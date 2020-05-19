@@ -15,25 +15,7 @@ from platform_agent.config.settings import Config
 from platform_agent.agent_websocket import WebSocketClient
 
 
-def main(args):
-    """ Main entry point of the app """
-
-    if args.run:
-
-        # Retrieving settings from config on start
-        Config()
-
-        # Configuring logger globally
-        configure_logger()
-
-        # Initiating WS client
-        client = WebSocketClient(os.environ['WEBSOCKET_HOST'], os.environ['API_KEY'])
-
-        # Starting WS client main thread
-        client.start()
-
-
-if __name__ == "__main__":
+def main(args=None):
     """ This is executed when run from the command line """
     parser = argparse.ArgumentParser()
 
@@ -55,4 +37,26 @@ if __name__ == "__main__":
         version="%(prog)s (version {version})".format(version=__version__))
 
     args = parser.parse_args()
-    main(args)
+    agent(args)
+
+
+def agent(args):
+    """ Main entry point of the app """
+    if args.run:
+
+        # Retrieving settings from config on start
+        Config()
+
+        # Configuring logger globally
+        configure_logger()
+
+        # Initiating WS client
+        client = WebSocketClient(os.environ.get('CONTROLLER_URL', 'app-controller-platform-agents.noia.network'), os.environ['API_KEY'])
+
+        # Starting WS client main thread
+        client.start()
+
+
+if __name__ == "__main__":
+    """ This is executed when run from the command line """
+    main()

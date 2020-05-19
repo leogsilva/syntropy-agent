@@ -4,6 +4,7 @@ import json
 import os
 
 from logging.config import dictConfig
+from pathlib import Path
 
 from platform_agent.lib.ctime import now
 
@@ -28,6 +29,18 @@ class PublishLogToSessionHandler(logging.Handler):
 
 
 def configure_logger():
+
+    log_path = "/var/log/noia-platform"
+
+    log_file = Path(f"{log_path}/agent.log")
+
+    noia_platform_dir = Path(f"{log_path}")
+
+    if not noia_platform_dir.is_dir():
+        noia_platform_dir.mkdir()
+    if not log_file.is_file():
+        log_file.write_text('')
+
     logging_config = dict(
         version=1,
         formatters={
@@ -39,18 +52,18 @@ def configure_logger():
             'h': {
                 'class': 'logging.StreamHandler',
                 'formatter': 'f',
-                'level': int(os.environ.get('DEFAULT_LOG_LEVEL', 30))
+                'level': int(os.environ.get('DEFAULT_LOG_LEVEL', 10))
             },
             'file': {
                 'level': 'DEBUG',
                 'class': 'logging.handlers.RotatingFileHandler',
                 'formatter': 'f',
-                'filename': os.environ['DEFAULT_LOG_FILE']
+                'filename': os.environ.get('DEFAULT_LOG_FILE', "/var/log/noia-platform/agent.log")
             }
         },
         root={
             'handlers': ['h', 'file'],
-            'level': int(os.environ.get('DEFAULT_LOG_LEVEL', 30)),
+            'level': int(os.environ.get('DEFAULT_LOG_LEVEL', 10)),
         },
     )
 

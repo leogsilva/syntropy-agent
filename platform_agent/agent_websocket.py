@@ -88,7 +88,7 @@ class WebSocketClient(threading.Thread):
         self.connection_url = f"{ssl}://{host}"
         self.ws = websocket.WebSocketApp(
             self.connection_url,
-            header={'authorization': api_key, 'x-deviceid': self.generate_device_id},
+            header={'authorization': api_key, 'x-deviceid': self.generate_device_id()},
             on_message=self.on_message,
             on_error=self.on_error,
             on_close=self.on_close,
@@ -129,4 +129,6 @@ class WebSocketClient(threading.Thread):
         self.agent_runner.queue.put(self.agent_runner.STOP_MESSAGE)
 
     def generate_device_id(self):
-        return "TEST_DEVICE_ID"
+        with open('/sys/class/dmi/id/product_uuid', 'r') as file:
+            machine_id = file.read().replace('\n', '')
+            return machine_id

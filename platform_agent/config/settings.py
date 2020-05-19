@@ -1,11 +1,20 @@
 import configparser
 import os
+from pathlib import Path
+
+
+class ConfigException(Exception):
+    pass
 
 
 class Config:
 
     _data = None
     _file = "/etc/noia-agent/config.ini"
+    config_file = Path(_file)
+    if not config_file.is_file():
+        print(f"Config file was not found in {_file}")
+        raise ConfigException(f"Config file was not found in {_file}")
 
     def __init__(self):
         self._data = configparser.ConfigParser()

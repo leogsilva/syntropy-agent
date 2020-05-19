@@ -1,0 +1,2 @@
+pyroute2==0.5.12
+websocket-client==0.57.0
