@@ -51,7 +51,10 @@ def agent(args):
         configure_logger()
 
         # Initiating WS client
-        client = WebSocketClient(os.environ.get('CONTROLLER_URL', 'app-controller-platform-agents.noia.network'), os.environ['API_KEY'])
+        client = WebSocketClient(
+            os.environ.get('NOIA_CONTROLLER_URL', 'app-controller-platform-agents.noia.network'),
+            os.environ['NOIA_API_KEY']
+        )
 
         # Starting WS client main thread
         client.start()

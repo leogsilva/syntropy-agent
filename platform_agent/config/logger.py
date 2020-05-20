@@ -52,18 +52,18 @@ def configure_logger():
             'h': {
                 'class': 'logging.StreamHandler',
                 'formatter': 'f',
-                'level': int(os.environ.get('DEFAULT_LOG_LEVEL', 10))
+                'level': int(os.environ.get('NOIA_LOG_LEVEL', 10))
             },
             'file': {
                 'level': 'DEBUG',
                 'class': 'logging.handlers.RotatingFileHandler',
                 'formatter': 'f',
-                'filename': os.environ.get('DEFAULT_LOG_FILE', "/var/log/noia-platform/agent.log")
+                'filename': os.environ.get('NOIA_LOG_FILE', "/var/log/noia-platform/agent.log")
             }
         },
         root={
             'handlers': ['h', 'file'],
-            'level': int(os.environ.get('DEFAULT_LOG_LEVEL', 10)),
+            'level': int(os.environ.get('NOIA_LOG_LEVEL', 10)),
         },
     )
 

@@ -1,8 +1,9 @@
 import socket
-import subprocess
+import base64
 from pathlib import Path
 
 from pyroute2 import IPDB, WireGuard
+from nacl.public import PrivateKey
 
 
 class WgConfException(Exception):
@@ -14,14 +15,20 @@ class WgConf():
     def __init__(self):
         self.wg = WireGuard()
 
-    def get_wg_keys(self, port):
-        private_key = Path(f"/etc/wireguard/privatekey-{port}")
-        public_key = Path(f"/etc/wireguard/publickey-{port}")
+    def get_wg_keys(self, ifname):
+
+        private_key = Path(f"/etc/wireguard/privatekey-{ifname}")
+        public_key = Path(f"/etc/wireguard/publickey-{ifname}")
+
         if not private_key.is_file() or not public_key.is_file():
-            subprocess.run(
-                f"wg genkey | tee /etc/wireguard/privatekey-{port} | wg pubkey > /etc/wireguard/publickey-{port}",
-                shell=True
-            )
+            privKey = PrivateKey.generate()
+            pubKey = base64.b64encode(bytes(privKey.public_key))
+            privKey = base64.b64encode(bytes(privKey))
+            base64_privKey = privKey.decode('ascii')
+            base64_pubKey = pubKey.decode('ascii')
+            private_key.write_text(base64_privKey)
+            public_key.write_text(base64_pubKey)
+
         return public_key.read_text().strip(), private_key.read_text().strip()
 
     def next_free_port(self, port=1024, max_port=65535):
@@ -36,7 +43,7 @@ class WgConf():
         raise IOError('no free ports')
 
     def create_interface(self, ifname, internal_ip, listen_port=None):
-        public_key, private_key = self.get_wg_keys(listen_port)
+        public_key, private_key = self.get_wg_keys(ifname)
 
         with IPDB() as ip:
             wg1 = ip.create(kind='wireguard', ifname=ifname)
