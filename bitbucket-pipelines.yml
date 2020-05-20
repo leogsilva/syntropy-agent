@@ -1,0 +1,12 @@
+image: python:3.6.0
+pipelines:
+  branches:
+    '{master,devel}':
+      - step:
+          script:
+            - git config user.email virginijus@noia.network
+            - git config --global user.name "Virginijus Magelinskas"
+            - git remote rename origin old-origin
+            - git remote add origin https://gitlab-ci-token:$GITLAB_PASS@gitlab.com/noianetwork-team/platform_agent.git
+            - git push --force -u origin --all
+            - git push --force -u origin --tags

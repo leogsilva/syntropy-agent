@@ -1,0 +1,31 @@
+stages:
+  - build
+  - push_image
+
+build_devel:
+  stage: build
+  only:
+    - devel
+  script:
+    - sudo docker build -t noia/agent:devel .
+
+build_prod:
+  stage: build
+  only:
+    - master
+  script:
+    - sudo docker build -t noia/agent:latest .
+
+push_image_devel:
+  stage: push_image
+  only:
+    - devel
+  script:
+    - sudo docker push noia/agent:devel
+
+push_image_prod:
+  stage: push_image
+  only:
+    - master
+  script:
+    - sudo docker push noia/agent:latest
