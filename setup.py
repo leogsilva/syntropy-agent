@@ -2,13 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name="platform-agent",
-    version='0.0.2',
+    version='0.0.3',
     py_modules=['platform-agent'],
     install_requires=[
         'pyroute2==0.5.12',
         'websocket-client==0.57.0',
         'requests==2.22.0',
         'PyNaCl==1.0.1',
+        'docker-py==1.10.6',
     ],
     packages=find_packages(),
     entry_points={
