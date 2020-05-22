@@ -71,9 +71,9 @@ class WgConf():
             "listen_port": listen_port
         }
 
-    def add_peer(self, ifname, public_key, allowed_ips, endpoint_addr, endpoint_port):
+    def add_peer(self, ifname, public_key, allowed_ips, endpoint_ipv4, endpoint_port):
         peer = {'public_key': public_key,
-                'endpoint_addr': endpoint_addr,
+                'endpoint_addr': endpoint_ipv4,
                 'endpoint_port': endpoint_port,
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
