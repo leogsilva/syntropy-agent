@@ -1,7 +1,7 @@
 import logging
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
-from platform_agent.docker import DockerNetworkWatcher
+from platform_agent.docker_api.docker_api import DockerNetworkWatcher
 
 logger = logging.getLogger()
 

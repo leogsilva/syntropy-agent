@@ -3,7 +3,7 @@ import logging
 import requests
 
 import docker
-from platform_agent.docker.helpers import format_networks_result
+from platform_agent.docker_api.helpers import format_networks_result
 
 logger = logging.getLogger()
 

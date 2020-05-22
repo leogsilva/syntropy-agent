@@ -4,7 +4,7 @@ import threading
 import time
 
 import docker
-from platform_agent.docker import format_networks_result
+from platform_agent.docker_api.helpers import format_networks_result
 from platform_agent.lib.ctime import now
 
 logger = logging.getLogger()
