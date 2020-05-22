@@ -1,1 +1,2 @@
 from platform_agent.docker.docker_api import DockerNetworkWatcher
+from platform_agent.docker.helpers import format_networks_result

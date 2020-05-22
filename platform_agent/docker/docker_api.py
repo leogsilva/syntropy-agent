@@ -4,6 +4,7 @@ import threading
 import time
 
 import docker
+from platform_agent.docker import format_networks_result
 from platform_agent.lib.ctime import now
 
 logger = logging.getLogger()
@@ -23,20 +24,7 @@ class DockerNetworkWatcher(threading.Thread):
     def run(self):
         while not self.stop_network_watcher.is_set():
             networks = self.docker_client.networks()
-            result = []
-            for network in networks:
-                subnets = []
-                for subnet in network['IPAM']['Config']:
-                    subnets.append(subnet['Subnet'])
-                if subnets:
-                    result.append(
-                        {
-                            'docker_network_id': network['Id'],
-                            'docker_network_name': network.get('Name'),
-                            'docker_network_subnets': subnets
-
-                        }
-                    )
+            result = format_networks_result(networks)
             logger.info(f"[NETWORK_INFO] Sending networks {result}")
             self.ws_client.send(json.dumps({
                 'id': "ID." + str(time.time()),

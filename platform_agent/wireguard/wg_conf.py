@@ -1,9 +1,12 @@
 import socket
 import base64
+import logging
 from pathlib import Path
 
-from pyroute2 import IPDB, WireGuard
+from pyroute2 import IPDB, WireGuard, IPRoute
 from nacl.public import PrivateKey
+
+logger = logging.getLogger()
 
 
 class WgConfException(Exception):
@@ -43,6 +46,7 @@ class WgConf():
         raise IOError('no free ports')
 
     def create_interface(self, ifname, internal_ip, listen_port=None):
+        logger.info(f"[WG_INFO] - Creating interface {ifname}")
         public_key, private_key = self.get_wg_keys(ifname)
 
         with IPDB() as ip:
@@ -74,6 +78,7 @@ class WgConf():
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
+        self.ip_route_add(allowed_ips)
         return
 
     def remove_peer(self, ifname, public_key):
@@ -91,3 +96,13 @@ class WgConf():
             with ipdb.interfaces[ifname] as i:
                 i.remove()
         return
+
+    def ip_route_add(self, ifname, ip_list):
+        ip_route = IPRoute()
+        devices = ip_route.link_lookup(ifname=ifname)
+        dev = devices[0]
+        for ip in ip_list:
+            if not ip_route.get_routes(RTA_DST=ip.split('/')[0]):
+                ip_route.route('add', dst=ip, oif=dev, scope=253)
+            else:
+                logger.info(f"vpnconf add route failed [{ip}] - already exists")
