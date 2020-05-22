@@ -22,7 +22,8 @@ class DockerNetworkWatcher(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        while not self.stop_network_watcher.is_set():
+        while True:
+            time.sleep(int(self.interval))
             networks = self.docker_client.networks()
             result = format_networks_result(networks)
             logger.info(f"[NETWORK_INFO] Sending networks {result}")
@@ -32,11 +33,7 @@ class DockerNetworkWatcher(threading.Thread):
                 'type': 'NETWORK_INFO',
                 'data': result
             }))
-            time.sleep(int(self.interval))
 
     def join(self, timeout=None):
         self.stop_network_watcher.set()
         super().join(timeout)
-
-    def format_networks(self, networks):
-        pass
