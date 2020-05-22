@@ -43,8 +43,14 @@ class AgentApi:
 
     def WG_CONF(self, data, **kwargs):
         try:
-            fn = getattr(self.wgconf, f"api_{data['fn']}")
-            return {data['fn']: fn(**data['args']), "args": data['args']}
+            fn = getattr(self.wgconf, data['fn'])
+            return {
+                'fn': data['fn'],
+                'data': fn(**data['args']),
+                "args": data['args']
+            }
         except WgConfException as e:
             logger.error(f"[WG_CONF] failed. exception = {str(e)}, data = {data}")
-            return {data['fn']: str(e), "args": data['args']}
+            return {
+                'error': {data['fn']: str(e), "args": data['args']}
+            }
