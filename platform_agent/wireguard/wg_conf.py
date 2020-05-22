@@ -78,7 +78,7 @@ class WgConf():
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
-        self.ip_route_add(allowed_ips)
+        self.ip_route_add(ifname, allowed_ips)
         return
 
     def remove_peer(self, ifname, public_key):
