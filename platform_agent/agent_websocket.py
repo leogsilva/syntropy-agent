@@ -57,7 +57,7 @@ class AgentRunner:
             'executed_at': now(),
             'type': request['type'],
         }
-        if isinstance(result, dict) and ('data' in result or 'error' in result):
+        if isinstance(result, dict) and ('error' in result):
             payload.update(result)
         else:
             payload.update({'data': result})
