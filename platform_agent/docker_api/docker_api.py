@@ -12,28 +12,34 @@ logger = logging.getLogger()
 
 class DockerNetworkWatcher(threading.Thread):
 
-    def __init__(self, ws_client, interval):
+    def __init__(self, ws_client):
         super().__init__()
         self.ws_client = ws_client
         self.docker_client = docker.from_env()
-        self.interval = interval
-        self.stop_network_watcher = threading.Event()
+        self.events = self.docker_client.events(decode=True)
         self.daemon = True
         threading.Thread.__init__(self)
 
     def run(self):
-        while True:
-            time.sleep(int(self.interval))
-            networks = self.docker_client.networks()
-            result = format_networks_result(networks)
-            logger.info(f"[NETWORK_INFO] Sending networks {result}")
-            self.ws_client.send(json.dumps({
-                'id': "ID." + str(time.time()),
-                'executed_at': now(),
-                'type': 'NETWORK_INFO',
-                'data': result
-            }))
+        for event in self.events:
+            network = event.get('Actor', {})
+            if event.get('Type') == 'network' and event.get('Action') in ['create', 'destroy'] and network:
+                if event.get('Action') == 'create':
+                    network = self.docker_client.inspect_network(network.get('ID'))
+                    result = format_networks_result([network])
+                else:
+                    result = {
+                        "docker_network_id": network.get('ID'),
+                        "remove": True
+                    }
+                logger.info(f"[NETWORK_INFO] Sending networks {result}")
+                self.ws_client.send(json.dumps({
+                    'id': "ID." + str(time.time()),
+                    'executed_at': now(),
+                    'type': 'NETWORK_INFO',
+                    'data': result
+                }))
 
     def join(self, timeout=None):
-        self.stop_network_watcher.set()
+        self.events.close()
         super().join(timeout)
