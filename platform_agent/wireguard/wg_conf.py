@@ -46,7 +46,7 @@ class WgConf():
         raise IOError('no free ports')
 
     def create_interface(self, ifname, internal_ip, listen_port=None):
-        logger.info(f"[WG_INFO] - Creating interface {ifname}")
+        logger.info(f"[WG_CONF] - Creating interface {ifname}")
         public_key, private_key = self.get_wg_keys(ifname)
 
         with IPDB() as ip:
@@ -71,22 +71,24 @@ class WgConf():
             "listen_port": listen_port
         }
 
-    def add_peer(self, ifname, public_key, allowed_ips, endpoint_ipv4, endpoint_port):
+    def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
         peer = {'public_key': public_key,
                 'endpoint_addr': endpoint_ipv4,
                 'endpoint_port': endpoint_port,
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
-        self.ip_route_add(ifname, allowed_ips)
+        self.ip_route_add(ifname, allowed_ips, gw_ipv4)
         return
 
-    def remove_peer(self, ifname, public_key):
+    def remove_peer(self, ifname, public_key, allowed_ips):
         peer = {
             'public_key': public_key,
             'remove': True
             }
+
         self.wg.set(ifname, peer=peer)
+        self.ip_route_del(ifname, allowed_ips)
         return
 
     def remove_interface(self, ifname):
@@ -97,12 +99,22 @@ class WgConf():
                 i.remove()
         return
 
-    def ip_route_add(self, ifname, ip_list):
+    def ip_route_add(self, ifname, ip_list, gw_ipv4):
         ip_route = IPRoute()
         devices = ip_route.link_lookup(ifname=ifname)
         dev = devices[0]
         for ip in ip_list:
             if not ip_route.get_routes(RTA_DST=ip.split('/')[0]):
-                ip_route.route('add', dst=ip, oif=dev, scope=253)
+                ip_route.route('add', dst=ip, gateway=gw_ipv4, oif=dev)
             else:
-                logger.info(f"vpnconf add route failed [{ip}] - already exists")
+                logger.info(f"[WG_CONF] add route failed [{ip}] - already exists")
+
+    def ip_route_del(self, ifname, ip_list, scope=None):
+        ip_route = IPRoute()
+        devices = ip_route.link_lookup(ifname=ifname)
+        dev = devices[0]
+        for ip in ip_list:
+            if ip_route.get_routes(RTA_DST=ip.split('/')[0]):
+                ip_route.route('del', dst=ip, oif=dev, scope=scope)
+            else:
+                logger.info(f"[WG_CONF] del route failed [{ip}] - does not exist")
