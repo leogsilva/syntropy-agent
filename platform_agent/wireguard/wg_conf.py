@@ -3,7 +3,7 @@ import base64
 import logging
 from pathlib import Path
 
-from pyroute2 import IPDB, WireGuard, IPRoute
+from pyroute2 import IPDB, WireGuard, IPRoute, NetlinkError
 from nacl.public import PrivateKey
 
 logger = logging.getLogger()
@@ -104,9 +104,11 @@ class WgConf():
         devices = ip_route.link_lookup(ifname=ifname)
         dev = devices[0]
         for ip in ip_list:
-            if not ip_route.get_routes(RTA_DST=ip.split('/')[0]):
+            try:
                 ip_route.route('add', dst=ip, gateway=gw_ipv4, oif=dev)
-            else:
+            except NetlinkError as error:
+                if error.code != 17:
+                    raise
                 logger.info(f"[WG_CONF] add route failed [{ip}] - already exists")
 
     def ip_route_del(self, ifname, ip_list, scope=None):
@@ -114,7 +116,9 @@ class WgConf():
         devices = ip_route.link_lookup(ifname=ifname)
         dev = devices[0]
         for ip in ip_list:
-            if ip_route.get_routes(RTA_DST=ip.split('/')[0]):
+            try:
                 ip_route.route('del', dst=ip, oif=dev, scope=scope)
-            else:
+            except NetlinkError as error:
+                if error.code != 17:
+                    raise
                 logger.info(f"[WG_CONF] del route failed [{ip}] - does not exist")
