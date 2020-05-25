@@ -22,16 +22,9 @@ class DockerNetworkWatcher(threading.Thread):
 
     def run(self):
         for event in self.events:
-            network = event.get('Actor', {})
-            if event.get('Type') == 'network' and event.get('Action') in ['create', 'destroy'] and network:
-                if event.get('Action') == 'create':
-                    network = self.docker_client.inspect_network(network.get('ID'))
-                    result = format_networks_result([network])
-                else:
-                    result = {
-                        "docker_network_id": network.get('ID'),
-                        "remove": True
-                    }
+            if event.get('Type') == 'network' and event.get('Action') in ['create', 'destroy']:
+                networks = self.docker_client.networks()
+                result = format_networks_result(networks)
                 logger.info(f"[NETWORK_INFO] Sending networks {result}")
                 self.ws_client.send(json.dumps({
                     'id': "ID." + str(time.time()),
