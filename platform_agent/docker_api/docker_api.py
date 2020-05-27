@@ -18,7 +18,6 @@ class DockerNetworkWatcher(threading.Thread):
         self.docker_client = docker.from_env()
         self.events = self.docker_client.events(decode=True)
         self.daemon = True
-        threading.Thread.__init__(self)
 
     def run(self):
         for event in self.events:

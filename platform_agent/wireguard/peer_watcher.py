@@ -21,7 +21,6 @@ class WireguardPeerWatcher(threading.Thread):
         self.wg = WireGuard()
         self.stop_peer_watcher = threading.Event()
         self.daemon = True
-        threading.Thread.__init__(self)
 
     def run(self):
         while not self.stop_peer_watcher.is_set():

@@ -12,7 +12,7 @@ class AgentApi:
         self.runner = runner
         self.wg_peers = None
         self.wgconf = WgConf()
-        self.network_watcher = DockerNetworkWatcher(self.runner, interval=30).start()
+        self.network_watcher = DockerNetworkWatcher(self.runner).start()
 
     def call(self, type, data, request_id):
         result = None

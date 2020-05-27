@@ -1,10 +1,13 @@
 import socket
 import base64
 import logging
+import subprocess
 from pathlib import Path
 
 from pyroute2 import IPDB, WireGuard, IPRoute, NetlinkError
 from nacl.public import PrivateKey
+
+from platform_agent.cmd.lsmod import module_loaded
 
 logger = logging.getLogger()
 
@@ -16,13 +19,15 @@ class WgConfException(Exception):
 class WgConf():
 
     def __init__(self):
-        self.wg = WireGuard()
+
+        self.wg_kernel = module_loaded('wireguard')
+        self.wg = WireGuard() if self.wg_kernel else WireguardGo()
 
     def get_wg_keys(self, ifname):
-
-        private_key = Path(f"/etc/wireguard/privatekey-{ifname}")
-        public_key = Path(f"/etc/wireguard/publickey-{ifname}")
-
+        private_key_path = f"/etc/wireguard/privatekey-{ifname}"
+        public_key_path = f"/etc/wireguard/publickey-{ifname}"
+        private_key = Path(private_key_path)
+        public_key = Path(public_key_path)
         if not private_key.is_file() or not public_key.is_file():
             privKey = PrivateKey.generate()
             pubKey = base64.b64encode(bytes(privKey.public_key))
@@ -31,8 +36,11 @@ class WgConf():
             base64_pubKey = pubKey.decode('ascii')
             private_key.write_text(base64_privKey)
             public_key.write_text(base64_pubKey)
+        if self.wg_kernel:
+            return public_key.read_text().strip(), private_key.read_text().strip()
+        else:
+            return public_key.read_text().strip(), private_key_path
 
-        return public_key.read_text().strip(), private_key.read_text().strip()
 
     def next_free_port(self, port=1024, max_port=65535):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -59,7 +67,6 @@ class WgConf():
         self.wg.set(
             ifname,
             private_key=private_key,
-            fwmark=0x1337,
             listen_port=listen_port
         )
 
@@ -122,3 +129,24 @@ class WgConf():
                 if error.code != 17:
                     raise
                 logger.info(f"[WG_CONF] del route failed [{ip}] - does not exist")
+
+
+class WireguardGo():
+
+    def set(self, ifname, peer=None, private_key=None, listen_port=None, allowed_ips=None):
+        listen_port_cmd = ''
+        private_key_cmd = ''
+        peer_cmd = ''
+        if peer and allowed_ips:
+            peer_cmd = f"peer {peer['public_key']} allowed-ips {' '.join(peer['allowed_ips'])} endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}"
+        if private_key:
+            private_key_cmd = f"private-key {private_key}"
+        if listen_port:
+            listen_port_cmd = f"listen-port {listen_port}"
+        full_cmd = f"wg set {ifname} {listen_port_cmd} {private_key_cmd} {peer_cmd}".split(' ')
+
+        result_set = subprocess.run(full_cmd, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        complete_output = result_set.stdout or result_set.stderr
+        complete_output = complete_output or 'Success'
+        return complete_output

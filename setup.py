@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="platform-agent",
-    version='0.0.15',
+    version='0.0.19',
     py_modules=['platform-agent'],
     install_requires=[
         'pyroute2==0.5.12',
