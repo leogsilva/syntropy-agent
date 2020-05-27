@@ -8,6 +8,7 @@ from pyroute2 import IPDB, WireGuard, IPRoute, NetlinkError
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
+from platform_agent.cmd.wg_show import get_wg_listen_port
 
 logger = logging.getLogger()
 
@@ -58,20 +59,21 @@ class WgConf():
         public_key, private_key = self.get_wg_keys(ifname)
 
         with IPDB() as ip:
-            wg1 = ip.create(kind='wireguard', ifname=ifname)
-
+            if self.wg_kernel:
+                wg1 = ip.create(kind='wireguard', ifname=ifname)
+            else:
+                self.wg.create_interface(ifname)
+                wg1 = ip.interfaces[ifname]
             wg1.add_ip(internal_ip)
             wg1.up()
             wg1.commit()
-
         self.wg.set(
             ifname,
             private_key=private_key,
             listen_port=listen_port
         )
 
-        wg_info = dict(self.wg.info(ifname)[0]['attrs'])
-        listen_port = wg_info['WGDEVICE_A_LISTEN_PORT']
+        listen_port = self.get_listening_port(ifname)
 
         return {
             "public_key": public_key,
@@ -130,23 +132,43 @@ class WgConf():
                     raise
                 logger.info(f"[WG_CONF] del route failed [{ip}] - does not exist")
 
+    def get_listening_port(self, ifname):
+        if self.wg_kernel:
+            wg_info = dict(self.wg.info(ifname)[0]['attrs'])
+            return wg_info['WGDEVICE_A_LISTEN_PORT']
+
+        else:
+            wg_info = self.wg.info(ifname)
+            return wg_info['listen_port']
 
 class WireguardGo():
 
-    def set(self, ifname, peer=None, private_key=None, listen_port=None, allowed_ips=None):
-        listen_port_cmd = ''
-        private_key_cmd = ''
-        peer_cmd = ''
-        if peer and allowed_ips:
-            peer_cmd = f"peer {peer['public_key']} allowed-ips {' '.join(peer['allowed_ips'])} endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}"
+    def set(self, ifname, peer=None, private_key=None, listen_port=None):
+        full_cmd = f"wg set {ifname}".split(' ')
+        if peer:
+            peer_cmd = f"peer {peer['public_key']} allowed-ips {' '.join(peer['allowed_ips'])} endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}".split(' ')
+            full_cmd += peer_cmd
         if private_key:
-            private_key_cmd = f"private-key {private_key}"
+            private_key_cmd = f"private-key {private_key}".split(' ')
+            full_cmd += private_key_cmd
         if listen_port:
-            listen_port_cmd = f"listen-port {listen_port}"
-        full_cmd = f"wg set {ifname} {listen_port_cmd} {private_key_cmd} {peer_cmd}".split(' ')
+            listen_port_cmd = f"listen-port {listen_port}".split(' ')
+            full_cmd += listen_port_cmd
 
         result_set = subprocess.run(full_cmd, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
         return complete_output
+
+    def create_interface(self, ifname):
+        result_set = subprocess.run(['wireguard-go', ifname], encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        complete_output = result_set.stdout or result_set.stderr
+        complete_output = complete_output or 'Success'
+        return complete_output
+
+    def info(self, ifname):
+        return {
+            "listen_port": get_wg_listen_port(ifname)
+        }
