@@ -146,7 +146,10 @@ class WireguardGo():
     def set(self, ifname, peer=None, private_key=None, listen_port=None):
         full_cmd = f"wg set {ifname}".split(' ')
         if peer:
-            peer_cmd = f"peer {peer['public_key']} allowed-ips {' '.join(peer['allowed_ips'])} endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}".split(' ')
+            allowed_ips_cmd = ""
+            for ip in peer.get('allowed_ips', []):
+                allowed_ips_cmd += f"allowed-ips {ip} "
+            peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}".split(' ')
             full_cmd += peer_cmd
         if private_key:
             private_key_cmd = f"private-key {private_key}".split(' ')
@@ -159,6 +162,7 @@ class WireguardGo():
 
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
+        logger.info(f"[Wireguard-go] - WG SET - {complete_output} , args {full_cmd}")
         return complete_output
 
     def create_interface(self, ifname):
