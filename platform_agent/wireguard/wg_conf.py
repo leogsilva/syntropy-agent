@@ -141,15 +141,19 @@ class WgConf():
             wg_info = self.wg.info(ifname)
             return wg_info['listen_port']
 
+
 class WireguardGo():
 
     def set(self, ifname, peer=None, private_key=None, listen_port=None):
         full_cmd = f"wg set {ifname}".split(' ')
         if peer:
             allowed_ips_cmd = ""
-            for ip in peer.get('allowed_ips', []):
-                allowed_ips_cmd += f"allowed-ips {ip} "
-            peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}".split(' ')
+            if not peer.get('remove'):
+                for ip in peer.get('allowed_ips', []):
+                    allowed_ips_cmd += f"allowed-ips {ip} "
+                peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}".split(' ')
+            else:
+                peer_cmd = f"peer {peer['public_key']} remove"
             full_cmd += peer_cmd
         if private_key:
             private_key_cmd = f"private-key {private_key}".split(' ')
