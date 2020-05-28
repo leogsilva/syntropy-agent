@@ -17,6 +17,9 @@ class Config:
         if os.environ.get("NOIA_API_KEY"):
             return
 
+        if os.environ.get('NOIA_USER_API') == 'DOCKER' and not os.environ.get('NOIA_DOCKER_URL'):
+            raise ConfigException(f"For Docker API, you must provide NOIA_DOCKER_URL")
+
         config_file = Path(self._file)
         if not config_file.is_file():
             print(f"Config file was not found in {self._file}")
