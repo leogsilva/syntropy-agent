@@ -1,5 +1,6 @@
 import os
 import logging
+import socket
 import requests
 
 import docker
@@ -32,8 +33,15 @@ def get_network_info():
     }
 
 
+def get_name():
+    return {
+        "agent_name": socket.gethostname()
+    }
+
+
 def gather_initial_info():
     result = {}
     result.update(get_ip_addr())
     result.update(get_network_info())
+    result.update(get_name())
     return result
