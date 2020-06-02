@@ -1,5 +1,6 @@
 import logging
 import json
+import socket
 import queue
 import threading
 import traceback
@@ -88,7 +89,11 @@ class WebSocketClient(threading.Thread):
         self.connection_url = f"{ssl}://{host}"
         self.ws = websocket.WebSocketApp(
             self.connection_url,
-            header={'authorization': api_key, 'x-deviceid': self.generate_device_id()},
+            header={
+                'authorization': api_key,
+                'x-deviceid': self.generate_device_id(),
+                'x-devicename': socket.gethostname()
+            },
             on_message=self.on_message,
             on_error=self.on_error,
             on_close=self.on_close,
