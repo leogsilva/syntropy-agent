@@ -8,6 +8,8 @@ from icmplib import multiping
 
 from pyroute2 import WireGuard
 
+from platform_agent.routes import ip_route_del, ip_route_add
+
 logger = logging.getLogger()
 
 
@@ -31,7 +33,6 @@ def get_routing_info():
         peers_internal_ips = []
         res = {k: v for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard'}
         for ifname in res.keys():
-            print(ifname)
             internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
             peers = get_peer_info(ifname)
             for peer in peers.keys():
@@ -55,7 +56,7 @@ def get_routing_info():
 
 def get_interface_internal_ip(ifname):
     with pyroute2.IPDB() as ipdb:
-        internal_ip = f"{ipdb.interfaces[ifname]['ipaddr'][0]['address']}/{ipdb.interfaces[ifname]['ipaddr'][0]['prefixlen']}"
+        internal_ip = f"{ipdb.interfaces[ifname]['ipaddr'][0]['address']}"
         return internal_ip
 
 
@@ -98,12 +99,15 @@ class Rerouting(threading.Thread):
         while not self.stop_rerouting.is_set():
             previous_routes = {}
             new_routes = get_fastest_routes()
-            print(new_routes)
             for dest, best_route in new_routes.items():
                 if not best_route and previous_routes.get(dest) == best_route:
                     continue
                 # Do rerouting logic with best_route
-                print(f"Rerouting {dest} via {best_route}")
+                logger.info(f"Rerouting {dest} via {best_route}")
+                ip_route_del(ifname=best_route['iface'], ip_list=[dest])
+                ip_route_add(
+                    ifname=best_route['iface'], ip_list=[dest], gw_ipv4=get_interface_internal_ip(best_route['iface'])
+                )
             time.sleep(int(self.interval))
 
     def join(self, timeout=None):
