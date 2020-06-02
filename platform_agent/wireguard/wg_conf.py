@@ -4,11 +4,12 @@ import logging
 import subprocess
 from pathlib import Path
 
-from pyroute2 import IPDB, WireGuard, IPRoute, NetlinkError
+from pyroute2 import IPDB, WireGuard
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
+from platform_agent.routes import ip_route_add, ip_route_del
 
 logger = logging.getLogger()
 
@@ -87,7 +88,7 @@ class WgConf():
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
-        self.ip_route_add(ifname, allowed_ips, gw_ipv4)
+        ip_route_add(ifname, allowed_ips, gw_ipv4)
         return
 
     def remove_peer(self, ifname, public_key, allowed_ips):
@@ -97,7 +98,7 @@ class WgConf():
             }
 
         self.wg.set(ifname, peer=peer)
-        self.ip_route_del(ifname, allowed_ips)
+        ip_route_del(ifname, allowed_ips)
         return
 
     def remove_interface(self, ifname):
@@ -107,30 +108,6 @@ class WgConf():
             with ipdb.interfaces[ifname] as i:
                 i.remove()
         return
-
-    def ip_route_add(self, ifname, ip_list, gw_ipv4):
-        ip_route = IPRoute()
-        devices = ip_route.link_lookup(ifname=ifname)
-        dev = devices[0]
-        for ip in ip_list:
-            try:
-                ip_route.route('add', dst=ip, gateway=gw_ipv4, oif=dev)
-            except NetlinkError as error:
-                if error.code != 17:
-                    raise
-                logger.info(f"[WG_CONF] add route failed [{ip}] - already exists")
-
-    def ip_route_del(self, ifname, ip_list, scope=None):
-        ip_route = IPRoute()
-        devices = ip_route.link_lookup(ifname=ifname)
-        dev = devices[0]
-        for ip in ip_list:
-            try:
-                ip_route.route('del', dst=ip, oif=dev, scope=scope)
-            except NetlinkError as error:
-                if error.code != 17:
-                    raise
-                logger.info(f"[WG_CONF] del route failed [{ip}] - does not exist")
 
     def get_listening_port(self, ifname):
         if self.wg_kernel:

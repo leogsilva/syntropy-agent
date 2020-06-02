@@ -1,6 +1,7 @@
 import logging
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
+from platform_agent.rerouting import Rerouting
 from platform_agent.docker_api.docker_api import DockerNetworkWatcher
 
 logger = logging.getLogger()
@@ -13,6 +14,7 @@ class AgentApi:
         self.wg_peers = None
         self.wgconf = WgConf()
         self.network_watcher = DockerNetworkWatcher(self.runner).start()
+        self.rerouting = Rerouting().start()
 
     def call(self, type, data, request_id):
         result = None
