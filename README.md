@@ -8,7 +8,7 @@ Pip is the package installer for Python. You can use pip to install packages fro
 
 #### 1. Install NOIA agent
 
-`pip install noia-agent`
+`pip install platform-agent`
 
 #### 2. Edit a /etc/noia-agent/config.ini file 
 
@@ -16,7 +16,7 @@ Pip is the package installer for Python. You can use pip to install packages fro
 
 #### List of Networks to join
 
-If `network_id = 0` or not present the Agent will not join any network when deployed
+If `network_ids = 0` or not present the Agent will not join any network when deployed
 
 `network_ids = Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg` 
 
@@ -28,9 +28,7 @@ country = Germany
 city = Frankfurt 
 
 #Select one of the categories from the list or default will be assigned 
-# 'zIoT',
-
-'Server','none' 
+# 'zIoT', 'Server','none' 
 category = IoT 
 
 #Select one of providers from the list or default will be assigned 
@@ -38,7 +36,8 @@ category = IoT
 #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
 
 provider = Microsoft Azure 
-lat = 40.14 lon = -74.21
+lat = 40.14 
+lon = -74.21
 ```
 
 #### Tags (Optional)
