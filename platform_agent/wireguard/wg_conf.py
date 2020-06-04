@@ -4,7 +4,7 @@ import logging
 import subprocess
 from pathlib import Path
 
-from pyroute2 import IPDB, WireGuard
+from pyroute2 import IPDB, WireGuard, CreateException
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
@@ -61,7 +61,10 @@ class WgConf():
 
         with IPDB() as ip:
             if self.wg_kernel:
-                wg1 = ip.create(kind='wireguard', ifname=ifname)
+                try:
+                    wg1 = ip.create(kind='wireguard', ifname=ifname)
+                except CreateException as e:
+                    raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
                 wg1 = ip.interfaces[ifname]

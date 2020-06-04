@@ -56,3 +56,11 @@ class AgentApi:
             return {
                 'error': {data['fn']: str(e), "args": data['args']}
             }
+
+    def CONFIG_INFO(self, data, **kwargs):
+        for vpn_cmd in data.get('vpn', []):
+            try:
+                fn = getattr(self.wgconf, vpn_cmd['fn'])
+                fn(**vpn_cmd['args'])
+            except WgConfException as e:
+                logger.error(f"[CONFIG_INFO] {str(e)}")
