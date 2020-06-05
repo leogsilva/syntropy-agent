@@ -23,6 +23,7 @@ If `network_ids = 0` or not present the Agent will not join any network when dep
 #### Metadata (Optional)
 
 ```ini
+NOIA_NETWORK_API = docker
 name = Azure EU gateway 
 country = Germany 
 city = Frankfurt 

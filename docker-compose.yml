@@ -18,6 +18,7 @@ services:
     environment:
       - NOIA_API_KEY=my-random-api-key
       - NOIA_CONTROLLER_URL=sandbox-controller-platform-agents.noia.network
+      - NOIA_NETWORK_API=docker
     restart: always
     network_mode: "host"
     volumes:

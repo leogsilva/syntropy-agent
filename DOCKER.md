@@ -6,6 +6,7 @@
     -e NOIA_ROLE='gateway' \
     -e NOIA_NETWORK_IDS='Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg'
     -e NOIA_CITY='Frankfurt' \
+    -e NOIA_NETWORK_API='docker' \
     -d noia/agent
 
 
@@ -14,6 +15,7 @@
 ### Metadata (Optional)
 
 ```ini
+-e NOIA_NETWORK_API='docker'
 -e NOIA_NAME='Azure EU gateway '
 -e NOIA_COUNTRY='Germany'
 -e NOIA_CITY='Frankfurt'

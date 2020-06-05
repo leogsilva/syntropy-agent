@@ -1,4 +1,6 @@
 import logging
+import os
+
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
 from platform_agent.rerouting import Rerouting
@@ -13,7 +15,8 @@ class AgentApi:
         self.runner = runner
         self.wg_peers = None
         self.wgconf = WgConf()
-        self.network_watcher = DockerNetworkWatcher(self.runner).start()
+        if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
+            self.network_watcher = DockerNetworkWatcher(self.runner).start()
         self.rerouting = Rerouting().start()
 
     def call(self, type, data, request_id):

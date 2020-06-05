@@ -25,12 +25,17 @@ def get_location():
 
 
 def get_network_info():
-    docker_client = docker.from_env()
-    networks = docker_client.networks()
-    network_info = format_networks_result(networks)
-    return {
-        "network_info": network_info
-    }
+    if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
+        docker_client = docker.from_env()
+        networks = docker_client.networks()
+        network_info = format_networks_result(networks)
+        return {
+            "network_info": network_info
+        }
+    else:
+        return {
+            "network_info": []
+        }
 
 
 def get_name():
