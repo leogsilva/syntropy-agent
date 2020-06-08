@@ -2,15 +2,13 @@ version: '2'
 
 services:
   portainer:
-    image: portainer/portainer
-    command: -H unix:///var/run/docker.sock
-    container_name: portainer-agent
+    image: portainer/agent
     restart: always
     networks:
       - noia
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
   noia-agent:
     image: noia/agent
     container_name: noia-agent
@@ -29,7 +27,6 @@ networks:
     noia:
         ipam:
             config:
-                  # Select non overlapping subnet
                 - subnet: 192.168.150.0/24
 
 volumes:
