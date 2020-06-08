@@ -1,6 +1,8 @@
 def format_networks_result(networks):
     result = []
     for network in networks:
+        if network.get('Name') == 'bridge':
+            continue
         subnets = []
         for subnet in network['IPAM']['Config']:
             subnets.append(subnet['Subnet'])
