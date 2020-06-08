@@ -65,15 +65,18 @@ class WgConf():
         with IPDB() as ip:
             if self.wg_kernel:
                 try:
-                    wg1 = ip.create(kind='wireguard', ifname=ifname)
+                    wg_int = ip.create(kind='wireguard', ifname=ifname)
                 except CreateException as e:
                     raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
-                wg1 = ip.interfaces[ifname]
-            wg1.add_ip(internal_ip)
-            wg1.up()
-            wg1.commit()
+                if ifname in ip.interfaces:
+                    wg_int = ip.interfaces[ifname]
+                else:
+                    raise WgConfException("Wireguard-go failed to create interface")
+            wg_int.add_ip(internal_ip)
+            wg_int.up()
+            wg_int.commit()
         self.wg.set(
             ifname,
             private_key=private_key,
