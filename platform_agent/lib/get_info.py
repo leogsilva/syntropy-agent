@@ -40,7 +40,8 @@ def get_network_info():
 
 def get_name():
     return {
-        "agent_name": socket.gethostname()
+        "agent_name": socket.gethostname(),
+        "agent_provider": os.environ.get('NOIA_PROVIDER', None)
     }
 
 
