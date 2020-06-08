@@ -26,8 +26,8 @@ class WgConf():
         self.wg = WireGuard() if self.wg_kernel else WireguardGo()
 
     def get_wg_keys(self, ifname):
-        private_key_path = f"/etc/wireguard/privatekey-{ifname}"
-        public_key_path = f"/etc/wireguard/publickey-{ifname}"
+        private_key_path = f"/etc/noia-agent/privatekey-{ifname}"
+        public_key_path = f"/etc/noia-agent/publickey-{ifname}"
         private_key = Path(private_key_path)
         public_key = Path(public_key_path)
         if not private_key.is_file() or not public_key.is_file():
@@ -38,6 +38,9 @@ class WgConf():
             base64_pubKey = pubKey.decode('ascii')
             private_key.write_text(base64_privKey)
             public_key.write_text(base64_pubKey)
+            private_key.chmod(0o600)
+            public_key.chmod(0o600)
+
         if self.wg_kernel:
             return public_key.read_text().strip(), private_key.read_text().strip()
         else:

@@ -14,8 +14,7 @@ from platform_agent.routes import ip_route_del, ip_route_add
 logger = logging.getLogger()
 
 
-def get_peer_info(ifname):
-    wg = WireGuard()
+def get_peer_info(ifname, wg):
 
     results = {}
     ss = wg.info(ifname)
@@ -28,14 +27,14 @@ def get_peer_info(ifname):
     return results
 
 
-def get_routing_info():
+def get_routing_info(wg):
     with pyroute2.IPDB() as ipdb:
         routing_info = {}
         peers_internal_ips = []
         res = {k: v for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard'}
         for ifname in res.keys():
             internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
-            peers = get_peer_info(ifname)
+            peers = get_peer_info(ifname, wg)
             for peer in peers.keys():
                 peer_internal_ip = next(
                     (
@@ -72,9 +71,9 @@ def ping_internal_ips(ips):
     return result
 
 
-def get_fastest_routes():
+def get_fastest_routes(wg):
     result = {}
-    routing_info, peers_internal_ips = get_routing_info()
+    routing_info, peers_internal_ips = get_routing_info(wg)
     ping_results = ping_internal_ips(peers_internal_ips)
     for dest, routes in routing_info.items():
         best_route = None
@@ -101,7 +100,7 @@ class Rerouting(threading.Thread):
             return
         while not self.stop_rerouting.is_set():
             previous_routes = {}
-            new_routes = get_fastest_routes()
+            new_routes = get_fastest_routes(self.wg)
             for dest, best_route in new_routes.items():
                 if not best_route and previous_routes.get(dest) == best_route:
                     continue

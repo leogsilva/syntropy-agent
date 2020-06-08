@@ -23,6 +23,7 @@ If `network_ids = 0` or not present the Agent will not join any network when dep
 #### Metadata (Optional)
 
 ```ini
+[INFO]
 NOIA_NETWORK_API = docker
 name = Azure EU gateway 
 country = Germany 
@@ -51,7 +52,7 @@ tags = Tag1,Tag2
 ```
 #### Start a NOIA Agent
 
-`noia_agent run`
+`/usr/local/bin/noia_agent run` or `noia_agent run`
 
 
 You can install NOIA using pip. If you don’t have pip installed, you can download it from here.

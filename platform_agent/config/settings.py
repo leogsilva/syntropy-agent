@@ -14,6 +14,12 @@ class Config:
 
     def __init__(self):
 
+        agent_path = "/etc/noia-agent"
+        agent_dir = Path(f"{agent_path}")
+        if not agent_dir.is_dir():
+            agent_dir.mkdir()
+            agent_dir.chmod(0o700)
+
         if os.environ.get("NOIA_API_KEY"):
             return
 
