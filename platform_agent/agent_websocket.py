@@ -75,7 +75,10 @@ class AgentRunner:
     def send_log(self, message):
         status = getattr(self.ws, 'sock')
         if status and status.status:
-            self.ws.send(message)
+            try:
+                self.ws.send(message)
+            except OSError:
+                pass
 
 
 class WebSocketClient(threading.Thread):

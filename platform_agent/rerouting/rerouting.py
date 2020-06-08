@@ -33,6 +33,8 @@ def get_routing_info(wg):
         peers_internal_ips = []
         res = {k: v for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard'}
         for ifname in res.keys():
+            if not res[ifname].get('ipaddr'):
+                continue
             internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
             peers = get_peer_info(ifname, wg)
             for peer in peers.keys():

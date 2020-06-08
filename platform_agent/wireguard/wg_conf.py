@@ -97,14 +97,15 @@ class WgConf():
         ip_route_add(ifname, allowed_ips, gw_ipv4)
         return
 
-    def remove_peer(self, ifname, public_key, allowed_ips):
+    def remove_peer(self, ifname, public_key, allowed_ips=None):
         peer = {
             'public_key': public_key,
             'remove': True
             }
 
         self.wg.set(ifname, peer=peer)
-        ip_route_del(ifname, allowed_ips)
+        if allowed_ips:
+            ip_route_del(ifname, allowed_ips)
         return
 
     def remove_interface(self, ifname):
