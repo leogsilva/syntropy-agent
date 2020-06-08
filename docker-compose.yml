@@ -4,6 +4,7 @@ services:
   portainer:
     image: portainer/portainer
     command: -H unix:///var/run/docker.sock
+    container_name: portainer-agent
     restart: always
     networks:
       - noia
@@ -12,6 +13,7 @@ services:
       - portainer_data:/data
   noia-agent:
     image: noia/agent
+    container_name: noia-agent
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
