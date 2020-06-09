@@ -8,7 +8,6 @@ Pip is the package installer for Python. You can use pip to install packages fro
 ```ini
 [SECRETS]
 api_key = z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA
-controller_url=app-controller-platform-agents.noia.network
 ```
 ##### List of Networks to join (Optional)
 If `network_ids = 0` or not present the Agent will not join any network when deployed

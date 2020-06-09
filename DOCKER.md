@@ -3,7 +3,6 @@
 #### Add API Key and NOIA API url (Required)
 ```ini
 -e NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA'
--e NOIA_CONTROLLER_URL='app-controller-platform-agents.noia.network'
 ```
 #### List of networks to join. `network_ids = 0 `  (Optional)
 `-e NETWORK_IDS='Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg'`

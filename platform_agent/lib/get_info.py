@@ -38,10 +38,11 @@ def get_network_info():
         }
 
 
-def get_name():
+def get_info():
     return {
         "agent_name": socket.gethostname(),
-        "agent_provider": os.environ.get('NOIA_PROVIDER', None)
+        "agent_provider": os.environ.get('NOIA_PROVIDER', None),
+        "agent_category": os.environ.get('NOIA_CATEGORY', None)
     }
 
 
@@ -71,7 +72,7 @@ def gather_initial_info():
     result = {}
     result.update(get_ip_addr())
     result.update(get_network_info())
-    result.update(get_name())
+    result.update(get_info())
     result.update(get_tags())
     result.update(get_network_ids())
     return result
