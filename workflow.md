@@ -1,47 +1,32 @@
 **Prerequisites:**
 
+* Wireguard kernel module is installed and loaded:
+
+     lsmod | grep wireguard
+
+* Optional:  Docker is installed and running: 
 
 
-*   Wireguard kernel module is installed and loaded:
-
-    ```
-lsmod | grep wireguard
-```
-
-
-*   Optional:  Docker is installed and running: 
-
-    ```
-docker system info
-```
-
-
+     docker system info
 
 **Steps:**
 
-
-
 1. Login to [https://platform.noia.network](https://platform.noia.network) 
 2. Create API key (Settings > API keys)
-
-    
 
 ---
 
 
 3. **Install NOIA Agent:**
 
-    Possible versions:
+Possible versions:
 
-
-    Stable:  noia/agent:prod
-
-
-    Development:  noia/agent:devel or noia/agent:latest  
+Stable:  ```noia/agent:prod```
+Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
     1. with Docker: 
 
-        ```
+```
 docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock --device /dev/net/tun:/dev/net/tun --name=noia-agent -e NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' -e NOIA_CONTROLLER_URL='app-controller-platform-agents.noia.network' -e NOIA_NETWORK_API='docker' -d noia/agent:prod
 ```
 
