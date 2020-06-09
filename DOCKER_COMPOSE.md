@@ -19,6 +19,7 @@ services:
       - SYS_MODULE
     environment:
       - NOIA_API_KEY=my-random-api-key
+      - NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
       - NOIA_NETWORK_API=docker
     restart: always
     network_mode: "host"
@@ -35,10 +36,21 @@ networks:
 volumes:
   portainer_data:
 ```
-##### Add API Key (Required)
+
+##### You must select non overlapping subnet for network
+```yaml
+networks:
+    noia:
+        ipam:
+            config:
+                - subnet: 192.168.150.0/24  #  Replace your subnet here
+```
+
+##### Add API Key and NOIA API url (Required)
 ```yaml
 environment:
   - NOIA_API_KEY=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA
+  - NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
   - NOIA_NETWORK_API=docker
 ```
 ##### List of Networks to join (Optional)

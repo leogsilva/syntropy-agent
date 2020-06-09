@@ -3,11 +3,12 @@ You can install NOIA using pip. If you don’t have pip installed, you can downl
 Pip is the package installer for Python. You can use pip to install packages from the Python Package Index and other indexes. https://pypi.org/project/pip/
 #### 1. Install NOIA agent
 `pip install platform-agent`
-#### 2. Edit a /etc/noia-agent/config.ini file 
-##### Add API Key (Required)
+#### 2. Create/Edit /etc/noia-agent/config.ini file 
+##### Add API Key and NOIA API url (Required)
 ```ini
 [SECRETS]
 api_key = z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA
+controller_url=app-controller-platform-agents.noia.network
 ```
 ##### List of Networks to join (Optional)
 If `network_ids = 0` or not present the Agent will not join any network when deployed
@@ -44,3 +45,22 @@ tags = Tag1,Tag2
 #### Start a NOIA Agent
 `/usr/local/bin/noia_agent run` or `noia_agent run`
 You can install NOIA using pip. If you don’t have pip installed, you can download it from here.
+
+
+### Create Systemd service
+
+```ini
+[Unit]
+Description=NOIA Platform Agent
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/bin/noia_agent run
+
+[Install]
+WantedBy=multi-user.target
+
+```
