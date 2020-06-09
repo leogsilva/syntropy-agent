@@ -9,6 +9,10 @@ lsmod | grep wireguard
 ```sh
 docker system info
 ```
+**Limitations:**
+
+* Docker network subnets can't overlap.
+* 10.69.0.0/16 is used for internal Wireguard network
 
 **Steps:**
 
