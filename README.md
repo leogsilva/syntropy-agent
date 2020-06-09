@@ -92,6 +92,11 @@ curl https://bitbucket.org/noianetwork-team/platform-agent/raw/e093bd419a3b3d117
 -o /etc/systemd/system/noia-agent.service
 ```
 
+Create noia-agent directory:
+```bash
+mkdir /etc/noia-agent
+```
+
 Edit settings file ```/etc/noia-agent/config.ini``` and change these settings:
 
 ```ini
