@@ -91,12 +91,12 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 
 1. Select image:
 
-![alt_text](images/image1.png "image_tooltip")
+![alt_text](images/image.png "Select docker image")
 
 
 2. Select network (Agent **MUST** run in the host network): 
 
-![alt_text](images/image2.png "image_tooltip")
+![alt_text](images/network.png "Select network")
 
 3. Add environment variables:
 
@@ -114,23 +114,23 @@ Optional:
 ```
 
 
-![alt_text](images/image3.png "image_tooltip")
+![alt_text](images/env.png "Add environment variables")
 
 
 
 
 4. Add additional capabilities (NET_ADMIN and SYS_MODULE): 
 
-![alt_text](images/image4.png "image_tooltip")
+![alt_text](images/cap.png "image_tooltip")
 
 
 5. All agents will appear in NOIA Platform as endpoints:
 
-![alt_text](images/image5.png "image_tooltip")
+![alt_text](images/endpoints.png "Endpoints")
 
 
 
 6. To connect endpoints to a network, select Networks > Add new network. Input Network name, select Type (if you want connect multiple Portainer agents to Portainer, choose Gateway and select Portainer host as a gateway and select agents which you want to connect), then click Add: 
 
-![alt_text](images/image6.png "image_tooltip")
+![alt_text](images/create_net.png "Create network")
 
