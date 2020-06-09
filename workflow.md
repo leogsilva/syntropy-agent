@@ -23,6 +23,7 @@ docker system info
 Possible versions:
 
 Stable:  ```noia/agent:prod```
+
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
 ### with Docker: 
