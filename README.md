@@ -95,6 +95,7 @@ curl https://bitbucket.org/noianetwork-team/platform-agent/raw/e093bd419a3b3d117
 Create noia-agent directory:
 ```bash
 mkdir /etc/noia-agent
+chmod -R 600 /etc/noia-agent
 ```
 Download settings file:
 ```bash
