@@ -112,7 +112,7 @@ Check if service is running:
 systemctl status noia-agent
 ```
 
-More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md)
+More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/master/pip.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/pip.md)
 
 ---
 
