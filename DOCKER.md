@@ -14,11 +14,11 @@
 -e NOIA_CITY='Frankfurt'
 
 #Select one of the categories from the list or default will be assigned 
-# 'zIoT','Server','none' 
+# 'IoT','Server','none' 
 -e NOIA_CATEGORY='IoT'
 
 #Select one of providers from the list or default will be assigned 
-#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
 #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
 
 -e NOIA_PROVIDER ='Microsoft Azure'
