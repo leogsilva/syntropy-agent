@@ -1,0 +1,74 @@
+﻿apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+  labels:
+    service: noia-agent
+  name: noia-agent
+  namespace: noia-agent
+spec:
+  selector:
+    matchLabels:
+      service: noia-agent
+  template:
+    metadata:
+      labels:
+        service: noia-agent
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+      containers:
+      - env:
+        - name: NOIA_CONTROLLER_URL
+          valueFrom:
+            secretKeyRef:
+              key: NOIA_CONTROLLER_URL
+              name: noia-platform
+              optional: false
+        - name: NOIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: NOIA_API_KEY
+              name: noia-platform
+              optional: false
+        image: noia/agent:prod
+        imagePullPolicy: Always
+        name: noia-agent
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_MODULE
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: docker
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /var/run/docker.sock
+          type: ""
+        name: docker
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 100
+    type: RollingUpdate
