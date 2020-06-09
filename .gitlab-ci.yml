@@ -7,14 +7,14 @@ build_devel:
   only:
     - devel
   script:
-    - sudo docker build --no-cache -t noia/agent:devel .
+    - sudo docker build --no-cache -t noia/agent:latest .
 
 build_prod:
   stage: build
   only:
     - master
   script:
-    - sudo docker build --no-cache -t noia/agent:latest .
+    - sudo docker build --no-cache -t noia/agent:prod .
 
 push_image_devel:
   stage: push_image

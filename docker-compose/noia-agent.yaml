@@ -2,7 +2,7 @@ version: '2'
 
 services:
   noia-agent:
-    image: noia/agent
+    image: noia/agent:prod
     container_name: noia-agent
     cap_add:
       - NET_ADMIN

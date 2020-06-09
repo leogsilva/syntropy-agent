@@ -17,7 +17,7 @@ class AgentApi:
         self.wgconf = WgConf()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
-        self.rerouting = Rerouting().start()
+        # self.rerouting = Rerouting().start()
 
     def call(self, type, data, request_id):
         result = None
