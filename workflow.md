@@ -28,6 +28,8 @@ docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-ad
 --device /dev/net/tun:/dev/net/tun --name=noia-agent -e NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' \
 -e NOIA_CONTROLLER_URL='app-controller-platform-agents.noia.network' -e NOIA_NETWORK_API='docker' -d noia/agent:prod
 ```
+Check agent logs:
+```docker logs noia-agent```
 
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
 
@@ -57,6 +59,10 @@ Start containers:
 ```
 docker-compose up -d
 ```
+
+Check agent logs:
+```docker logs noia-agent```
+
 P.S. NOIA Agent will ignore the default docker network, you will  need to create a separate network with different subnets on different hosts. Also, subnet 10.69.0.0/16 is used by our agent.
 
 More information:
@@ -85,6 +91,9 @@ api_key=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA
 ```systemctl  daemon-reload```
 
 ```systemctl enable --now noia-agent```
+
+Check if service is running:
+```systemctl status noia-agent```
 
 More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md)
 
