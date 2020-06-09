@@ -154,16 +154,14 @@ NOIA_API_KEY= your_api_key
 -e NOIA_LAT='40.14'
 -e NOIA_LON='-74.21'
 ```
-(noia agent will read docker subnets and report them to the controller). If this variable is selected, you also need to add volumes;
-```yaml
-            volumes: \
-              - /var/run/docker.sock:/var/run/docker.sock \
-              - /var/lib/docker/volumes:/var/lib/docker/volumes
-```
 
 
 ![alt_text](images/env.png "Add environment variables")
 
+
+(noia agent will read docker subnets and report them to the controller). If this variable is selected, you also need to add docker.sock as a read-only volume;
+
+![alt_text](images/volumes.png "Add docker.sock")
 
 
 4. Add additional capabilities (NET_ADMIN and SYS_MODULE): 
