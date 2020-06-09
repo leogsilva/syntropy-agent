@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  portainer:
+    image: portainer/agent
+    restart: always
+    networks:
+      - noia
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+  noia-agent:
+    image: noia/agent
+    container_name: noia-agent
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - NOIA_API_KEY=my-random-api-key
+      - NOIA_CONTROLLER_URL=sandbox-controller-platform-agents.noia.network
+      - NOIA_NETWORK_API=docker
+    restart: always
+    network_mode: "host"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+networks:
+    noia:
+        ipam:
+            config:
+                - subnet: 192.168.150.0/24
