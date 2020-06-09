@@ -25,7 +25,7 @@ Possible versions:
 Stable:  ```noia/agent:prod```
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
-1. with Docker: 
+### with Docker: 
 
 ```bash
 docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock \
@@ -38,7 +38,7 @@ Check agent logs:
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
 
 ---
-2. Docker-compose
+### Docker-compose
 
 ** With Portainer agent:**
 
@@ -78,7 +78,7 @@ More information:
 [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md)
 
 ---
-3. Pip 
+### pip 
 
 ```bash
 pip install platform-agent
@@ -129,19 +129,31 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 
 3. Add environment variables:
 
-Mandatory variables:
+### Mandatory variables:
 
 ```ini
 NOIA_API_KEY= your_api_key
 ```
 
-Optional:
+#### Metadata (Optional)
 ```ini
-NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
+-e NOIA_NETWORK_API='docker'
+-e NOIA_NAME='Azure EU gateway '
+-e NOIA_COUNTRY='Germany'
+-e NOIA_CITY='Frankfurt'
+
+#Select one of the categories from the list or default will be assigned 
+# 'zIoT','Server','none' 
+-e NOIA_CATEGORY='IoT'
+
+#Select one of providers from the list or default will be assigned 
+#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
+
+-e NOIA_PROVIDER ='Microsoft Azure'
+-e NOIA_LAT='40.14'
+-e NOIA_LON='-74.21'
 ```
-```ini
-NOIA_NETWORK_API=docker
-```  
 (noia agent will read docker subnets and report them to the controller). If this variable is selected, you also need to add volumes;
 ```yaml
             volumes: \
