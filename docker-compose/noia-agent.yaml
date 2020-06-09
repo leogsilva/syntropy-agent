@@ -13,6 +13,9 @@ services:
     restart: always
     network_mode: "host"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - type: volume
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
     devices:
       - "/dev/net/tun:/dev/net/tun"
