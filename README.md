@@ -96,14 +96,22 @@ Create noia-agent directory:
 ```bash
 mkdir /etc/noia-agent
 ```
+Download settings file:
+```bash
+curl https://bitbucket.org/noianetwork-team/platform-agent/raw/f6af9fbebdaab86e7e37fbbb2165e005a19d3e78/configs/config.ini \
+-o /etc/noia-agent/config.ini
+```
 
 Edit settings file ```/etc/noia-agent/config.ini``` and change these settings:
 
+#### Mandatory
 ```ini
 [SECRETS] 
 api_key=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA 
 ```
-List of Networks to join (Optional)
+#### Optional
+
+List of Networks to join:
 
 If `network_ids = 0` or not present the Agent will not join any network when deployed
 ```ini
