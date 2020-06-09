@@ -42,30 +42,34 @@ More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src
 
 ** With Portainer agent:**
 
-```
+```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/na-pa.yml \
 -o docker-compose.yaml
 ```
 
 ** Without portainer agent:**
 
-```
+```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/noia-agent.yaml \
 -o docker-compose.yaml
 ```
 
 Edit ```docker-compose.yaml``` file and edit these environment variables:
 
-```NOIA_API_KEY= your_api_key```
+```yaml
+NOIA_API_KEY= your_api_key
+```
 
 Start containers:
 
-```
+```bash
 docker-compose up -d
 ```
 
 Check agent logs:
-```docker logs noia-agent```
+```bash
+docker logs noia-agent
+```
 
 P.S. NOIA Agent will ignore the default docker network, you will  need to create a separate network with different subnets on different hosts. Also, subnet 10.69.0.0/16 is used by our agent.
 
@@ -76,28 +80,36 @@ More information:
 ---
 3. Pip 
 
-```pip install platform-agent```
+```bash
+pip install platform-agent
+```
 
 Download systemd service file:
 
-```
+```bash
 curl https://bitbucket.org/noianetwork-team/platform-agent/raw/e093bd419a3b3d117bad5c2acff950e8b16fc36f/systemd/noia-agent.service \
 -o /etc/systemd/system/noia-agent.service
 ```
 
 Edit settings file ```/etc/noia-agent/config.ini``` and change these settings:
 
-```
+```ini
 [SECRETS] 
 api_key=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA 
 ```
 
-```systemctl  daemon-reload```
+```bash
+systemctl  daemon-reload
+```
 
-```systemctl enable --now noia-agent```
+```bash
+systemctl enable --now noia-agent
+```
 
 Check if service is running:
-```systemctl status noia-agent```
+```bash
+systemctl status noia-agent
+```
 
 More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md)
 
@@ -105,7 +117,6 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 
 4. 
 **Install NOIA Agent on Portainer:**
-
 
 1. Select image:
 
@@ -120,12 +131,19 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 
 Mandatory variables:
 
-```NOIA_API_KEY= your_api_key```
+```ini
+NOIA_API_KEY= your_api_key
+```
 
 Optional:
-```NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network```
-```NOIA_NETWORK_API=docker```  (noia agent will read docker subnets and report them to the controller). If this variable is selected, you also need to add volumes;
+```ini
+NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
 ```
+```ini
+NOIA_NETWORK_API=docker
+```  
+(noia agent will read docker subnets and report them to the controller). If this variable is selected, you also need to add volumes;
+```yaml
             volumes: \
               - /var/run/docker.sock:/var/run/docker.sock \
               - /var/lib/docker/volumes:/var/lib/docker/volumes
@@ -133,7 +151,6 @@ Optional:
 
 
 ![alt_text](images/env.png "Add environment variables")
-
 
 
 
