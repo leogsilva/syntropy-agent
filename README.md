@@ -31,7 +31,7 @@ Development:  ```noia/agent:devel``` or ```noia/agent:latest```
 ```bash
 docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock:ro \
 --device /dev/net/tun:/dev/net/tun --name=noia-agent -e NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' \
--e NOIA_CONTROLLER_URL='app-controller-platform-agents.noia.network' -e NOIA_NETWORK_API='docker' -d noia/agent:prod
+-e NOIA_NETWORK_API='docker' -d noia/agent:prod
 ```
 Check agent logs:
 ```docker logs noia-agent```
@@ -92,11 +92,50 @@ curl https://bitbucket.org/noianetwork-team/platform-agent/raw/e093bd419a3b3d117
 -o /etc/systemd/system/noia-agent.service
 ```
 
+Create noia-agent directory:
+```bash
+mkdir /etc/noia-agent
+```
+
 Edit settings file ```/etc/noia-agent/config.ini``` and change these settings:
 
 ```ini
 [SECRETS] 
 api_key=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA 
+```
+List of Networks to join (Optional)
+
+If `network_ids = 0` or not present the Agent will not join any network when deployed
+```ini
+[CONFIG]
+network_ids = Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg
+```
+
+Metadata (Optional)
+```ini
+[INFO]
+NOIA_NETWORK_API = docker
+name = Azure EU gateway 
+country = Germany 
+city = Frankfurt 
+
+#Select one of the categories from the list or default will be assigned 
+# 'zIoT', 'Server','none' 
+category = IoT 
+
+#Select one of providers from the list or default will be assigned 
+#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
+
+provider = Microsoft Azure 
+lat = 40.14 
+lon = -74.21
+```
+Tags (Optional)
+categorize your end-points. #You can use more than one tag.  e.g. eu-group,fr-group
+```ini
+[INFO]
+tags = Tag1,Tag2
 ```
 
 ```bash
@@ -112,7 +151,7 @@ Check if service is running:
 systemctl status noia-agent
 ```
 
-More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/README.md)
+More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/master/pip.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/pip.md)
 
 ---
 
