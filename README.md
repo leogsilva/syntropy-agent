@@ -98,6 +98,40 @@ Edit settings file ```/etc/noia-agent/config.ini``` and change these settings:
 [SECRETS] 
 api_key=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA 
 ```
+List of Networks to join (Optional)
+
+If `network_ids = 0` or not present the Agent will not join any network when deployed
+```ini
+[CONFIG]
+network_ids = Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg
+```
+
+Metadata (Optional)
+```ini
+[INFO]
+NOIA_NETWORK_API = docker
+name = Azure EU gateway 
+country = Germany 
+city = Frankfurt 
+
+#Select one of the categories from the list or default will be assigned 
+# 'zIoT', 'Server','none' 
+category = IoT 
+
+#Select one of providers from the list or default will be assigned 
+#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
+
+provider = Microsoft Azure 
+lat = 40.14 
+lon = -74.21
+```
+Tags (Optional)
+categorize your end-points. #You can use more than one tag.  e.g. eu-group,fr-group
+```ini
+[INFO]
+tags = Tag1,Tag2
+```
 
 ```bash
 systemctl  daemon-reload
