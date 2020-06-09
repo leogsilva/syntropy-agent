@@ -7,10 +7,7 @@ services:
     networks:
       - noia
     volumes:
-      - type: volume
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
-        read_only: true
+      - /var/run/docker.sock:/var/run/docker.sock:ro
   noia-agent:
     image: noia/agent:prod
     container_name: noia-agent
