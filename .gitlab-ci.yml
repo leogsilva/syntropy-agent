@@ -21,11 +21,11 @@ push_image_devel:
   only:
     - devel
   script:
-    - sudo docker push noia/agent:devel
+    - sudo docker push noia/agent:latest
 
 push_image_prod:
   stage: push_image
   only:
     - master
   script:
-    - sudo docker push noia/agent:latest
+    - sudo docker push noia/agent:prod
