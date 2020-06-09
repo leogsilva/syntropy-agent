@@ -1,41 +1,76 @@
 # Docker-Compose
 ```yaml
 version: '2'
+
 services:
   portainer:
-    image: portainer/portainer
-    command: -H unix:///var/run/docker.sock
+    image: portainer/agent
     restart: always
     networks:
       - noia
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
   noia-agent:
     image: noia/agent
+    container_name: noia-agent
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
     environment:
-      - NOIA_API_KEY=yuor api key
+      - NOIA_API_KEY=my-random-api-key
       - NOIA_NETWORK_API=docker
     restart: always
     network_mode: "host"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
 networks:
     noia:
         ipam:
             config:
-                  # Select non overlapping subnet
                 - subnet: 192.168.150.0/24
+
 volumes:
   portainer_data:
 ```
-#### Tags (Optional)
+##### Add API Key (Required)
+```yaml
+environment:
+  - NOIA_API_KEY=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA
+  - NOIA_NETWORK_API=docker
+```
+##### List of Networks to join (Optional)
+If `network_ids = 0` or not present the Agent will not join any network when deployed
+```yaml
+environment:
+  - NOIA_NETWORK_IDS=Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg
+```
+##### Metadata (Optional)
+```yaml
+environment:
+  - NOIA_NETWORK_IDS=Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg
+  - NOIA_NAME=Azure EU gateway 
+  - NOIA_COUNTRY=Germany 
+  - NOIA_CITY=Frankfurt 
+
+#Select one of the categories from the list or default will be assigned 
+# 'zIoT', 'Server','none' 
+  - NOIA_CATEGORY=IoT 
+
+#Select one of providers from the list or default will be assigned 
+#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
+
+  - NOIA_PROVIDER=Microsoft Azure 
+  - NOIA_LAT=40.14 
+  - NOIA_LON=-74.21
+```
+##### Tags (Optional)
 categorize your end-points. #You can use more than one tag.
 e.g. eu-group,fr-group
 ```yaml
-    environment:
-      - NOIA_TAGS=Tag1,Tag2
+environment:
+  - NOIA_TAGS=Tag1,Tag2
 ```
