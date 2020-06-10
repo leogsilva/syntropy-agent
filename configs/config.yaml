@@ -1,23 +1,31 @@
 name: Azure EU gateway
-controller_url: app-controller-platform-agents.noia.network
-api_key: vAVlRtYoiA2rfa3NHM7mgGpN23Sg1WWH
-network_api: docker
-country: Germany
-city: Frankfurt
 
-#Select one of the categories from the list or default will be assigned
-# 'zIoT', 'Server','none'
-category: IoT
+connection:
+  api_key: vAVlRtYoiA2rfa3NHM7mgGpN23Sg1WWH
+  controller_url: app-controller-platform-agents.noia.network
+  network_api: docker
+  #Select one of providers from the list or default will be assigned
+  #'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
+  #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
+  provider: Microsoft Azure
+  #Select one of the categories from the list or default will be assigned
+  # 'zIoT', 'Server','none'
+  category: IoT
 
-#Select one of providers from the list or default will be assigned
-#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
-#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
-provider: Microsoft Azure
+geo_location:
+  lat: 40.14
+  lon: -74.21
+  country: Germany
+  city: Frankfurt
 
-lat: 40.14
-lon: -74.21
-tags: ['Tag1', 'Tag2']
-network_ids: ['network_1', 'network_2']
+tags:
+  - Tag1
+  - Tag2
+
+network_ids:
+  - network_1
+  - network_2
+
 allowed_ips:
   - name: my_vpc
     subnet: 192.168.9.0/24

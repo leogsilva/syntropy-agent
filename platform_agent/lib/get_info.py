@@ -39,7 +39,7 @@ def get_network_info():
 
 def get_info():
     return {
-        "agent_name": socket.gethostname(),
+        "agent_name": os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
         "agent_provider": os.environ.get('NOIA_PROVIDER', None),
         "agent_category": os.environ.get('NOIA_CATEGORY', None),
         "agent_tags": Config.get_list_item('tags'),

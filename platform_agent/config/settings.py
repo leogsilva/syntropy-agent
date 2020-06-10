@@ -32,8 +32,10 @@ class Config:
         if not config_file.is_file():
             print(f"Config file was not found in {CONFIG_FILE}")
             raise ConfigException(f"Config file was not found in {CONFIG_FILE}")
-
-        for k, v in self.get_config().items():
+        env_conf = self.get_config()
+        if env_conf.get('name') and type(env_conf['name']) == str:
+            os.environ[f"NOIA_AGENT_NAME"] = env_conf['name']
+        for k, v in env_conf.get('connection', {}).items():
             if type(v) in [int, str]:
                 os.environ[f"NOIA_{k.upper()}"] = str(v)
 
