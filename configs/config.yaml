@@ -1,0 +1,23 @@
+name: Azure EU gateway
+network_api: docker
+country: Germany
+city: Frankfurt
+
+#Select one of the categories from the list or default will be assigned
+# 'zIoT', 'Server','none'
+category: IoT
+
+#Select one of providers from the list or default will be assigned
+#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
+#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
+provider: Microsoft Azure
+
+lat: 40.14
+lon: -74.21
+tags: ['Tag1', 'Tag2']
+network_ids: ['network_1', 'network_2']
+allowed_ips:
+  - name: my_vpc
+    subnet: 192.168.9.0/24
+  - name: other_vpc
+    subnet: 10.88.0.0/16

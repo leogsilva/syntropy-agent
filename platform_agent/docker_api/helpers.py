@@ -9,10 +9,9 @@ def format_networks_result(networks):
         if subnets:
             result.append(
                 {
-                    'docker_network_id': network['Id'],
-                    'docker_network_name': network.get('Name'),
-                    'docker_network_subnets': subnets
-
+                    'agent_network_id': network['Id'],
+                    'agent_network_name': network.get('Name'),
+                    'agent_network_subnets': subnets,
                 }
             )
     return result

@@ -19,7 +19,8 @@ setup(
         'requests==2.22.0',
         'PyNaCl==1.3.0',
         'docker-py==1.10.6',
-        'icmplibv2==1.0.5'
+        'icmplibv2==1.0.5',
+        'PyYAML==5.3.1'
     ],
     packages=find_packages(),
     license="MIT",
