@@ -1,17 +1,5 @@
 [TOC]
 
-[Prerequisites](#markdown-header-prerequisites)
-
-[Limitations](#markdown-header-limitations)
-
-[Install with Docker](#markdown-header-with-docker)
-
-[Install with Docker Compose](#markdown-header-docker-comp)
-
-[Install with pip](#markdown-header-pip)
-
-[Install on Portainer](#markdown-header-install-noia-agent-on-portainer)
-
 ### Prerequisites:
 
 * Wireguard kernel module is installed and loaded:
@@ -23,20 +11,18 @@ lsmod | grep wireguard
 ```sh
 docker system info
 ```
-#### Limitations:
+### Limitations:
 
 * Docker network subnets can't overlap.
 * 10.69.0.0/16 is used for internal Wireguard network
 
-**Steps:**
 
-1. Login to [https://platform.noia.network](https://platform.noia.network) 
-2. Create API key (Settings > API keys)
+### 1. Login to [https://platform.noia.network](https://platform.noia.network) 
+### 2. Create API key (Settings > API keys)
 
 ---
 
-
-3. **Install NOIA Agent:**
+### 3. **Install NOIA Agent:**
 
 Possible versions:
 
@@ -44,7 +30,7 @@ Stable:  ```noia/agent:prod```
 
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
-### with Docker: 
+#### with Docker: 
 
 ```bash
 docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -57,7 +43,7 @@ Check agent logs:
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
 
 ---
-### Docker-compose
+#### Docker-compose
 
 ** With Portainer agent:**
 
@@ -97,7 +83,7 @@ More information:
 [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md)
 
 ---
-### pip 
+#### pip 
 
 ```bash
 pip3 install platform-agent
@@ -123,12 +109,12 @@ curl https://bitbucket.org/noianetwork-team/platform-agent/raw/f6af9fbebdaab86e7
 
 Edit settings file ```/etc/noia-agent/config.ini``` and change these settings:
 
-#### Mandatory
+** Mandatory **
 ```ini
 [SECRETS] 
 api_key=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA 
 ```
-#### Optional
+** Optional **
 
 List of Networks to join:
 
@@ -184,7 +170,7 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 ---
 
 4. 
-### Install NOIA Agent on Portainer:
+#### Install NOIA Agent on Portainer:
 
 1. Select image:
 
