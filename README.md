@@ -35,7 +35,8 @@ Stable:  ```noia/agent:prod```
 
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
-###### with Docker 
+
+###### With Docker 
 
 ```bash
 docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -48,16 +49,19 @@ Check agent logs:
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
 
 ---
+
+
 ###### With Docker-compose
 
-** With Portainer agent:**
+
+*With Portainer agent:*
 
 ```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/na-pa.yml \
 -o docker-compose.yaml
 ```
 
-** Without portainer agent:**
+*Without portainer agent:*
 
 ```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/noia-agent.yaml \
@@ -88,6 +92,8 @@ More information:
 [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md)
 
 ---
+
+
 ###### With pip 
 
 ```bash
@@ -174,7 +180,7 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 
 ---
 
-4. 
+
 ###### On Portainer
 
 1. Select image:
