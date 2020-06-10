@@ -1,5 +1,7 @@
 [TOC]
 
+---
+
 ### Prerequisites
 
 * Wireguard kernel module is installed and loaded:
@@ -11,13 +13,15 @@ lsmod | grep wireguard
 ```sh
 docker system info
 ```
+---
 ### Limitations
 
 * Docker network subnets can't overlap.
 * 10.69.0.0/16 is used for internal Wireguard network
 
-
+----
 ### Login to [https://platform.noia.network](https://platform.noia.network) 
+---
 ### Create API key (Settings > API keys)
 
 ---
