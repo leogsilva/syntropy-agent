@@ -2,7 +2,7 @@
 You can install NOIA using pip. If you don’t have pip installed, you can download it from here.
 Pip is the package installer for Python. You can use pip to install packages from the Python Package Index and other indexes. https://pypi.org/project/pip/
 #### 1. Install NOIA agent
-`pip install platform-agent`
+`pip3 install platform-agent`
 #### 2. Create/Edit /etc/noia-agent/config.ini file 
 ##### Add API Key and NOIA API url (Required)
 ```ini
