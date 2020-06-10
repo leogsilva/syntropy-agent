@@ -2,7 +2,7 @@
 
 ---
 
-### Prerequisites
+#### Prerequisites
 
 * Wireguard kernel module is installed and loaded:
 ```bash
@@ -14,20 +14,20 @@ lsmod | grep wireguard
 docker system info
 ```
 ---
-### Limitations
+#### Limitations
 
 * Docker network subnets can't overlap.
 * 10.69.0.0/16 is used for internal Wireguard network
 
-## Steps
+#### Steps
 ----
-### Login to [https://platform.noia.network](https://platform.noia.network) 
+##### 1. Login to [https://platform.noia.network](https://platform.noia.network) 
 ---
-### Create API key (Settings > API keys)
+##### 2. Create API key (Settings > API keys)
 
 ---
 
-### Install NOIA Agent
+##### 3. Install NOIA Agent
 
 Possible versions:
 
@@ -35,29 +35,39 @@ Stable:  ```noia/agent:prod```
 
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
-#### with Docker 
+
+###### With Docker 
 
 ```bash
-docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock:ro \
---device /dev/net/tun:/dev/net/tun --name=noia-agent -e NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' \
--e NOIA_NETWORK_API='docker' -d noia/agent:prod
+docker run --network="host" --restart=on-failure:10 \ 
+--cap-add=NET_ADMIN --cap-add=SYS_MODULE \
+-v /var/run/docker.sock:/var/run/docker.sock:ro \
+--device /dev/net/tun:/dev/net/tun \
+--name=noia-agent \
+-e NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' \
+-e NOIA_NETWORK_API='docker' \
+-d noia/agent:prod
 ```
 Check agent logs:
+
 ```docker logs noia-agent```
 
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
 
 ---
-#### With Docker-compose
 
-** With Portainer agent:**
+
+###### With Docker-compose
+
+
+> With Portainer agent:
 
 ```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/na-pa.yml \
 -o docker-compose.yaml
 ```
 
-** Without portainer agent:**
+> Without portainer agent:
 
 ```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/noia-agent.yaml \
@@ -88,7 +98,9 @@ More information:
 [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md)
 
 ---
-#### With pip 
+
+
+###### With pip 
 
 ```bash
 pip3 install platform-agent
@@ -139,11 +151,11 @@ country = Germany
 city = Frankfurt 
 
 #Select one of the categories from the list or default will be assigned 
-# 'zIoT', 'Server','none' 
+# 'IoT', 'Server','none' 
 category = IoT 
 
 #Select one of providers from the list or default will be assigned 
-#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
 #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
 
 provider = Microsoft Azure 
@@ -174,8 +186,8 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 
 ---
 
-4. 
-#### On Portainer
+
+###### On Portainer
 
 1. Select image:
 
