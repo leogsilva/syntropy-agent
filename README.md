@@ -1,4 +1,9 @@
-[Prerequisites](#markdown-header-Prerequisites)
+[Prerequisites](#markdown-header-prerequisites)
+
+[Limitations](#markdown-header-limitations)
+
+[Prerequisites](#markdown-header-prerequisites)
+
 [pip](#markdown-header-pip)
 
 ### Prerequisites:
@@ -12,7 +17,7 @@ lsmod | grep wireguard
 ```sh
 docker system info
 ```
-**Limitations:**
+#### Limitations:
 
 * Docker network subnets can't overlap.
 * 10.69.0.0/16 is used for internal Wireguard network
