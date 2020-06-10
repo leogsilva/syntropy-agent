@@ -49,6 +49,7 @@ docker run --network="host" --restart=on-failure:10 \
 -d noia/agent:prod
 ```
 Check agent logs:
+
 ```docker logs noia-agent```
 
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
