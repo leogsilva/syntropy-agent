@@ -21,13 +21,13 @@ docker system info
 
 #### Steps
 ----
-##### Login to [https://platform.noia.network](https://platform.noia.network) 
+##### 1. Login to [https://platform.noia.network](https://platform.noia.network) 
 ---
-##### Create API key (Settings > API keys)
+##### 2. Create API key (Settings > API keys)
 
 ---
 
-##### Install NOIA Agent
+##### 3. Install NOIA Agent
 
 Possible versions:
 
