@@ -2,9 +2,13 @@
 
 [Limitations](#markdown-header-limitations)
 
-[Prerequisites](#markdown-header-prerequisites)
+[Install with Docker](#markdown-header-with-docker)
 
-[pip](#markdown-header-pip)
+[Install with Docker Compose](#markdown-header-docker-comp)
+
+[Install with pip](#markdown-header-pip)
+
+[Install on Portainer](#markdown-header-pip)
 
 ### Prerequisites:
 
@@ -178,7 +182,7 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 ---
 
 4. 
-**Install NOIA Agent on Portainer:**
+### Install NOIA Agent on Portainer:
 
 1. Select image:
 
