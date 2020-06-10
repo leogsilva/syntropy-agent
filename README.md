@@ -2,7 +2,7 @@
 
 ---
 
-### Prerequisites
+#### Prerequisites
 
 * Wireguard kernel module is installed and loaded:
 ```bash
@@ -14,20 +14,20 @@ lsmod | grep wireguard
 docker system info
 ```
 ---
-### Limitations
+#### Limitations
 
 * Docker network subnets can't overlap.
 * 10.69.0.0/16 is used for internal Wireguard network
 
-## Steps
+#### Steps
 ----
-### Login to [https://platform.noia.network](https://platform.noia.network) 
+##### Login to [https://platform.noia.network](https://platform.noia.network) 
 ---
-### Create API key (Settings > API keys)
+##### Create API key (Settings > API keys)
 
 ---
 
-### Install NOIA Agent
+##### Install NOIA Agent
 
 Possible versions:
 
@@ -35,7 +35,7 @@ Stable:  ```noia/agent:prod```
 
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
-#### with Docker 
+###### with Docker 
 
 ```bash
 docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -48,7 +48,7 @@ Check agent logs:
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
 
 ---
-#### With Docker-compose
+###### With Docker-compose
 
 ** With Portainer agent:**
 
@@ -88,7 +88,7 @@ More information:
 [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md)
 
 ---
-#### With pip 
+###### With pip 
 
 ```bash
 pip3 install platform-agent
@@ -139,11 +139,11 @@ country = Germany
 city = Frankfurt 
 
 #Select one of the categories from the list or default will be assigned 
-# 'zIoT', 'Server','none' 
+# 'IoT', 'Server','none' 
 category = IoT 
 
 #Select one of providers from the list or default will be assigned 
-#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
 #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
 
 provider = Microsoft Azure 
@@ -175,7 +175,7 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 ---
 
 4. 
-#### On Portainer
+###### On Portainer
 
 1. Select image:
 
