@@ -19,6 +19,7 @@ docker system info
 * Docker network subnets can't overlap.
 * 10.69.0.0/16 is used for internal Wireguard network
 
+## Steps
 ----
 ### Login to [https://platform.noia.network](https://platform.noia.network) 
 ---
