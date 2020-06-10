@@ -86,7 +86,7 @@ More information:
 ### pip 
 
 ```bash
-pip install platform-agent
+pip3 install platform-agent
 ```
 
 Download systemd service file:
