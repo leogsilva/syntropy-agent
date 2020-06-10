@@ -54,14 +54,14 @@ More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src
 ###### With Docker-compose
 
 
-*With Portainer agent:*
+> With Portainer agent:
 
 ```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/na-pa.yml \
 -o docker-compose.yaml
 ```
 
-*Without portainer agent:*
+> Without portainer agent:
 
 ```bash
 curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/noia-agent.yaml \
