@@ -1,4 +1,5 @@
-[pip](#pip)
+[pip](#markdown-header-pip)
+
 **Prerequisites:**
 
 * Wireguard kernel module is installed and loaded:
