@@ -6,5 +6,5 @@ pipelines:
           script:
             - git config user.email virginijus@noia.network
             - git config --global user.name "Virginijus Magelinskas"
-            - git remote add --mirror=fetch gitlab git@gitlab.com:noianetwork-team/platform_agent.git
+            - git remote add --mirror=fetch gitlab git@gitlab.com:noia-public/platform_agent.git
             - git push -f -u gitlab --all
