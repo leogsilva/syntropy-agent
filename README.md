@@ -1,3 +1,5 @@
+[TOC]
+
 [Prerequisites](#markdown-header-prerequisites)
 
 [Limitations](#markdown-header-limitations)
@@ -8,7 +10,7 @@
 
 [Install with pip](#markdown-header-pip)
 
-[Install on Portainer](#markdown-header-pip)
+[Install on Portainer](#markdown-header-install-noia-agent-on-portainer)
 
 ### Prerequisites:
 
