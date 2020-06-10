@@ -9,10 +9,8 @@ services:
     networks:
       - noia
     volumes:
-      - type: volume
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
-        read_only: true
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
   noia-agent:
     image: noia/agent:prod
     container_name: noia-agent
@@ -25,7 +23,7 @@ services:
     restart: always
     network_mode: "host"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     devices:
       - "/dev/net/tun:/dev/net/tun"
 networks:
