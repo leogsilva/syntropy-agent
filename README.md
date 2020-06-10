@@ -1,3 +1,4 @@
+[pip](#pip)
 **Prerequisites:**
 
 * Wireguard kernel module is installed and loaded:
@@ -121,6 +122,7 @@ List of Networks to join:
 If `network_ids = 0` or not present the Agent will not join any network when deployed
 ```ini
 [CONFIG]
+controller_url = app-controller-platform-agents.noia.network
 network_ids = Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg
 ```
 
