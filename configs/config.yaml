@@ -1,5 +1,6 @@
 name: Azure EU gateway
 controller_url: app-controller-platform-agents.noia.network
+api_key: vAVlRtYoiA2rfa3NHM7mgGpN23Sg1WWH
 network_api: docker
 country: Germany
 city: Frankfurt
