@@ -1,6 +1,6 @@
 [TOC]
 
-### Prerequisites:
+### Prerequisites
 
 * Wireguard kernel module is installed and loaded:
 ```bash
@@ -11,18 +11,18 @@ lsmod | grep wireguard
 ```sh
 docker system info
 ```
-### Limitations:
+### Limitations
 
 * Docker network subnets can't overlap.
 * 10.69.0.0/16 is used for internal Wireguard network
 
 
-### 1. Login to [https://platform.noia.network](https://platform.noia.network) 
-### 2. Create API key (Settings > API keys)
+### Login to [https://platform.noia.network](https://platform.noia.network) 
+### Create API key (Settings > API keys)
 
 ---
 
-### 3. **Install NOIA Agent:**
+### Install NOIA Agent
 
 Possible versions:
 
@@ -30,7 +30,7 @@ Stable:  ```noia/agent:prod```
 
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
-#### with Docker: 
+#### with Docker 
 
 ```bash
 docker run --network="host" --restart=on-failure:10 --cap-add=NET_ADMIN --cap-add=SYS_MODULE -v /var/run/docker.sock:/var/run/docker.sock:ro \
@@ -43,7 +43,7 @@ Check agent logs:
 More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
 
 ---
-#### Docker-compose
+#### With Docker-compose
 
 ** With Portainer agent:**
 
@@ -83,7 +83,7 @@ More information:
 [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md)
 
 ---
-#### pip 
+#### With pip 
 
 ```bash
 pip3 install platform-agent
@@ -170,7 +170,7 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 ---
 
 4. 
-#### Install NOIA Agent on Portainer:
+#### On Portainer
 
 1. Select image:
 
@@ -183,13 +183,13 @@ More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/mas
 
 3. Add environment variables:
 
-### Mandatory variables:
+** Mandatory variables: **
 
 ```ini
 NOIA_API_KEY= your_api_key
 ```
 
-#### Metadata (Optional)
+** Metadata (Optional) **
 ```ini
 -e NOIA_NETWORK_API='docker'
 -e NOIA_NAME='Azure EU gateway '
@@ -197,11 +197,11 @@ NOIA_API_KEY= your_api_key
 -e NOIA_CITY='Frankfurt'
 
 #Select one of the categories from the list or default will be assigned 
-# 'zIoT','Server','none' 
+# 'IoT','Server','none' 
 -e NOIA_CATEGORY='IoT'
 
 #Select one of providers from the list or default will be assigned 
-#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
 #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
 
 -e NOIA_PROVIDER ='Microsoft Azure'
