@@ -1,3 +1,4 @@
+import ipaddress
 import os
 from pathlib import Path
 
@@ -51,16 +52,21 @@ class Config:
         if type(result) != list:
             result = []
         return result
+
     @staticmethod
     def get_valid_allowed_ips():
         allowed_ips = Config.get_config().get('allowed_ips', [])
         result = []
         for allowed_ip in allowed_ips:
             if allowed_ip.get('name') and allowed_ip.get('subnet'):
+                try:
+                    ip_network = ipaddress.ip_interface(allowed_ip['subnet'])
+                except ValueError:
+                    continue
                 result.append(
                     {
                         'agent_network_name': allowed_ip['name'],
-                        'agent_network_subnets': [allowed_ip['subnet']]
+                        'agent_network_subnets': [ip_network.with_prefixlen]
                     }
                 )
         return result
