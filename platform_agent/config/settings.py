@@ -1,5 +1,6 @@
-import ipaddress
 import os
+import ipaddress
+import json
 from pathlib import Path
 
 import yaml
@@ -55,18 +56,36 @@ class Config:
 
     @staticmethod
     def get_valid_allowed_ips():
+
+        def update_results(result: list, subnet: str, subnet_name: str):
+            try:
+                ip_network = ipaddress.ip_interface(subnet)
+            except ValueError:
+                return result
+            result.append(
+                {
+                    'agent_network_name': subnet_name,
+                    'agent_network_subnets': [ip_network.with_prefixlen]
+                }
+            )
+            return result
+
+        results = []
+        if os.environ.get('NOIA_ALLOWED_IPS'):
+            try:
+                allowed_ips = json.loads(os.environ['NOIA_ALLOWED_IPS'])
+            except json.JSONDecodeError:
+                return
+            for k, v in allowed_ips.items():
+                if not (type(k) == type(v) == str):
+                    continue
+                update_results(results, k, v)
         allowed_ips = Config.get_config().get('allowed_ips', [])
-        result = []
         for allowed_ip in allowed_ips:
             if allowed_ip.get('name') and allowed_ip.get('subnet'):
                 try:
                     ip_network = ipaddress.ip_interface(allowed_ip['subnet'])
                 except ValueError:
                     continue
-                result.append(
-                    {
-                        'agent_network_name': allowed_ip['name'],
-                        'agent_network_subnets': [ip_network.with_prefixlen]
-                    }
-                )
-        return result
+                results = update_results(results, ip_network.with_prefixlen, allowed_ip['name'])
+        return results

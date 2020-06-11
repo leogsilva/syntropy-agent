@@ -18,10 +18,14 @@ geo_location:
   country: Germany
   city: Frankfurt
 
+
+#Tags (Optional)
+#categorize your end-points. #You can use more than one tag.  e.g. eu-group,fr-group
 tags:
   - Tag1
   - Tag2
 
+#If `network_ids` not present the Agent will not automatically join any network when deployed
 network_ids:
   - network_1
   - network_2
