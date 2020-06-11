@@ -15,14 +15,15 @@ RUN git clone https://git.zx2c4.com/wireguard-tools && \
     make install
 
 FROM python:alpine3.10
-
 COPY --from=builder /usr/bin/wireguard-go /usr/bin/wg* /usr/bin/
-
+COPY . /agent
+WORKDIR ./agent
 RUN apk add wireguard-tools iproute2 \
   && apk --update add python py-pip openssl ca-certificates py-openssl wget \
   && apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
-  && pip3 install --upgrade pip \
-  && pip3 install platform-agent \
+  && pip install --upgrade pip \
+  && python setup.py install \
+  && rm -rf /agent \
   && apk del build-dependencies
 
-ENTRYPOINT ["noia_agent", "run"]
+ENTRYPOINT ["/usr/local/bin/noia_agent", "run"]
