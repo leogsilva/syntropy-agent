@@ -76,6 +76,8 @@ environment:
   - NOIA_PROVIDER=Microsoft Azure 
   - NOIA_LAT=40.14 
   - NOIA_LON=-74.21
+
+  - NOIA_ALLOWED_IPS='[{"127.0.24.0/24""myvpc"},{"192.168.24.0/32":"vpc"}]'
 ```
 ##### Tags (Optional)
 categorize your end-points. #You can use more than one tag.

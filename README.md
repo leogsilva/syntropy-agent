@@ -231,7 +231,7 @@ NOIA_API_KEY= your_api_key
 -e NOIA_LON='-74.21'
 
 #You can manually add allowed ips
--e NOIA_ALLOWED_IPS='[{"127.0.24.0/24": "myvpc"}, {"192.168.24.0/32": "vpc"}]'
+-e NOIA_ALLOWED_IPS='[{"127.0.24.0/24":"myvpc"},{"192.168.24.0/32":"vpc"}]'
 ```
 
 
