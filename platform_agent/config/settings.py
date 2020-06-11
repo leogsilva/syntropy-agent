@@ -43,16 +43,23 @@ class Config:
 
     @staticmethod
     def get_config():
-        with open(CONFIG_FILE) as f:
-            config_dict = yaml.safe_load(f)
-            return config_dict
+        try:
+            with open(CONFIG_FILE) as f:
+                config_dict = yaml.safe_load(f)
+                return config_dict
+        except FileNotFoundError:
+            return {}
 
     @staticmethod
     def get_list_item(key: str):
+        if os.environ.get(f'NOIA_{key.upper()}'):
+            result = os.environ.get(f'NOIA_{key.upper()}').split(',')
+            return result
         result = Config.get_config().get(key, [])
         if type(result) != list:
             result = []
         return result
+
 
     @staticmethod
     def get_valid_allowed_ips():
