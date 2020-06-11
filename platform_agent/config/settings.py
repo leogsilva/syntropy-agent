@@ -75,11 +75,13 @@ class Config:
             try:
                 allowed_ips = json.loads(os.environ['NOIA_ALLOWED_IPS'])
             except json.JSONDecodeError:
-                return
-            for k, v in allowed_ips.items():
-                if not (type(k) == type(v) == str):
-                    continue
-                update_results(results, k, v)
+                return []
+            for allowed_ip in allowed_ips:
+                for k, v in allowed_ip.items():
+                    if not (type(k) == type(v) == str):
+                        continue
+                    update_results(results, k, v)
+            return results
         allowed_ips = Config.get_config().get('allowed_ips', [])
         for allowed_ip in allowed_ips:
             if allowed_ip.get('name') and allowed_ip.get('subnet'):
