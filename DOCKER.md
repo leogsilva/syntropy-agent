@@ -26,7 +26,7 @@
 -e NOIA_LON='-74.21'
 
 #You can manually add allowed ips
--e NOIA_ALLOWED_IPS='[{"127.0.24.0/24": "myvpc"}, {"192.168.24.0/32": "vpc"}]'
+-e NOIA_ALLOWED_IPS='[{"127.0.24.0/24":"myvpc"},{"192.168.24.0/32":"vpc"}]'
 ```
 ##### Tags (Optional)
 categorize your end-points. #You can use more than one tag.  e.g. eu-group,fr-group
