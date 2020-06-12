@@ -109,8 +109,7 @@ pip3 install platform-agent
 Download systemd service file:
 
 ```bash
-curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/noia-agent.service \
--o /etc/systemd/system/noia-agent.service
+curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/noia-agent.service -o /etc/systemd/system/noia-agent.service
 ```
 
 Create noia-agent directory:
@@ -120,8 +119,7 @@ chmod -R 600 /etc/noia-agent
 ```
 Download settings file:
 ```bash
-curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/10-vars.conf \
--o /etc/systemd/system/noia-agent.service.d/10-vars.conf
+curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/10-vars.conf -o /etc/systemd/system/noia-agent.service.d/10-vars.conf
 ```
 
 Edit settings file ```/etc/systemd/system/noia-agent.service.d/10-vars.conf``` and change these settings:
