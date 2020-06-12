@@ -120,58 +120,33 @@ chmod -R 600 /etc/noia-agent
 ```
 Download settings file:
 ```bash
-curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/configs/config.yaml \
--o /etc/noia-agent/config.yaml
+curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/10-vars.conf \
+-o /etc/systemd/system/noia-agent.service.d/10-vars.conf
 ```
 
-Edit settings file ```/etc/noia-agent/config.yaml``` and change these settings:
+Edit settings file ```/etc/systemd/system/noia-agent.service.d/10-vars.conf``` and change these settings:
 
-** Mandatory **
-```yaml
-connection:
-  api_key: vAVlRtYoiA2rfa3NHM7mgGpN23Sg1WWH
-```
-** Optional **
-
-Metadata (Optional)
-```yaml
-name: Azure EU gateway
-
-connection:
-  api_key: vAVlRtYoiA2rfa3NHM7mgGpN23Sg1WWH
-  controller_url: app-controller-platform-agents.noia.network
-  network_api: docker
-  #Select one of providers from the list or default will be assigned
-  #'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
-  #'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
-  provider: Microsoft Azure
-  #Select one of the categories from the list or default will be assigned
-  # 'zIoT', 'Server','none'
-  category: IoT
-
-geo_location:
-  lat: 40.14
-  lon: -74.21
-  country: Germany
-  city: Frankfurt
-
-
-#Tags (Optional)
-#categorize your end-points. #You can use more than one tag.  e.g. eu-group,fr-group
-tags:
-  - Tag1
-  - Tag2
-
-#If `network_ids` not present the Agent will not automatically join any network when deployed
-network_ids:
-  - network_1
-  - network_2
-
-allowed_ips:
-  - name: my_vpc
-    subnet: 192.168.9.0/24
-  - name: other_vpc
-    subnet: 10.88.0.0/16
+```ini
+[Service]
+# Required parameters
+Environment=NOIA_API_KEY=YOUR_API_KEY
+# Optional parameters
+Environment=NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
+Environment=NOIA_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]
+#If using docker , NOIA_NETWORK_API=docker would allow agent to access docker networks for information.
+Environment=NOIA_NETWORK_API=none
+Environment=NOIA_NAME=Azure EU gateway
+Environment=NOIA_COUNTRY=Germany
+Environment=NOIA_CITY=Frankfurt
+#Select one of the categories from the list or default will be assigned
+# 'IoT','Server','none'
+Environment=NOIA_CATEGORY=IoT
+#Select one of providers from the list or default will be assigned
+#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
+#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
+Environment=NOIA_PROVIDER =Microsoft Azure
+Environment=NOIA_LAT=40.14
+Environment=NOIA_LON=-74.21
 ```
 
 ```bash
