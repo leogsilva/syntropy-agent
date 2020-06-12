@@ -63,14 +63,14 @@ More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src
 > With Portainer agent:
 
 ```bash
-curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/na-pa.yml \
+curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/master/docker-compose/na-pa.yml \
 -o docker-compose.yaml
 ```
 
 > Without portainer agent:
 
 ```bash
-curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/669636b38f3c9016533b6b55576dbba1998b21fa/docker-compose/noia-agent.yaml \
+curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/master/docker-compose/noia-agent.yaml \
 -o docker-compose.yaml
 ```
 
@@ -109,64 +109,43 @@ pip3 install platform-agent
 Download systemd service file:
 
 ```bash
-curl https://bitbucket.org/noianetwork-team/platform-agent/raw/e093bd419a3b3d117bad5c2acff950e8b16fc36f/systemd/noia-agent.service \
--o /etc/systemd/system/noia-agent.service
+curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/noia-agent.service -o /etc/systemd/system/noia-agent.service
 ```
 
 Create noia-agent directory:
 ```bash
-mkdir /etc/noia-agent
+mkdir /etc/systemd/system/noia-agent.service.d/
 chmod -R 600 /etc/noia-agent
 ```
 Download settings file:
 ```bash
-curl https://bitbucket.org/noianetwork-team/platform-agent/raw/f6af9fbebdaab86e7e37fbbb2165e005a19d3e78/configs/config.ini \
--o /etc/noia-agent/config.ini
+curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/10-vars.conf -o /etc/systemd/system/noia-agent.service.d/10-vars.conf
 ```
 
-Edit settings file ```/etc/noia-agent/config.ini``` and change these settings:
+Edit settings file ```/etc/systemd/system/noia-agent.service.d/10-vars.conf``` and change these settings:
 
-** Mandatory **
 ```ini
-[SECRETS] 
-api_key=z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA 
-```
-** Optional **
-
-List of Networks to join:
-
-If `network_ids = 0` or not present the Agent will not join any network when deployed
-```ini
-[CONFIG]
-controller_url = app-controller-platform-agents.noia.network
-network_ids = Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg
-```
-
-Metadata (Optional)
-```ini
-[INFO]
-NOIA_NETWORK_API = docker
-name = Azure EU gateway 
-country = Germany 
-city = Frankfurt 
-
-#Select one of the categories from the list or default will be assigned 
-# 'IoT', 'Server','none' 
-category = IoT 
-
-#Select one of providers from the list or default will be assigned 
-#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
-#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
-
-provider = Microsoft Azure 
-lat = 40.14 
-lon = -74.21
-```
-Tags (Optional)
-categorize your end-points. #You can use more than one tag.  e.g. eu-group,fr-group
-```ini
-[INFO]
-tags = Tag1,Tag2
+[Service]
+# Required parameters
+Environment=NOIA_API_KEY=YOUR_API_KEY
+# Optional parameters
+Environment=NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
+Environment=NOIA_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]
+#If using docker , NOIA_NETWORK_API=docker would allow agent to access docker networks for information.
+Environment=NOIA_NETWORK_API=none
+Environment="NOIA_NAME=Azure EU gateway"
+Environment=NOIA_COUNTRY=Germany
+Environment=NOIA_CITY=Frankfurt
+#Select one of the categories from the list or default will be assigned
+# 'IoT','Server','none'
+Environment=NOIA_CATEGORY=IoT
+#Select one of providers from the list or default will be assigned
+#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
+#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
+Environment="NOIA_PROVIDER=Microsoft Azure"
+Environment=NOIA_LAT=40.14
+Environment=NOIA_LON=-74.21
+Environment=NOIA_TAGS=Tag1,Tag2
 ```
 
 ```bash
@@ -224,6 +203,9 @@ NOIA_API_KEY= your_api_key
 -e NOIA_PROVIDER ='Microsoft Azure'
 -e NOIA_LAT='40.14'
 -e NOIA_LON='-74.21'
+
+#You can manually add allowed ips
+-e NOIA_ALLOWED_IPS='[{"127.0.24.0/24":"myvpc"},{"192.168.24.0/32":"vpc"}]'
 ```
 
 

@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="platform-agent",
-    version='0.0.39',
+    version='0.0.40',
     py_modules=['platform-agent'],
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -19,7 +19,8 @@ setup(
         'requests==2.22.0',
         'PyNaCl==1.3.0',
         'docker-py==1.10.6',
-        'icmplibv2==1.0.5'
+        'icmplibv2==1.0.5',
+        'PyYAML==5.3.1'
     ],
     packages=find_packages(),
     license="MIT",
