@@ -3,7 +3,7 @@ sudo yum update -y
 sudo yum install python3-pip -y
 sudo pip3 install platform-agent-devel
 sudo yum install https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm -y
-sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
 sudo yum install yum-plugin-elrepo wireguard-tools -y
 sudo yum --enablerepo=elrepo-kernel install kernel-ml -y
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
