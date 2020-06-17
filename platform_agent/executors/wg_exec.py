@@ -6,7 +6,6 @@ import queue
 
 from platform_agent.lib.ctime import now
 from platform_agent.wireguard import WgConfException, WgConf
-
 logger = logging.getLogger()
 
 
@@ -35,11 +34,16 @@ class WgExecutor(threading.Thread):
                 continue
             request_id = message['request_id']
             payloads[request_id] = []
-            data = message['data'] if type(message['data']) == list else list(message['data'])
+            data = message['data'] if type(message['data']) == list else [message['data']]
             for payload in data:
                 try:
                     payloads[request_id].append(
-                        {"fn_name": payload['fn'], "fn_args": payload['args'], "request_id": request_id})
+                        {
+                            "fn_name": payload['fn'],
+                            "fn_args": payload['args'],
+                            "request_id": request_id
+                        }
+                    )
                 except AttributeError as e:
                     logger.warning(e)
                     payloads[request_id].append(
@@ -55,37 +59,37 @@ class WgExecutor(threading.Thread):
             logger.info(f"[WG_EXECUTOR] - Received {payloads}")
             for request_id in list(payloads.keys()):
                 result = {}
-                ok = []
+                ok = {}
                 errors = []
                 for payload in payloads[request_id]:
                     if payload.get('error'):
                         errors.append(payload['error'])
                     else:
                         try:
-                            fn = getattr(self.wgconf, payload['fn'])
+                            fn = getattr(self.wgconf, payload['fn_name'])
                             if fn == self.wgconf.add_peer:
                                 threading.Thread(target=self.add_peer, args=(payload, request_id)).run()
                                 continue
-                            ok.append({payload['fn_name']: fn(**payload['fn_args']), "args": payload['fn_args']})
+                            ok.update({"fn": payload['fn_name'], "data": fn(**payload['fn_args']), "args": payload['fn_args']})
                         except WgConfException as e:
                             logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
                             errors.append({payload['fn_name']: str(e), "args": payload['fn_args']})
-                if errors:
-                    result['error'] = errors
-                elif ok:
-                    result['ok'] = ok
-                logger.info(f"[WG_EXECUTOR] - Results {result}")
-                self.client.send(json.dumps({
-                    'id': request_id,
-                    'executed_at': now(),
-                    'type': self.CMD_TYPE,
-                    'data': result
-                }))
+                    if errors:
+                        result['error'] = errors
+                    elif ok:
+                        result = ok
+                    logger.info(f"[WG_EXECUTOR] - Results {result}")
+                    self.client.send(json.dumps({
+                        'id': request_id,
+                        'executed_at': now(),
+                        'type': self.CMD_TYPE,
+                        'data': result
+                    }))
 
     def add_peer(self, payload, request_id):
         result = {}
         try:
-            result['ok'] = self.wgconf.add_peer(**payload['fn_args'])
+            result = self.wgconf.add_peer(**payload['fn_args'])
         except WgConfException as e:
             logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
             result['error'] = {payload['fn_name']: str(e), "args": payload['fn_args']}
