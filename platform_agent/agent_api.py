@@ -1,10 +1,11 @@
 import logging
+import threading
 import os
 
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
-from platform_agent.rerouting import Rerouting
 from platform_agent.docker_api.docker_api import DockerNetworkWatcher
+from platform_agent.executors.wg_exec import WgExecutor
 
 logger = logging.getLogger()
 
@@ -15,6 +16,8 @@ class AgentApi:
         self.runner = runner
         self.wg_peers = None
         self.wgconf = WgConf()
+        self.wg_executor = WgExecutor(self.runner)
+        threading.Thread(target=self.wg_executor.run).start()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
         # self.rerouting = Rerouting().start()
@@ -47,18 +50,8 @@ class AgentApi:
         logger.debug(f"[WIREGUARD_PEERS] Enabled | {data}")
 
     def WG_CONF(self, data, **kwargs):
-        try:
-            fn = getattr(self.wgconf, data['fn'])
-            return {
-                'fn': data['fn'],
-                'data': fn(**data['args']),
-                "args": data['args']
-            }
-        except WgConfException as e:
-            logger.error(f"[WG_CONF] failed. exception = {str(e)}, data = {data}")
-            return {
-                'error': {data['fn']: str(e), "args": data['args']}
-            }
+        self.wg_executor.queue.put({"data": data, "request_id": kwargs['request_id']})
+        return False
 
     def CONFIG_INFO(self, data, **kwargs):
         for vpn_cmd in data.get('vpn', []):

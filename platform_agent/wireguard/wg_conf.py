@@ -157,7 +157,10 @@ class WireguardGo():
         return complete_output
 
     def create_interface(self, ifname):
-        result_set = subprocess.run(['wireguard-go', ifname], encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            result_set = subprocess.run(['wireguard-go', ifname], encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except FileNotFoundError:
+            raise WgConfException(f'Wireguard-go missing')
 
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
