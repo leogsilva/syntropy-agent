@@ -74,30 +74,31 @@ class WgExecutor(threading.Thread):
                         except WgConfException as e:
                             logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
                             errors.append({payload['fn_name']: str(e), "args": payload['fn_args']})
-                    if errors:
-                        result['error'] = errors
-                    elif ok:
-                        result = ok
-                    logger.info(f"[WG_EXECUTOR] - Results {result}")
-                    self.client.send(json.dumps({
+                    response = {
                         'id': request_id,
                         'executed_at': now(),
                         'type': self.CMD_TYPE,
-                        'data': result
-                    }))
+                    }
+                    if errors:
+                        response.update({'error': errors, 'data': {}})
+                    elif ok:
+                        response.update({'data': ok})
+                    logger.info(f"[WG_EXECUTOR] - Results {result}")
+
+                    self.client.send(json.dumps(response))
 
     def add_peer(self, payload, request_id):
-        result = {}
+        response = {}
         try:
-            result = self.wgconf.add_peer(**payload['fn_args'])
+            response['data'] = self.wgconf.add_peer(**payload['fn_args'])
         except WgConfException as e:
             logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
-            result['error'] = {payload['fn_name']: str(e), "args": payload['fn_args']}
+            response['error'] = {payload['fn_name']: str(e), "args": payload['fn_args']}
         self.client.send(json.dumps({
             'id': request_id,
             'executed_at': now(),
             'type': self.CMD_TYPE,
-            'data': result
+            'data': response
         }))
 
     def join(self, timeout=None):
