@@ -13,6 +13,7 @@ from platform_agent.routes import ip_route_add, ip_route_del
 
 logger = logging.getLogger()
 
+WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
 
 class WgConfException(Exception):
     pass
@@ -24,6 +25,20 @@ class WgConf():
 
         self.wg_kernel = module_loaded('wireguard')
         self.wg = WireGuard() if self.wg_kernel else WireguardGo()
+
+    @staticmethod
+    def get_wg_interfaces():
+        with IPDB() as ipdb:
+            current_interfaces = [k for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard' and any(
+                substring in k for substring in WG_NAME_SUBSTRINGS)]
+        return current_interfaces
+
+    def clear_interfaces(self, dump):
+        remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
+        current_interfaces = self.get_wg_interfaces()
+        remove_interfaces = set(current_interfaces) - set(remote_interfaces)
+        for interface in remove_interfaces:
+            self.remove_interface(interface)
 
     def get_wg_keys(self, ifname):
         private_key_path = f"/etc/noia-agent/privatekey-{ifname}"
@@ -45,7 +60,6 @@ class WgConf():
             return public_key.read_text().strip(), private_key.read_text().strip()
         else:
             return public_key.read_text().strip(), private_key_path
-
 
     def next_free_port(self, port=1024, max_port=65535):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

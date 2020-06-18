@@ -52,7 +52,7 @@ class WgExecutor(threading.Thread):
 
     def run(self):
 
-        while True:
+        while not self.stop_wg_executor.is_set():
             payloads = self.get_from_queue()
             if not payloads:
                 continue
@@ -68,7 +68,7 @@ class WgExecutor(threading.Thread):
                         try:
                             fn = getattr(self.wgconf, payload['fn_name'])
                             if fn == self.wgconf.add_peer:
-                                threading.Thread(target=self.add_peer, args=(payload, request_id)).run()
+                                threading.Thread(target=self.add_peer, args=(payload, request_id)).start()
                                 continue
                             ok.update({"fn": payload['fn_name'], "data": fn(**payload['fn_args']), "args": payload['fn_args']})
                         except WgConfException as e:
