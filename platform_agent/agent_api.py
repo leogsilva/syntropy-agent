@@ -12,13 +12,14 @@ logger = logging.getLogger()
 
 class AgentApi:
 
-    def __init__(self, runner):
+    def __init__(self, runner, prod_mode=True):
         self.runner = runner
         self.wg_peers = None
         self.wgconf = WgConf()
         self.wg_executor = WgExecutor(self.runner)
-        threading.Thread(target=self.wg_executor.run).start()
-        if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
+        if prod_mode:
+            threading.Thread(target=self.wg_executor.run).start()
+        if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
         # self.rerouting = Rerouting().start()
 
@@ -54,6 +55,7 @@ class AgentApi:
         return False
 
     def CONFIG_INFO(self, data, **kwargs):
+        self.wgconf.clear_interfaces(data.get('vpn', []))
         for vpn_cmd in data.get('vpn', []):
             try:
                 fn = getattr(self.wgconf, vpn_cmd['fn'])
