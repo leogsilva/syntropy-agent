@@ -10,6 +10,8 @@ from nacl.public import PrivateKey
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.routes import ip_route_add, ip_route_del
+from platform_agent.wireguard.helpers import get_peer_info
+
 
 logger = logging.getLogger()
 
@@ -91,6 +93,10 @@ class WgConf():
         }
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
+        if self.wg_kernel:
+            peer_info = get_peer_info(ifname=ifname, wg=self.wg)
+            old_ips = set(peer_info.get(public_key, [])) - set(allowed_ips)
+            ip_route_del(ifname, old_ips)
         peer = {'public_key': public_key,
                 'endpoint_addr': endpoint_ipv4,
                 'endpoint_port': endpoint_port,
