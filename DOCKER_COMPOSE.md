@@ -65,13 +65,13 @@ environment:
   - NOIA_COUNTRY=Germany 
   - NOIA_CITY=Frankfurt 
 
-#Select one of the categories from the list or default will be assigned 
-# 'zIoT', 'Server','none' 
+# Select one of the categories from the list or default will be assigned 
+# 'IoT', 'Server','none' 
   - NOIA_CATEGORY=IoT 
 
-#Select one of providers from the list or default will be assigned 
-#'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
-#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
+# Select one of providers from the list or default will be assigned 
+# 'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
+# 'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
 
   - NOIA_PROVIDER=Microsoft Azure 
   - NOIA_LAT=40.14 
