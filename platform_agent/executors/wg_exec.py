@@ -19,7 +19,6 @@ class WgExecutor(threading.Thread):
         self.queue = queue.Queue()
         self.client = client
         self.stop_wg_executor = threading.Event()
-        self.daemon = True
         self.wg = None
         self.wgconf = WgConf()
 
@@ -77,7 +76,7 @@ class WgExecutor(threading.Thread):
                 try:
                     fn = getattr(self.wgconf, payload['fn_name'])
                     if payload['fn_name'] in ["add_peer"]:
-                        threading.Thread(target=self.add_peer, args=(payload, request_id)).start()
+                        threading.Thread(target=self.add_peer, args=(payload, request_id), daemon=True).start()
                         continue
                     ok.update(
                         {"fn": payload['fn_name'], "data": fn(**payload['fn_args']), "args": payload['fn_args']})
