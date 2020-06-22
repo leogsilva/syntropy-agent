@@ -105,6 +105,7 @@ class WgConf():
             "listen_port": listen_port
         }
         logger.info(f"[WG_CONF] - interface_created {result}")
+        return result
 
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
