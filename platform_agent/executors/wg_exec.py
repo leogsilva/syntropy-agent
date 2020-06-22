@@ -81,6 +81,8 @@ class WgExecutor(threading.Thread):
                         continue
                     ok.update(
                         {"fn": payload['fn_name'], "data": fn(**payload['fn_args']), "args": payload['fn_args']})
+                    logger.debug(f"[WG_EXECUTOR] - ok - {ok}")
+
                 except WgConfException as e:
                     logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
                     errors.append({payload['fn_name']: str(e), "args": payload['fn_args']})
@@ -99,6 +101,7 @@ class WgExecutor(threading.Thread):
 
     def add_peer(self, payload, request_id):
         response = {}
+        logger.debug(f"[WG_EXECUTOR] add_peer starting {payload}")
         try:
             response['data'] = self.wgconf.add_peer(**payload['fn_args'])
         except WgConfException as e:
@@ -106,8 +109,10 @@ class WgExecutor(threading.Thread):
             response['error'] = {payload['fn_name']: str(e), "args": payload['fn_args']}
         except:
             # Catch all exceptions that not handled
+            logger.info(f"[WG_EXECUTOR] add_peer error {response} - {request_id}")
             self.send_error(request_id)
             return
+        logger.info(f"[WG_EXECUTOR] add_peer sending message {response} - {request_id}")
         self.client.send(json.dumps({
             'id': request_id,
             'executed_at': now(),
