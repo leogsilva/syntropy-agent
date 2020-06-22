@@ -26,13 +26,11 @@ class WgExecutor(threading.Thread):
         threading.Thread.__init__(self)
 
     def get_from_queue(self):
-        logger.info(f"[WG_EXECUTOR] - Quee")
         payloads = {}
         t_end = time.time() + 1  # run for 1 second
         while time.time() < t_end:
             try:
                 message = self.queue.get(timeout=0.1)
-                logger.info(f"{message}")
             except queue.Empty:
                 continue
             request_id = message['request_id']
