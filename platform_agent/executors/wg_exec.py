@@ -78,8 +78,18 @@ class WgExecutor(threading.Thread):
                     if payload['fn_name'] in ["add_peer"]:
                         threading.Thread(target=self.add_peer, args=(payload, request_id), daemon=True).start()
                         continue
+                    try:
+                        result = fn(**payload['fn_args'])
+                    except:
+                        traceback.print_exc()
+                        result = {
+                            'error': {
+                                'traceback': traceback.format_exc(),
+                            }
+                        }
+                        raise WgConfException(str(result))
                     ok.update(
-                        {"fn": payload['fn_name'], "data": fn(**payload['fn_args']), "args": payload['fn_args']})
+                        {"fn": payload['fn_name'], "data": result, "args": payload['fn_args']})
                     logger.debug(f"[WG_EXECUTOR] - ok - {ok}")
 
                 except WgConfException as e:
