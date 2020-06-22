@@ -78,8 +78,7 @@ class WgExecutor(threading.Thread):
             else:
                 try:
                     fn = getattr(self.wgconf, payload['fn_name'])
-                    povilo_break_point
-                    if fn == self.wgconf.add_peer:
+                    if payload['fn_name'] in ["add_peer"]:
                         threading.Thread(target=self.add_peer, args=(payload, request_id)).start()
                         continue
                     ok.update(
@@ -110,6 +109,7 @@ class WgExecutor(threading.Thread):
         except:
             # Catch all exceptions that not handled
             self.send_error(request_id)
+            return
         self.client.send(json.dumps({
             'id': request_id,
             'executed_at': now(),
@@ -130,7 +130,15 @@ class WgExecutor(threading.Thread):
         }
         logger.error(result)
         logger.debug(f"[RUNNER] WG Executor ERROR | {result}")
-        self.queue.task_done()
         if result:
-            payload = self.client.create_response(request_id, result)
+            payload = {
+                'id': request_id,
+                'executed_at': now(),
+                'type': "WG_CONF",
+            }
+            if isinstance(result, dict) and ('error' in result):
+                payload.update(result)
+            else:
+                payload.update({'data': result})
+            payload = json.dumps(payload)
             self.client.send(payload)
