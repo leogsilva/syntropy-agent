@@ -100,11 +100,12 @@ class WgConf():
         )
 
         listen_port = self.get_listening_port(ifname)
-
-        return {
+        result = {
             "public_key": public_key,
             "listen_port": listen_port
         }
+        logger.info(f"[WG_CONF] - interface_created {result}")
+
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
         if self.wg_kernel:

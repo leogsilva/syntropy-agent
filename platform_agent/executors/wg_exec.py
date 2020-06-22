@@ -86,6 +86,7 @@ class WgExecutor(threading.Thread):
                 except WgConfException as e:
                     logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
                     errors.append({payload['fn_name']: str(e), "args": payload['fn_args']})
+            logger.info(f"[WG_EXECUTOR] - Results {result}")
             response = {
                 'id': request_id,
                 'executed_at': now(),
@@ -95,7 +96,6 @@ class WgExecutor(threading.Thread):
                 response.update({'error': errors, 'data': {}})
             elif ok:
                 response.update({'data': ok})
-            logger.info(f"[WG_EXECUTOR] - Results {result}")
 
             self.client.send(json.dumps(response))
 
