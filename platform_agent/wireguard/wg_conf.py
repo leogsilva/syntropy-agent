@@ -3,8 +3,7 @@ import base64
 import logging
 import subprocess
 from pathlib import Path
-
-from pyroute2 import IPDB, WireGuard, CreateException
+from pyroute2 import IPDB, WireGuard, CreateException, NDB
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
@@ -16,6 +15,7 @@ from platform_agent.wireguard.helpers import get_peer_info
 logger = logging.getLogger()
 
 WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
+
 
 class WgConfException(Exception):
     pass
@@ -78,16 +78,11 @@ class WgConf():
         logger.info(f"[WG_CONF] - Creating interface {ifname} - wg_kernel={self.wg_kernel}")
         public_key, private_key = self.get_wg_keys(ifname)
 
-        with IPDB() as ip:
-            logger.debug(f"[WG_CONF] - inside IPDB")
+        with NDB() as ip:
             if self.wg_kernel:
-                logger.debug(f"[WG_CONF] - wg_kernel")
                 try:
-                    logger.debug(f"[WG_CONF] - ip.create")
-                    wg_int = ip.create(kind='wireguard', ifname=ifname)
-                    logger.debug(f"[WG_CONF] - ip.create {wg_int}")
+                    wg_int = ip.interfaces.create(kind='wireguard', ifname=ifname)
                 except CreateException as e:
-                    logger.debug(f"[WG_CONF] -CreateException as {e}")
                     raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
@@ -95,21 +90,15 @@ class WgConf():
                     wg_int = ip.interfaces[ifname]
                 else:
                     raise WgConfException("Wireguard-go failed to create interface")
-            logger.debug(f"[WG_CONF] -before add ip {internal_ip}")
             wg_int.add_ip(internal_ip)
-            logger.debug(f"[WG_CONF] -after add ip")
-            wg_int.up()
-            logger.debug(f"[WG_CONF] - up ")
+            wg_int.set('state', 'up')
             wg_int.commit()
-            logger.debug(f"[WG_CONF] - commit ")
         self.wg.set(
             ifname,
             private_key=private_key,
             listen_port=listen_port
         )
-        logger.debug(f"[WG_CONF] - wg_set")
         listen_port = self.get_listening_port(ifname)
-        logger.debug(f"[WG_CONF] - get_listening_port")
 
         result = {
             "public_key": public_key,
