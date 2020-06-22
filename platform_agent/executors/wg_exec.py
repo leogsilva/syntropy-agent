@@ -103,7 +103,9 @@ class WgExecutor(threading.Thread):
         response = {}
         logger.debug(f"[WG_EXECUTOR] add_peer starting {payload}")
         try:
+            logger.debug(f"[WG_EXECUTOR] calling add_peer")
             response['data'] = self.wgconf.add_peer(**payload['fn_args'])
+            logger.debug(f"[WG_EXECUTOR] after add_peer {response['data']}")
         except WgConfException as e:
             logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
             response['error'] = {payload['fn_name']: str(e), "args": payload['fn_args']}
