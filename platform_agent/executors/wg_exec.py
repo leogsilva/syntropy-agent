@@ -21,6 +21,7 @@ class WgExecutor(threading.Thread):
         self.stop_wg_executor = threading.Event()
         self.wg = None
         self.wgconf = WgConf()
+        self.wgconf_peers = WgConf()
 
         threading.Thread.__init__(self)
 
@@ -78,19 +79,9 @@ class WgExecutor(threading.Thread):
                     if payload['fn_name'] in ["add_peer"]:
                         threading.Thread(target=self.add_peer, args=(payload, request_id), daemon=True).start()
                         continue
-                    try:
-                        result = fn(**payload['fn_args'])
-                    except:
-                        traceback.print_exc()
-                        result = {
-                            'error': {
-                                'traceback': traceback.format_exc(),
-                            }
-                        }
-                        raise WgConfException(str(result))
+                    result = fn(**payload['fn_args'])
                     ok.update(
                         {"fn": payload['fn_name'], "data": result, "args": payload['fn_args']})
-                    logger.debug(f"[WG_EXECUTOR] - ok - {ok}")
 
                 except WgConfException as e:
                     logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
@@ -110,11 +101,8 @@ class WgExecutor(threading.Thread):
 
     def add_peer(self, payload, request_id):
         response = {}
-        logger.debug(f"[WG_EXECUTOR] add_peer starting {payload}")
         try:
-            logger.debug(f"[WG_EXECUTOR] calling add_peer")
-            response['data'] = self.wgconf.add_peer(**payload['fn_args'])
-            logger.debug(f"[WG_EXECUTOR] after add_peer {response['data']}")
+            response['data'] = self.wgconf_peers.add_peer(**payload['fn_args'])
         except WgConfException as e:
             logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
             response['error'] = {payload['fn_name']: str(e), "args": payload['fn_args']}
@@ -148,7 +136,7 @@ class WgExecutor(threading.Thread):
             payload = {
                 'id': request_id,
                 'executed_at': now(),
-                'type': "WG_CONF",
+                'type': self.CMD_TYPE,
             }
             if isinstance(result, dict) and ('error' in result):
                 payload.update(result)
