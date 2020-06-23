@@ -77,7 +77,8 @@ class WgExecutor(threading.Thread):
                 try:
                     fn = getattr(self.wgconf, payload['fn_name'])
                     if payload['fn_name'] in ["add_peer"]:
-                        threading.Thread(target=self.add_peer, args=(payload, request_id), daemon=True).start()
+                        # TODO to start new thread should use start()
+                        threading.Thread(target=self.add_peer, args=(payload, request_id), daemon=True).run()
                         continue
                     result = fn(**payload['fn_args'])
                     ok.update(
