@@ -9,7 +9,7 @@
 #### Metadata (Optional)
 ```ini
 -e NOIA_NETWORK_API='docker'
--e NOIA_NAME='Azure EU gateway '
+-e NOIA_AGENT_NAME='Azure EU gateway '
 -e NOIA_COUNTRY='Germany'
 -e NOIA_CITY='Frankfurt'
 
