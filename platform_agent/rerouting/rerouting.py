@@ -9,7 +9,8 @@ from icmplib import multiping
 from pyroute2 import WireGuard
 
 from platform_agent.cmd.lsmod import module_loaded
-from platform_agent.routes import ip_route_del, ip_route_add
+from platform_agent.routes import Routes
+
 from platform_agent.wireguard.helpers import get_peer_info
 
 logger = logging.getLogger()
@@ -82,6 +83,7 @@ class Rerouting(threading.Thread):
         super().__init__()
         self.interval = interval
         self.wg = WireGuard()
+        self.routes = Routes()
         self.stop_rerouting = threading.Event()
         self.daemon = True
 
@@ -96,8 +98,8 @@ class Rerouting(threading.Thread):
                     continue
                 # Do rerouting logic with best_route
                 logger.info(f"Rerouting {dest} via {best_route}")
-                ip_route_del(ifname=best_route['iface'], ip_list=[dest])
-                ip_route_add(
+                self.routes.ip_route_del(ifname=best_route['iface'], ip_list=[dest])
+                self.routes.ip_route_add(
                     ifname=best_route['iface'], ip_list=[dest], gw_ipv4=get_interface_internal_ip(best_route['iface'])
                 )
             time.sleep(int(self.interval))

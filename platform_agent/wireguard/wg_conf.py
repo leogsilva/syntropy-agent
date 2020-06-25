@@ -8,9 +8,8 @@ from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
-from platform_agent.routes import ip_route_add, ip_route_del
+from platform_agent.routes import Routes
 from platform_agent.wireguard.helpers import get_peer_info
-
 
 logger = logging.getLogger()
 
@@ -27,6 +26,7 @@ class WgConf():
 
         self.wg_kernel = module_loaded('wireguard')
         self.wg = WireGuard() if self.wg_kernel else WireguardGo()
+        self.routes = Routes()
 
     @staticmethod
     def get_wg_interfaces():
@@ -82,7 +82,7 @@ class WgConf():
             if self.wg_kernel:
                 try:
                     wg_int = ip.interfaces.create(kind='wireguard', ifname=ifname)
-                except CreateException as e:
+                except KeyError as e:
                     raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
@@ -107,30 +107,29 @@ class WgConf():
         logger.info(f"[WG_CONF] - interface_created {result}")
         return result
 
-
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
         if self.wg_kernel:
             peer_info = get_peer_info(ifname=ifname, wg=self.wg)
             old_ips = set(peer_info.get(public_key, [])) - set(allowed_ips)
-            ip_route_del(ifname, old_ips)
+            self.routes.ip_route_del(ifname, old_ips)
         peer = {'public_key': public_key,
                 'endpoint_addr': endpoint_ipv4,
                 'endpoint_port': endpoint_port,
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
-        ip_route_add(ifname, allowed_ips, gw_ipv4)
+        self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
         return
 
     def remove_peer(self, ifname, public_key, allowed_ips=None):
         peer = {
             'public_key': public_key,
             'remove': True
-            }
+        }
 
         self.wg.set(ifname, peer=peer)
         if allowed_ips:
-            ip_route_del(ifname, allowed_ips)
+            self.routes.ip_route_del(ifname, allowed_ips)
         return
 
     def remove_interface(self, ifname):
@@ -151,7 +150,7 @@ class WgConf():
             return wg_info['listen_port']
 
 
-class WireguardGo():
+class WireguardGo:
 
     def set(self, ifname, peer=None, private_key=None, listen_port=None):
         full_cmd = f"wg set {ifname}".split(' ')

@@ -21,7 +21,6 @@ class WgExecutor(threading.Thread):
         self.stop_wg_executor = threading.Event()
         self.wg = None
         self.wgconf = WgConf()
-        self.wgconf_peers = WgConf()
 
         threading.Thread.__init__(self)
 
@@ -76,14 +75,9 @@ class WgExecutor(threading.Thread):
             else:
                 try:
                     fn = getattr(self.wgconf, payload['fn_name'])
-                    if payload['fn_name'] in ["add_peer"]:
-                        # TODO to start new thread should use start()
-                        threading.Thread(target=self.add_peer, args=(payload, request_id), daemon=True).run()
-                        continue
                     result = fn(**payload['fn_args'])
                     ok.update(
                         {"fn": payload['fn_name'], "data": result, "args": payload['fn_args']})
-
                 except WgConfException as e:
                     logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
                     errors.append({payload['fn_name']: str(e), "args": payload['fn_args']})
@@ -99,26 +93,6 @@ class WgExecutor(threading.Thread):
                 response.update({'data': ok})
 
             self.client.send(json.dumps(response))
-
-    def add_peer(self, payload, request_id):
-        response = {}
-        try:
-            response['data'] = self.wgconf_peers.add_peer(**payload['fn_args'])
-        except WgConfException as e:
-            logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
-            response['error'] = {payload['fn_name']: str(e), "args": payload['fn_args']}
-        except:
-            # Catch all exceptions that not handled
-            logger.info(f"[WG_EXECUTOR] add_peer error {response} - {request_id}")
-            self.send_error(request_id)
-            return
-        logger.info(f"[WG_EXECUTOR] add_peer sending message {response} - {request_id}")
-        self.client.send(json.dumps({
-            'id': request_id,
-            'executed_at': now(),
-            'type': self.CMD_TYPE,
-            'data': response
-        }))
 
     def join(self, timeout=None):
         self.stop_wg_executor.set()
