@@ -61,7 +61,7 @@ environment:
 ```yaml
 environment:
   - NOIA_NETWORK_IDS=Lpy3zq2ehdVZehZvoRFur4tV,U7FrPST7bV6NQGyBdhHyiebg
-  - NOIA_NAME=Azure EU gateway 
+  - NOIA_AGENT_NAME=Azure EU gateway 
   - NOIA_COUNTRY=Germany 
   - NOIA_CITY=Frankfurt 
 

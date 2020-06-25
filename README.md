@@ -133,7 +133,7 @@ Environment=NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
 Environment=NOIA_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]
 #If using docker , NOIA_NETWORK_API=docker would allow agent to access docker networks for information.
 Environment=NOIA_NETWORK_API=none
-Environment="NOIA_NAME=Azure EU gateway"
+Environment="NOIA_AGENT_NAME=Azure EU gateway"
 Environment=NOIA_COUNTRY=Germany
 Environment=NOIA_CITY=Frankfurt
 #Select one of the categories from the list or default will be assigned
@@ -188,7 +188,7 @@ NOIA_API_KEY= your_api_key
 ** Metadata (Optional) **
 ```ini
 -e NOIA_NETWORK_API='docker'
--e NOIA_NAME='Azure EU gateway '
+-e NOIA_AGENT_NAME='Azure EU gateway '
 -e NOIA_COUNTRY='Germany'
 -e NOIA_CITY='Frankfurt'
 
