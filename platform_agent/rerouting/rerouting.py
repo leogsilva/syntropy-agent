@@ -9,22 +9,11 @@ from icmplib import multiping
 from pyroute2 import WireGuard
 
 from platform_agent.cmd.lsmod import module_loaded
-from platform_agent.routes import ip_route_del, ip_route_add
+from platform_agent.routes import Routes
+
+from platform_agent.wireguard.helpers import get_peer_info
 
 logger = logging.getLogger()
-
-
-def get_peer_info(ifname, wg):
-
-    results = {}
-    ss = wg.info(ifname)
-    wg_info = dict(ss[0]['attrs'])
-    peers = wg_info.get('WGDEVICE_A_PEERS', [])
-    for peer in peers:
-        peer = dict(peer['attrs'])
-        results[peer['WGPEER_A_PUBLIC_KEY'].decode('utf-8')] = [allowed_ip['addr'] for allowed_ip in
-                                                                peer['WGPEER_A_ALLOWEDIPS']]
-    return results
 
 
 def get_routing_info(wg):
@@ -94,6 +83,7 @@ class Rerouting(threading.Thread):
         super().__init__()
         self.interval = interval
         self.wg = WireGuard()
+        self.routes = Routes()
         self.stop_rerouting = threading.Event()
         self.daemon = True
 
@@ -108,8 +98,8 @@ class Rerouting(threading.Thread):
                     continue
                 # Do rerouting logic with best_route
                 logger.info(f"Rerouting {dest} via {best_route}")
-                ip_route_del(ifname=best_route['iface'], ip_list=[dest])
-                ip_route_add(
+                self.routes.ip_route_del(ifname=best_route['iface'], ip_list=[dest])
+                self.routes.ip_route_add(
                     ifname=best_route['iface'], ip_list=[dest], gw_ipv4=get_interface_internal_ip(best_route['iface'])
                 )
             time.sleep(int(self.interval))

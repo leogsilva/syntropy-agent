@@ -1,1 +1,1 @@
-from platform_agent.routes.routes import ip_route_add, ip_route_del, create_rule
+from platform_agent.routes.routes import Routes
