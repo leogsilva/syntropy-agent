@@ -109,7 +109,10 @@ class WgConf():
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
         if self.wg_kernel:
-            peer_info = get_peer_info(ifname=ifname, wg=self.wg)
+            try:
+                peer_info = get_peer_info(ifname=ifname, wg=self.wg)
+            except ValueError as e:
+                raise WgConfException(str(e))
             old_ips = set(peer_info.get(public_key, [])) - set(allowed_ips)
             self.routes.ip_route_del(ifname, old_ips)
         peer = {'public_key': public_key,
