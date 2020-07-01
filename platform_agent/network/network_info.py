@@ -56,6 +56,7 @@ class BWDataCollect(threading.Thread):
                 rx_errors = (rx_errors_after - rx_errors)
                 rx_packets = (rx_packets_after - rx_packets)
                 result = {
+                    'iface': iface,
                     'tx_speed_mbps': tx_speed_mbps,
                     'rx_speed_mbps': rx_speed_mbps,
                     'tx_dropped': tx_dropped,
@@ -64,6 +65,7 @@ class BWDataCollect(threading.Thread):
                     'rx_dropped': rx_dropped,
                     'rx_errors': rx_errors,
                     'rx_packets': rx_packets,
+                    'interval': self.interval,
                 }
                 self.client.send(json.dumps({
                     'id': "UNKNOWN",
