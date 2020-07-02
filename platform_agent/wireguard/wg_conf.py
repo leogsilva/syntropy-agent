@@ -86,7 +86,7 @@ class WgConf():
                     raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
-                if ifname in ip.interfaces:
+                if ip.interfaces.get(ifname):
                     wg_int = ip.interfaces[ifname]
                 else:
                     raise WgConfException("Wireguard-go failed to create interface")
@@ -182,7 +182,13 @@ class WireguardGo:
 
     def create_interface(self, ifname):
         try:
-            result_set = subprocess.run(['wireguard-go', ifname], encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result_set = subprocess.Popen(
+                ['wireguard-go', ifname],
+                encoding='utf-8',
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                start_new_session=True
+            )
         except FileNotFoundError:
             raise WgConfException(f'Wireguard-go missing')
 
