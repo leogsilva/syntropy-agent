@@ -115,7 +115,7 @@ curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/no
 Create noia-agent directory:
 ```bash
 mkdir /etc/systemd/system/noia-agent.service.d/
-chmod -R 600 /etc/noia-agent
+chmod -R 600 /etc/systemd/system/noia-agent.service.d/
 ```
 Download settings file:
 ```bash

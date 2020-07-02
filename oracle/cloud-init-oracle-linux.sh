@@ -8,6 +8,8 @@ sudo yum install yum-plugin-elrepo wireguard-tools -y
 sudo yum --enablerepo=elrepo-kernel install kernel-ml -y
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 sudo grub2-set-default 0
+sudo setenforce 0
+sudo touch /etc/modules-load.d/wireguard.conf
 sudo echo wireguard >> /etc/modules-load.d/wireguard.conf
 sudo curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/noia-agent.service \
 -o /etc/systemd/system/noia-agent.service
