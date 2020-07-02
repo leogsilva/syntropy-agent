@@ -1,4 +1,5 @@
 import logging
+import os
 import json
 import socket
 import queue
@@ -95,7 +96,7 @@ class WebSocketClient(threading.Thread):
             header={
                 'authorization': api_key,
                 'x-deviceid': self.generate_device_id(),
-                'x-devicename': socket.gethostname()
+                'x-devicename': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
             },
             on_message=self.on_message,
             on_error=self.on_error,
