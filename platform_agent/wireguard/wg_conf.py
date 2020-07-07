@@ -13,7 +13,7 @@ from platform_agent.wireguard.helpers import get_peer_info
 
 logger = logging.getLogger()
 
-WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
+WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_', 'noia_']
 
 
 class WgConfException(Exception):
@@ -31,7 +31,7 @@ class WgConf():
     @staticmethod
     def get_wg_interfaces():
         with IPDB() as ipdb:
-            current_interfaces = [k for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard' and any(
+            current_interfaces = [k for k, v in ipdb.by_name.items() if any(
                 substring in k for substring in WG_NAME_SUBSTRINGS)]
         return current_interfaces
 

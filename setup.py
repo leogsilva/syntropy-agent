@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="platform-agent",
-    version='0.0.45',
+    version='0.0.47',
     py_modules=['platform-agent'],
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -22,6 +22,7 @@ setup(
         'icmplibv2==1.0.5',
         'PyYAML==5.3.1',
         'dataclasses==0.7',
+        'prometheus-client==0.8.0'
     ],
     packages=find_packages(),
     license="MIT",

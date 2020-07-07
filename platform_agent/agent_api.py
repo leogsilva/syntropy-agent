@@ -5,6 +5,7 @@ import os
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
 from platform_agent.docker_api.docker_api import DockerNetworkWatcher
+from platform_agent.network.dummy_watcher import DummyNetworkWatcher
 from platform_agent.executors.wg_exec import WgExecutor
 from platform_agent.network.network_info import BWDataCollect
 
@@ -24,6 +25,8 @@ class AgentApi:
             threading.Thread(target=self.bw_data_collector.run).start()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
+        if os.environ.get("NOIA_NETWORK_API", '').lower() == "dummy" and prod_mode:
+            self.network_watcher = DummyNetworkWatcher(self.runner).start()
         # self.rerouting = Rerouting().start()
 
     def call(self, type, data, request_id):
