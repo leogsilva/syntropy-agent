@@ -8,6 +8,7 @@ from platform_agent.docker_api.docker_api import DockerNetworkWatcher
 from platform_agent.network.dummy_watcher import DummyNetworkWatcher
 from platform_agent.executors.wg_exec import WgExecutor
 from platform_agent.network.network_info import BWDataCollect
+from platform_agent.network.autoping import AutopingClient
 
 logger = logging.getLogger()
 
@@ -17,6 +18,7 @@ class AgentApi:
     def __init__(self, runner, prod_mode=True):
         self.runner = runner
         self.wg_peers = None
+        self.autoping = None
         self.wgconf = WgConf()
         self.wg_executor = WgExecutor(self.runner)
         self.bw_data_collector = BWDataCollect(self.runner)
@@ -58,6 +60,15 @@ class AgentApi:
 
     def WG_CONF(self, data, **kwargs):
         self.wg_executor.queue.put({"data": data, "request_id": kwargs['request_id']})
+        return False
+
+    def AUTO_PING(self, data, **kwargs):
+        if self.autoping:
+            self.autoping.join(timeout=1)
+            self.autoping = None
+        self.autoping = AutopingClient(self.runner, **data)
+        self.autoping.start()
+        logger.debug(f"[AUTO_PING] Enabled | {data}")
         return False
 
     def CONFIG_INFO(self, data, **kwargs):
