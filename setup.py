@@ -21,8 +21,7 @@ setup(
         'docker-py==1.10.6',
         'icmplibv2==1.0.5',
         'PyYAML==5.3.1',
-        'dataclasses==0.7',
-        'prometheus-client==0.8.0'
+        'dnspython==1.16.0',
     ],
     packages=find_packages(),
     license="MIT",
