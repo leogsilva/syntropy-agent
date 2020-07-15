@@ -86,6 +86,9 @@ class WgConf():
                     raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
+                from time import sleep
+                #Wait until interface was created
+                sleep(0.01)
                 if ip.interfaces.get(ifname):
                     wg_int = ip.interfaces[ifname]
                 else:
