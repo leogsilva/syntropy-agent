@@ -71,7 +71,10 @@ class BWDataCollect(threading.Thread):
     def run(self):
         while not self.stop_BWDataCollect.is_set():
             for iface in WgConf.get_wg_interfaces():
-                result = [self.get_iface_info_set(iface, self.interval)]
+                try:
+                    result = [self.get_iface_info_set(iface, self.interval)]
+                except FileNotFoundError:
+                    continue
                 self.client.send(json.dumps({
                     'id': "UNKNOWN",
                     'executed_at': now(),
