@@ -25,6 +25,8 @@ class AgentApi:
         if prod_mode:
             threading.Thread(target=self.wg_executor.run).start()
             threading.Thread(target=self.bw_data_collector.run).start()
+            self.wg_peers = WireguardPeerWatcher(self.runner)
+            self.wg_peers.start()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "dummy" and prod_mode:
