@@ -7,6 +7,16 @@ def CONFIG_INFO():
 
 
 @fixture
+def GET_INFO():
+    return 'GET_INFO'
+
+
+@fixture
+def WG_INFO():
+    return 'WG_INFO'
+
+
+@fixture
 def request_id():
     return 'TEST_01'
 
@@ -24,6 +34,21 @@ def config_info_int_check():
         {'args': {'ifname': 'gw_113_d5yg', 'internal_ip': '10.69.0.56/31'}, 'fn': 'create_interface'},
         {'args': {'ifname': 'mesh_112_wnyt', 'internal_ip': '10.69.0.48/31'}, 'fn': 'create_interface'}
     ]}
+
+
+@fixture
+def gather_initial_info_payload():
+    return {}
+
+
+@fixture
+def gather_initial_info_payload_bad():
+    return "BAD_PAYLOAD"
+
+
+@fixture
+def wg_info_payload():
+    return {'interval': 5}
 
 
 @fixture
