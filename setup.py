@@ -22,6 +22,7 @@ setup(
         'icmplibv2==1.0.5',
         'PyYAML==5.3.1',
         'dnspython==1.16.0',
+        'iperf3==0.1.11',
     ],
     packages=find_packages(),
     license="MIT",

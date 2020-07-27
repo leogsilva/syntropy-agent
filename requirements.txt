@@ -10,3 +10,4 @@ mock==3.0.5
 dataclasses==0.6
 prometheus-client==0.8.0
 dnspython==1.16.0
+iperf3==0.1.11

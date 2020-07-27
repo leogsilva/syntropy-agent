@@ -9,6 +9,8 @@ from platform_agent.network.dummy_watcher import DummyNetworkWatcher
 from platform_agent.executors.wg_exec import WgExecutor
 from platform_agent.network.network_info import BWDataCollect
 from platform_agent.network.autoping import AutopingClient
+from platform_agent.network.iperf import IperfServer
+from platform_agent.rerouting.rerouting import Rerouting
 
 logger = logging.getLogger()
 
@@ -31,7 +33,7 @@ class AgentApi:
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "dummy" and prod_mode:
             self.network_watcher = DummyNetworkWatcher(self.runner).start()
-        # self.rerouting = Rerouting().start()
+        self.rerouting = Rerouting().start()
 
     def call(self, type, data, request_id):
         result = None
@@ -81,3 +83,20 @@ class AgentApi:
                 fn(**vpn_cmd['args'])
             except WgConfException as e:
                 logger.error(f"[CONFIG_INFO] {str(e)}")
+
+    def IPERF_SERVER(self, data, **kwargs):
+        if self.iperf and data.get('status') == 'off':
+            self.iperf.join(timeout=1)
+            self.iperf = None
+            return 'ok'
+        if data.get('status'):
+            self.iperf = IperfServer()
+            IperfServer.start(self.runner)
+            return 'ok'
+
+    def IPERF_TEST(self, data, **kwargs):
+        if data.get('hosts') and isinstance(data['hosts'], list):
+            result = IperfServer.test_speed(**data)
+            return result
+        else:
+            return {"error": "must be list"}
