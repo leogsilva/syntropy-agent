@@ -32,7 +32,7 @@ def get_peer_info_all(ifname, wg):
             results[peer_dict['WGPEER_A_PUBLIC_KEY'].decode('utf-8')] = {
                 "last_handshake": datetime.datetime.strptime(peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'],
                                                              "%a %b %d %H:%M:%S %Y").isoformat(),
-                "keep_alive_intreval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
+                "keep_alive_interval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
                 "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
                 "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
 
