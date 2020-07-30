@@ -24,17 +24,17 @@ class WireguardPeerWatcher(threading.Thread):
 
     def run(self):
         while not self.stop_peer_watcher.is_set():
-            results = {}
+            results = []
             for iface in WgConf.get_wg_interfaces():
                 peers = get_peer_info_all(iface, self.wg)
-                results[iface] = peers
-                self.client.send(json.dumps({
-                    'id': "UNKNOWN",
-                    'executed_at': now(),
-                    'type': 'WIREGUARD_PEERS',
-                    'data': results
-                }))
-                time.sleep(int(self.interval))
+                results.append({'iface': iface, 'peers': peers})
+            self.client.send(json.dumps({
+                'id': "UNKNOWN",
+                'executed_at': now(),
+                'type': 'IFACES_PEERS_BW_DATA',
+                'data': results
+            }))
+            time.sleep(int(self.interval))
 
     def join(self, timeout=None):
         self.stop_peer_watcher.set()

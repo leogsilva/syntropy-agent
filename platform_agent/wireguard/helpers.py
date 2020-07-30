@@ -1,11 +1,12 @@
 import datetime
-from platform_agent.cmd.lsmod import module_loaded
+import os
+
 from platform_agent.cmd.wg_info import WireGuardRead
 
 
 def get_peer_info(ifname, wg):
     results = {}
-    if module_loaded('wireguard'):
+    if os.environ.get("NOIA_WIREGUARD"):
         ss = wg.info(ifname)
         wg_info = dict(ss[0]['attrs'])
         peers = wg_info.get('WGDEVICE_A_PEERS', [])
@@ -22,21 +23,21 @@ def get_peer_info(ifname, wg):
 
 
 def get_peer_info_all(ifname, wg):
-    results = {}
-    if module_loaded('wireguard'):
+    results = []
+    if os.environ.get("NOIA_WIREGUARD"):
         ss = wg.info(ifname)
         wg_info = dict(ss[0]['attrs'])
         peers = wg_info.get('WGDEVICE_A_PEERS', [])
         for peer in peers:
             peer_dict = dict(peer['attrs'])
-            results[peer_dict['WGPEER_A_PUBLIC_KEY'].decode('utf-8')] = {
+            results.append({
+                "public_key": peer_dict['WGPEER_A_PUBLIC_KEY'].decode('utf-8'),
                 "last_handshake": datetime.datetime.strptime(peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'],
                                                              "%a %b %d %H:%M:%S %Y").isoformat(),
                 "keep_alive_interval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
                 "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
                 "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
-
-            }
+            })
 
     else:
         wg = WireGuardRead()

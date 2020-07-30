@@ -78,7 +78,7 @@ class BWDataCollect(threading.Thread):
                 self.client.send(json.dumps({
                     'id': "UNKNOWN",
                     'executed_at': now(),
-                    'type': 'BW_DATA',
+                    'type': 'IFACES_BW_DATA',
                     'data': result
                 }))
                 time.sleep(int(self.interval))
