@@ -9,6 +9,7 @@ from icmplib import multiping
 from pyroute2 import WireGuard
 
 from platform_agent.cmd.lsmod import module_loaded
+from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.routes import Routes
 
 from platform_agent.wireguard.helpers import get_peer_info
@@ -82,7 +83,7 @@ class Rerouting(threading.Thread):
     def __init__(self, interval=1):
         super().__init__()
         self.interval = interval
-        self.wg = WireGuard()
+        self.wg = WireGuard() if module_loaded("wireguard") else WireGuardRead()
         self.routes = Routes()
         self.stop_rerouting = threading.Event()
         self.daemon = True

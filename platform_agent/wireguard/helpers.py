@@ -43,5 +43,9 @@ def get_peer_info_all(ifname, wg):
         wg = WireGuardRead()
         iface = wg.wg_info(ifname)[0]
         for peer in iface['peers']:
-            results[peer['peer']] = peer['allowed_ips']
+            results.append({
+                "public_key": peer['peer'],
+                "last_handshake": datetime.datetime.now().isoformat() if peer['latest_handshake'] else None,
+                "keep_alive_interval": peer['persistent_keepalive'],
+            })
     return results

@@ -95,7 +95,10 @@ class WgConf():
                     raise WgConfException("Wireguard-go failed to create interface")
             wg_int.add_ip(internal_ip)
             wg_int.set('state', 'up')
-            wg_int.commit()
+            try:
+                wg_int.commit()
+            except KeyError as e:
+                raise WgConfException(str(e))
         self.wg.set(
             ifname,
             private_key=private_key,

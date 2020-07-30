@@ -52,7 +52,7 @@ def configure_logger():
             'h': {
                 'class': 'logging.StreamHandler',
                 'formatter': 'f',
-                'level': int(os.environ.get('NOIA_LOG_LEVEL', 10))
+                'level': int(os.environ.get('NOIA_LOG_LEVEL', 20))
             },
             'file': {
                 'level': 'DEBUG',
@@ -63,7 +63,7 @@ def configure_logger():
         },
         root={
             'handlers': ['h', 'file'],
-            'level': int(os.environ.get('NOIA_LOG_LEVEL', 10)),
+            'level': int(os.environ.get('NOIA_LOG_LEVEL', 20)),
         },
     )
 

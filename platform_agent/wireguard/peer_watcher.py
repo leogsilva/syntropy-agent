@@ -5,9 +5,12 @@ import time
 
 from pyroute2 import WireGuard
 
+from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.lib.ctime import now
 from platform_agent.wireguard import WgConf
 from platform_agent.wireguard.helpers import get_peer_info_all
+from platform_agent.cmd.wg_info import WireGuardRead
+
 
 logger = logging.getLogger()
 
@@ -18,7 +21,7 @@ class WireguardPeerWatcher(threading.Thread):
         super().__init__()
         self.client = client
         self.interval = interval
-        self.wg = WireGuard()
+        self.wg = WireGuard() if module_loaded("wireguard") else WireGuardRead()
         self.stop_peer_watcher = threading.Event()
         self.daemon = True
 
