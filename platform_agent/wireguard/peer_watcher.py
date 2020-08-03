@@ -31,6 +31,8 @@ class WireguardPeerWatcher(threading.Thread):
             for iface in WgConf.get_wg_interfaces():
                 peers = get_peer_info_all(iface, self.wg)
                 results.append({'iface': iface, 'peers': peers})
+            if not results:
+                continue
             self.client.send(json.dumps({
                 'id': "UNKNOWN",
                 'executed_at': now(),

@@ -75,6 +75,8 @@ class BWDataCollect(threading.Thread):
                     result = [self.get_iface_info_set(iface, self.interval)]
                 except FileNotFoundError:
                     continue
+                if not result:
+                    continue
                 self.client.send(json.dumps({
                     'id': "UNKNOWN",
                     'executed_at': now(),
