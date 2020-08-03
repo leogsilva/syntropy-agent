@@ -77,7 +77,7 @@ class BWDataCollect(threading.Thread):
                     continue
                 if not result:
                     continue
-                self.client.send(json.dumps({
+                self.client.send_log(json.dumps({
                     'id': "UNKNOWN",
                     'executed_at': now(),
                     'type': 'IFACES_BW_DATA',

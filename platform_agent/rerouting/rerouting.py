@@ -104,14 +104,17 @@ class Rerouting(threading.Thread):
                     continue
                 # Do rerouting logic with best_route
                 logger.info(f"Rerouting {dest} via {best_route}")
-                self.routes.ip_route_replace(
-                    ifname=best_route['iface'], ip_list=[dest], gw_ipv4=get_interface_internal_ip(best_route['iface'])
-                )
+                try:
+                    self.routes.ip_route_replace(
+                        ifname=best_route['iface'], ip_list=[dest], gw_ipv4=get_interface_internal_ip(best_route['iface'])
+                    )
+                except KeyError:  # catch if interface was deleted while executing this code
+                    continue
             previous_routes = new_routes
             time.sleep(int(self.interval))
 
     def send_latency_data(self, data):
-        self.client.send(json.dumps({
+        self.client.send_log(json.dumps({
             'id': "ID." + str(time.time()),
             'executed_at': now(),
             'type': 'PEERS_LATENCY_DATA',
