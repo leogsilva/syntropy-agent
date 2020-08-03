@@ -3,13 +3,16 @@ import time
 import logging
 import pyroute2
 import ipaddress
+import json
 
 from icmplib import multiping
 
 from pyroute2 import WireGuard
 
 from platform_agent.cmd.lsmod import module_loaded
+from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.routes import Routes
+from platform_agent.lib.ctime import now
 
 from platform_agent.wireguard.helpers import get_peer_info
 
@@ -36,7 +39,7 @@ def get_routing_info(wg):
                 )
                 if not peer_internal_ip:
                     continue
-                peers_internal_ips.append(peer_internal_ip)
+                peers_internal_ips.append(peer_internal_ip.split('/')[0])
                 peers[peer].remove(peer_internal_ip)
                 for allowed_ip in peers[peer]:
                     if not routing_info.get(allowed_ip):
@@ -70,19 +73,21 @@ def get_fastest_routes(wg):
         best_route = None
         best_ping = 9999
         for iface, internal_ip in routes['ifaces'].items():
-            if ping_results[internal_ip]['latency_ms'] < best_ping:
+            int_ip = internal_ip.split('/')[0]
+            if ping_results[int_ip]['latency_ms'] < best_ping:
                 best_route = {'iface': iface, 'gw': internal_ip}
-                best_ping = ping_results[internal_ip]['latency_ms']
+                best_ping = ping_results[int_ip]['latency_ms']
         result[dest] = best_route
-    return result
+    return result, ping_results
 
 
 class Rerouting(threading.Thread):
 
-    def __init__(self, interval=1):
+    def __init__(self, client, interval=1):
         super().__init__()
         self.interval = interval
-        self.wg = WireGuard()
+        self.client = client
+        self.wg = WireGuard() if module_loaded("wireguard") else WireGuardRead()
         self.routes = Routes()
         self.stop_rerouting = threading.Event()
         self.daemon = True
@@ -90,19 +95,28 @@ class Rerouting(threading.Thread):
     def run(self):
         if not module_loaded('wireguard'):
             return
+        previous_routes = {}
         while not self.stop_rerouting.is_set():
-            previous_routes = {}
-            new_routes = get_fastest_routes(self.wg)
+            new_routes, ping_data = get_fastest_routes(self.wg)
+            self.send_latency_data(ping_data)
             for dest, best_route in new_routes.items():
-                if not best_route and previous_routes.get(dest) == best_route:
+                if not best_route or previous_routes.get(dest) == best_route:
                     continue
                 # Do rerouting logic with best_route
                 logger.info(f"Rerouting {dest} via {best_route}")
-                self.routes.ip_route_del(ifname=best_route['iface'], ip_list=[dest])
-                self.routes.ip_route_add(
+                self.routes.ip_route_replace(
                     ifname=best_route['iface'], ip_list=[dest], gw_ipv4=get_interface_internal_ip(best_route['iface'])
                 )
+            previous_routes = new_routes
             time.sleep(int(self.interval))
+
+    def send_latency_data(self, data):
+        self.client.send(json.dumps({
+            'id': "ID." + str(time.time()),
+            'executed_at': now(),
+            'type': 'PEERS_LATENCY_DATA',
+            'data': data
+        }))
 
     def join(self, timeout=None):
         self.stop_rerouting.set()

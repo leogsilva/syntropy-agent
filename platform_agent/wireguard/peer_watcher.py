@@ -5,45 +5,38 @@ import time
 
 from pyroute2 import WireGuard
 
+from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.lib.ctime import now
+from platform_agent.wireguard import WgConf
+from platform_agent.wireguard.helpers import get_peer_info_all
+from platform_agent.cmd.wg_info import WireGuardRead
+
 
 logger = logging.getLogger()
-
-IFNAME = 'wg0-server'
 
 
 class WireguardPeerWatcher(threading.Thread):
 
-    def __init__(self, client, interval):
+    def __init__(self, client, interval=10):
         super().__init__()
         self.client = client
         self.interval = interval
-        self.wg = WireGuard()
+        self.wg = WireGuard() if module_loaded("wireguard") else WireGuardRead()
         self.stop_peer_watcher = threading.Event()
         self.daemon = True
 
     def run(self):
         while not self.stop_peer_watcher.is_set():
             results = []
-            ss = self.wg.info(IFNAME)
-            wg_info = dict(ss[0]['attrs'])
-            peers = wg_info['WGDEVICE_A_PEERS']['attrs']
-            for peer in peers:
-                peer_dict = dict(peer[1]['attrs'])
-                results.append(
-                    {
-                        "last_handshake": peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME'],
-                        "keep_alive_intreval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
-                        "public_key": peer_dict['WGPEER_A_PUBLIC_KEY'],
-                        "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
-                        "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
-
-                    }
-                )
+            for iface in WgConf.get_wg_interfaces():
+                peers = get_peer_info_all(iface, self.wg)
+                results.append({'iface': iface, 'peers': peers})
+            if not results:
+                continue
             self.client.send(json.dumps({
                 'id': "UNKNOWN",
                 'executed_at': now(),
-                'type': 'WIREGUARD_PEERS',
+                'type': 'IFACES_PEERS_BW_DATA',
                 'data': results
             }))
             time.sleep(int(self.interval))

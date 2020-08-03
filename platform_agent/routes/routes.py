@@ -20,6 +20,17 @@ class Routes:
                     raise
                 logger.info(f"[WG_CONF] add route failed [{ip}] - already exists")
 
+    def ip_route_replace(self, ifname, ip_list, gw_ipv4):
+        devices = self.ip_route.link_lookup(ifname=ifname)
+        dev = devices[0]
+        for ip in ip_list:
+            try:
+                self.ip_route.route('replace', dst=ip, gateway=gw_ipv4)
+            except NetlinkError as error:
+                if error.code != 17:
+                    raise
+                logger.info(f"[WG_CONF] add route failed [{ip}] - already exists")
+
     def ip_route_del(self, ifname, ip_list, scope=None):
         devices = self.ip_route.link_lookup(ifname=ifname)
         dev = devices[0]

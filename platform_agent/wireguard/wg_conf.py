@@ -13,7 +13,7 @@ from platform_agent.wireguard.helpers import get_peer_info
 
 logger = logging.getLogger()
 
-WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
+WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_', 'noia_']
 
 
 class WgConfException(Exception):
@@ -31,7 +31,7 @@ class WgConf():
     @staticmethod
     def get_wg_interfaces():
         with IPDB() as ipdb:
-            current_interfaces = [k for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard' and any(
+            current_interfaces = [k for k, v in ipdb.by_name.items() if any(
                 substring in k for substring in WG_NAME_SUBSTRINGS)]
         return current_interfaces
 
@@ -86,13 +86,19 @@ class WgConf():
                     raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
-                if ifname in ip.interfaces:
+                from time import sleep
+                #Wait until interface was created
+                sleep(0.01)
+                if ip.interfaces.get(ifname):
                     wg_int = ip.interfaces[ifname]
                 else:
                     raise WgConfException("Wireguard-go failed to create interface")
             wg_int.add_ip(internal_ip)
             wg_int.set('state', 'up')
-            wg_int.commit()
+            try:
+                wg_int.commit()
+            except KeyError as e:
+                raise WgConfException(str(e))
         self.wg.set(
             ifname,
             private_key=private_key,
@@ -109,7 +115,10 @@ class WgConf():
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
         if self.wg_kernel:
-            peer_info = get_peer_info(ifname=ifname, wg=self.wg)
+            try:
+                peer_info = get_peer_info(ifname=ifname, wg=self.wg)
+            except ValueError as e:
+                raise WgConfException(str(e))
             old_ips = set(peer_info.get(public_key, [])) - set(allowed_ips)
             self.routes.ip_route_del(ifname, old_ips)
         peer = {'public_key': public_key,
@@ -179,7 +188,13 @@ class WireguardGo:
 
     def create_interface(self, ifname):
         try:
-            result_set = subprocess.run(['wireguard-go', ifname], encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result_set = subprocess.Popen(
+                ['wireguard-go', ifname],
+                encoding='utf-8',
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                start_new_session=True
+            )
         except FileNotFoundError:
             raise WgConfException(f'Wireguard-go missing')
 
