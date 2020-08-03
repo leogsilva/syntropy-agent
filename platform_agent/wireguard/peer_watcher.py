@@ -33,7 +33,7 @@ class WireguardPeerWatcher(threading.Thread):
                 results.append({'iface': iface, 'peers': peers})
             if not results:
                 continue
-            self.client.send(json.dumps({
+            self.client.send_log(json.dumps({
                 'id': "UNKNOWN",
                 'executed_at': now(),
                 'type': 'IFACES_PEERS_BW_DATA',
