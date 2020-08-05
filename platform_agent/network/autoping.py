@@ -38,7 +38,7 @@ class AutopingClient(threading.Thread):
                     break
 
             logger.debug("Autoping - sending answer")
-            self.client.send(json.dumps({
+            self.client.send_log(json.dumps({
                 'id': "ID." + str(time.time()),
                 'executed_at': now(),
                 'type': 'AUTO_PING',
