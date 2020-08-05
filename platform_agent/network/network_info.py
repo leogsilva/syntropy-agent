@@ -17,9 +17,12 @@ class BWDataCollect(threading.Thread):
 
     @staticmethod
     def get_int_info(t, iface):
-        with open('/sys/class/net/' + iface + '/statistics/' + t, 'r') as f:
-            data = f.read()
-            return int(data)
+        try:
+            with open('/sys/class/net/' + iface + '/statistics/' + t, 'r') as f:
+                data = f.read()
+                return int(data)
+        except FileNotFoundError:
+            return -1
 
     @staticmethod
     def get_iface_info_set(iface, interval=10):

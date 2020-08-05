@@ -78,6 +78,7 @@ def get_fastest_routes(wg):
                 best_route = {'iface': iface, 'gw': internal_ip}
                 best_ping = ping_results[int_ip]['latency_ms']
         result[dest] = best_route
+        logger.info(f"[REROUTING] Ping results {ping_results}")
     return result, ping_results
 
 
