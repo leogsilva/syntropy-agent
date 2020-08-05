@@ -1,6 +1,7 @@
 import datetime
 import os
 
+from platform_agent.cmd.lsmod import module_loaded, is_tool
 from platform_agent.cmd.wg_info import WireGuardRead
 
 
@@ -49,3 +50,7 @@ def get_peer_info_all(ifname, wg):
                 "keep_alive_interval": peer['persistent_keepalive'],
             })
     return results
+
+
+def check_if_wireguard_installled():
+    return module_loaded('wireguard') or is_tool('wireguard-go')

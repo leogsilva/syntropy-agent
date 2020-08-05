@@ -15,13 +15,11 @@ class JsonCollector(object):
     def collect(self):
         # Fetch the JSON
         for iface in WgConf.get_wg_interfaces():
-            print(iface)
             result = BWDataCollect.get_iface_info_set(iface, self.interval)
             del result['iface']
             metric = Metric(f'interface_info_{iface}',
                             'interface_information', 'summary')
             for k, v in result.items():
-                print(k, v)
                 metric.add_sample(f'interface_information_{k}',
                                   value=str(v),
                                   labels={'hostname': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
@@ -29,7 +27,7 @@ class JsonCollector(object):
             yield metric
 
 
-class NetworExporter(threading.Thread):
+class NetworkExporter(threading.Thread):
 
     def __init__(self, ws_client, port=18001):
         super().__init__()
