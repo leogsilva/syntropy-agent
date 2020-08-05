@@ -4,6 +4,7 @@ import os
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.lib.get_info import gather_initial_info
+from platform_agent.network.exporter import NetworkExporter
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
 from platform_agent.docker_api.docker_api import DockerNetworkWatcher
 from platform_agent.network.dummy_watcher import DummyNetworkWatcher
@@ -30,6 +31,7 @@ class AgentApi:
             threading.Thread(target=self.bw_data_collector.run).start()
             self.wg_peers = WireguardPeerWatcher(self.runner)
             self.wg_peers.start()
+            self.network_exporter = NetworkExporter(self.runner).start()
         if module_loaded("wireguard"):
             os.environ["NOIA_WIREGUARD"] = "true"
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:
