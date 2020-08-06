@@ -34,7 +34,7 @@ def get_routing_info(wg):
                 peer_internal_ip = next(
                     (
                         ip for ip in peers[peer]
-                        if ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(internal_ip, False)
+                        if ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/24", False)
                     ),
                     None
                 )
