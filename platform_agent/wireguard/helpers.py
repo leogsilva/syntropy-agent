@@ -5,9 +5,9 @@ from platform_agent.cmd.lsmod import module_loaded, is_tool
 from platform_agent.cmd.wg_info import WireGuardRead
 
 
-def get_peer_info(ifname, wg):
+def get_peer_info(ifname, wg, kind=None):
     results = {}
-    if os.environ.get("NOIA_WIREGUARD"):
+    if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
         ss = wg.info(ifname)
         wg_info = dict(ss[0]['attrs'])
         peers = wg_info.get('WGDEVICE_A_PEERS', [])

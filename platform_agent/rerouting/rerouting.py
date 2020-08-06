@@ -18,17 +18,18 @@ from platform_agent.wireguard.helpers import get_peer_info
 
 logger = logging.getLogger()
 
+WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
 
 def get_routing_info(wg):
     with pyroute2.IPDB() as ipdb:
         routing_info = {}
         peers_internal_ips = []
-        res = {k: v for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard'}
+        res = {k: v for k, v in ipdb.by_name.items() if any(substring in v.get('ifname') for substring in WG_NAME_SUBSTRINGS)}
         for ifname in res.keys():
             if not res[ifname].get('ipaddr'):
                 continue
             internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
-            peers = get_peer_info(ifname, wg)
+            peers = get_peer_info(ifname, wg, kind=res[ifname]['kind'])
             for peer in peers.keys():
                 peer_internal_ip = next(
                     (
