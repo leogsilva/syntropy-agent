@@ -82,12 +82,17 @@ class AgentApi:
 
     def CONFIG_INFO(self, data, **kwargs):
         self.wgconf.clear_interfaces(data.get('vpn', []))
+        self.wgconf.clear_peers(data.get('vpn', []))
+        response = []
         for vpn_cmd in data.get('vpn', []):
             try:
                 fn = getattr(self.wgconf, vpn_cmd['fn'])
-                fn(**vpn_cmd['args'])
+                result = fn(**vpn_cmd['args'])
+                if vpn_cmd['fn'] == 'create_interface':
+                    response.append({'fn': vpn_cmd['fn'], 'data': result})
             except WgConfException as e:
                 logger.error(f"[CONFIG_INFO] {str(e)}")
+        return response
 
     def IPERF_SERVER(self, data, **kwargs):
         if self.iperf and data.get('status') == 'off':

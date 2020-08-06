@@ -42,6 +42,15 @@ class WgConf():
         for interface in remove_interfaces:
             self.remove_interface(interface)
 
+    def clear_peers(self, dump):
+        remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
+        remote_peers = [d['args']['public_key'] for d in dump if d['fn'] == 'add_peer']
+        for iface in remote_interfaces:
+            peers = get_peer_info(iface, self.wg)
+            for peer in peers:
+                if peer not in remote_peers:
+                    self.remove_peer(iface, peer)
+
     def get_wg_keys(self, ifname):
         private_key_path = f"/etc/noia-agent/privatekey-{ifname}"
         public_key_path = f"/etc/noia-agent/publickey-{ifname}"
@@ -108,7 +117,8 @@ class WgConf():
 
         result = {
             "public_key": public_key,
-            "listen_port": listen_port
+            "listen_port": listen_port,
+            "ifname": ifname
         }
         logger.info(f"[WG_CONF] - interface_created {result}")
         return result
