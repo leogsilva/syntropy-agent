@@ -43,9 +43,9 @@ class WgConf():
             self.remove_interface(interface)
 
     def clear_peers(self, dump):
-        remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
         remote_peers = [d['args']['public_key'] for d in dump if d['fn'] == 'add_peer']
-        for iface in remote_interfaces:
+        current_interfaces = self.get_wg_interfaces()
+        for iface in current_interfaces:
             peers = get_peer_info(iface, self.wg)
             for peer in peers:
                 if peer not in remote_peers:
