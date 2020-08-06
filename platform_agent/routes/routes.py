@@ -38,7 +38,7 @@ class Routes:
             try:
                 self.ip_route.route('del', dst=ip, oif=dev, scope=scope)
             except NetlinkError as error:
-                if error.code != 17:
+                if error.code not in [17, 3]:
                     raise
                 logger.info(f"[WG_CONF] del route failed [{ip}] - does not exist")
 
