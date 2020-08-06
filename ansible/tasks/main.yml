@@ -1,0 +1,40 @@
+---
+# tasks file for noia-agent
+- name: pull an image
+  docker_image:
+    name: noia/agent:latest
+    force_source: yes
+  tags:
+    - pull_noia-agent
+
+- name: Stop and remove old container
+  docker_container:
+    name: noia-agent
+    state: absent
+    image: noia-agent
+  tags:
+    - remove_noia-agent
+
+- name: Create NOIA agent container and connect to network
+  docker_container:
+    name: noia-agent
+    restart_policy: unless-stopped
+    image: noia/agent:latest
+    exposed_ports:
+      - 18001
+    network_mode: "host"
+    purge_networks: no
+    env:
+      NOIA_API_KEY: "{{ noia_api_key }}"
+      NOIA_CONTROLLER_URL:  "{{ ctrl_url | default('app-controller-platform-agents.noia.network') }}" 
+      NOIA_NETWORK_API: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    capabilities:
+      - net_admin
+      - sys_module
+  tags:
+    - start_noia-agent
+
