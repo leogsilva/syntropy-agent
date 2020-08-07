@@ -80,7 +80,7 @@ class AgentRunner:
         if status and status.status:
             try:
                 self.ws.send(message)
-            except OSError:
+            except websocket.WebSocketConnectionClosedException or OSError:
                 pass
 
 
