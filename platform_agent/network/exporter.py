@@ -1,37 +1,41 @@
-from prometheus_client import start_http_server, Metric, REGISTRY
-from platform_agent.network.network_info import BWDataCollect
-from platform_agent.wireguard.wg_conf import WgConf
-
 import time
 import socket
 import os
 import threading
 
+from prometheus_client import start_http_server, Metric, REGISTRY
+
+from platform_agent.wireguard.helpers import merged_peer_info
+from pyroute2 import WireGuard
+
 
 class JsonCollector(object):
     def __init__(self, interval=10):
         self.interval = interval
+        self.wg = WireGuard()
 
     def collect(self):
         # Fetch the JSON
-        for iface in WgConf.get_wg_interfaces():
-            result = BWDataCollect.get_iface_info_set(iface, self.interval)
-            del result['iface']
-            metric = Metric(f'interface_info_{iface}',
+        peer_info = merged_peer_info(self.wg)
+        for iface in peer_info:
+            metric = Metric(f"interface_info_{iface['iface']}",
                             'interface_information', 'summary')
-            for k, v in result.items():
-                metric.add_sample(f'interface_information_{k}',
-                                  value=str(v),
-                                  labels={'hostname': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
-                                          'interval': str(self.interval)})
+            for peer in iface['peers']:
+                for k, v in peer.items():
+                    if k not in ['latency_ms', 'packet_loss', 'rx_bytes', 'tx_bytes']:
+                        continue
+                    metric.add_sample(f"iface_information_{k}",
+                                      value=str(v),
+                                      labels={
+                                          'hostname': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
+                                           'ifname': iface['iface'], 'peer': peer['public_key'], 'internal_ip': peer['internal_ip']})
             yield metric
 
 
 class NetworkExporter(threading.Thread):
 
-    def __init__(self, ws_client, port=18001):
+    def __init__(self, port=18001):
         super().__init__()
-        self.ws_client = ws_client
         self.stop_network_exporter = threading.Event()
         self.exporter_port = port
         self.daemon = True
