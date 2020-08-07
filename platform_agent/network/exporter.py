@@ -39,6 +39,7 @@ class JsonCollector(object):
                                           labels={'hostname': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
                                                   'ifname': iface['iface']})
                 yield metric
+            time.sleep(2)
 
 
 class NetworkExporter(threading.Thread):
