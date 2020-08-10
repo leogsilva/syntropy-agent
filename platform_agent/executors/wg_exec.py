@@ -21,6 +21,7 @@ class WgExecutor(threading.Thread):
         self.stop_wg_executor = threading.Event()
         self.wg = None
         self.wgconf = WgConf()
+        self.daemon = True
 
         threading.Thread.__init__(self)
 
@@ -51,7 +52,6 @@ class WgExecutor(threading.Thread):
         return payloads
 
     def run(self):
-
         while True:
             payloads = self.get_from_queue()
             if not payloads:

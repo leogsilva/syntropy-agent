@@ -12,6 +12,8 @@ import websocket
 from platform_agent.lib.ctime import now
 from platform_agent.agent_api import AgentApi
 from platform_agent.config.logger import PublishLogToSessionHandler
+from platform_agent.wireguard.helpers import check_if_wireguard_installled
+
 logger = logging.getLogger()
 
 
@@ -68,7 +70,7 @@ class AgentRunner:
     def send(self, message):
         status = getattr(self.ws, 'sock')
         if status and status.status:
-            logger.debug(f"[SENDING]: {message}")
+            logger.info(f"[SENDING]: {message}")
             self.ws.send(message)
         else:
             logger.error("[SENDING]: websocket offline")
@@ -78,7 +80,7 @@ class AgentRunner:
         if status and status.status:
             try:
                 self.ws.send(message)
-            except OSError:
+            except websocket.WebSocketConnectionClosedException or OSError:
                 pass
 
 
@@ -86,9 +88,14 @@ class WebSocketClient(threading.Thread):
 
     def __init__(self, host, api_key, ssl="wss"):
         threading.Thread.__init__(self)
+
+        if check_if_wireguard_installled():
+            status = 'OK'
+        else:
+            status = 'WG_ERROR'
+
         self.host = host
         self.active = True
-
         websocket.enableTrace(False)
         self.connection_url = f"{ssl}://{host}"
         self.ws = websocket.WebSocketApp(
@@ -97,6 +104,7 @@ class WebSocketClient(threading.Thread):
                 'authorization': api_key,
                 'x-deviceid': self.generate_device_id(),
                 'x-devicename': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
+                'x-devicestatus': status,
             },
             on_message=self.on_message,
             on_error=self.on_error,

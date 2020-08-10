@@ -27,9 +27,9 @@ class WgPeer:
 @dataclasses.dataclass
 class WgInterface:
     interface: str
-    listening_port: str
-    private_key: str
-    public_key: str
+    listening_port: str = None
+    private_key: str = None
+    public_key: str = None
     peers: List[WgPeer] = dataclasses.field(default_factory=[])
 
 
@@ -41,7 +41,7 @@ class WireGuardRead:
 
     def wg_info(self, ifname=None):
         if ifname:
-            grep = f" | grep {ifname}"
+            grep = f" {ifname}"
         else:
             grep = ""
         self.stdin = os.popen('wg show' + grep).read()

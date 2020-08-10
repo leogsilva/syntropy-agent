@@ -13,7 +13,7 @@ from platform_agent.wireguard.helpers import get_peer_info
 
 logger = logging.getLogger()
 
-WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
+WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_', 'noia_']
 
 
 class WgConfException(Exception):
@@ -31,7 +31,7 @@ class WgConf():
     @staticmethod
     def get_wg_interfaces():
         with IPDB() as ipdb:
-            current_interfaces = [k for k, v in ipdb.by_name.items() if v.get('kind') == 'wireguard' and any(
+            current_interfaces = [k for k, v in ipdb.by_name.items() if any(
                 substring in k for substring in WG_NAME_SUBSTRINGS)]
         return current_interfaces
 
@@ -41,6 +41,15 @@ class WgConf():
         remove_interfaces = set(current_interfaces) - set(remote_interfaces)
         for interface in remove_interfaces:
             self.remove_interface(interface)
+
+    def clear_peers(self, dump):
+        remote_peers = [d['args']['public_key'] for d in dump if d['fn'] == 'add_peer']
+        current_interfaces = self.get_wg_interfaces()
+        for iface in current_interfaces:
+            peers = get_peer_info(iface, self.wg)
+            for peer in peers:
+                if peer not in remote_peers:
+                    self.remove_peer(iface, peer)
 
     def get_wg_keys(self, ifname):
         private_key_path = f"/etc/noia-agent/privatekey-{ifname}"
@@ -86,13 +95,19 @@ class WgConf():
                     raise WgConfException(str(e))
             else:
                 self.wg.create_interface(ifname)
-                if ifname in ip.interfaces:
+                from time import sleep
+                #Wait until interface was created
+                sleep(0.01)
+                if ip.interfaces.get(ifname):
                     wg_int = ip.interfaces[ifname]
                 else:
                     raise WgConfException("Wireguard-go failed to create interface")
             wg_int.add_ip(internal_ip)
             wg_int.set('state', 'up')
-            wg_int.commit()
+            try:
+                wg_int.commit()
+            except KeyError as e:
+                raise WgConfException(str(e))
         self.wg.set(
             ifname,
             private_key=private_key,
@@ -102,7 +117,8 @@ class WgConf():
 
         result = {
             "public_key": public_key,
-            "listen_port": listen_port
+            "listen_port": listen_port,
+            "ifname": ifname
         }
         logger.info(f"[WG_CONF] - interface_created {result}")
         return result
@@ -182,7 +198,13 @@ class WireguardGo:
 
     def create_interface(self, ifname):
         try:
-            result_set = subprocess.run(['wireguard-go', ifname], encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result_set = subprocess.Popen(
+                ['wireguard-go', ifname],
+                encoding='utf-8',
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                start_new_session=True
+            )
         except FileNotFoundError:
             raise WgConfException(f'Wireguard-go missing')
 
