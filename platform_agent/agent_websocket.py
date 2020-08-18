@@ -13,6 +13,7 @@ from platform_agent.lib.ctime import now
 from platform_agent.agent_api import AgentApi
 from platform_agent.config.logger import PublishLogToSessionHandler
 from platform_agent.wireguard.helpers import check_if_wireguard_installled
+from platform_agent.__main__ import __version__
 
 logger = logging.getLogger()
 
@@ -32,6 +33,7 @@ class AgentRunner:
     def run(self):
         while True:
             message = self.queue.get()
+            print("GOT", message)
             if message == self.STOP_MESSAGE:
                 break
             request = json.loads(message)
@@ -105,6 +107,7 @@ class WebSocketClient(threading.Thread):
                 'x-deviceid': self.generate_device_id(),
                 'x-devicename': os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
                 'x-devicestatus': status,
+                'x-agentversion': __version__,
             },
             on_message=self.on_message,
             on_error=self.on_error,
