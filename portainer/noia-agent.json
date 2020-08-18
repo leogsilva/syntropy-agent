@@ -1,5 +1,6 @@
+[
 {
-    "type": "container",
+    "type": "1",
     "title": "NOIA agent",
     "description": "Connecting machines",
     "categories": ["Networking", "VPN"],
@@ -11,58 +12,70 @@
     "env": [
       {
         "name": "NOIA_API_KEY",
-        "label": ""
+        "label": "xx"
       },
       {
+
         "name": "NOIA_CONTROLLER_URL",
         "label": "app-controller-platform-agents.noia.network"
       },
       {
         "name": "NOIA_NETWORK_API",
         "label": "docker"
+
       },
       {
         "name": "NOIA_TAGS",
-        "label": ""
+        "label": "x"
+
       },
+
       {
         "name": "NOIA_AGENT_NAME",
-        "label": ""
+        "label": "x"
       },
       {
         "name": "NOIA_COUNTRY",
-        "label": ""
+        "label": "x"
+
       },
       {
+
         "name": "NOIA_CITY",
-        "label": ""
+        "label": "x"
       },
       {
         "name": "NOIA_CATEGORY",
-        "label": ""
+        "label": "x"
+
       },
       {
+
         "name": "NOIA_PROVIDER",
-        "label": ""
+        "label": "x"
       },
       {
         "name": "NOIA_LAT",
-        "label": ""
+        "label": "x"
+
       },
       {
+
         "name": "NOIA_LON",
-        "label": ""
+        "label": "x"
       },
       {
         "name": "NOIA_TAGS",
-        "label": ""
+        "label": "x"
       }
     ],
     "volumes": [
-      {
-        "container": "/var/run/docker.sock",
-        "bind": "/var/run/docker.sock",
-        "readonly": true
-      }
+        {
+            "container": "/var/run/docker.sock",
+            "bind": "/var/run/docker.sock",
+            "readonly": true
+        }
     ]
   }
+]
+
