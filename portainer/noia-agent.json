@@ -1,4 +1,5 @@
-  {
+[  
+{
     "type": "container",
     "title": "NOIA agent",
     "description": "Connecting machines",
@@ -66,3 +67,4 @@
       }
     ]
   }
+]
