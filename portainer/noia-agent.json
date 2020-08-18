@@ -11,6 +11,7 @@
       "platform":"linux",
       "image":"noia/agent:latest",
       "name":"noia-agent",
+      "privileged": true,
       "network":"host",
       "env":[
          {
