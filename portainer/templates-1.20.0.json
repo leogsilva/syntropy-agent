@@ -924,7 +924,7 @@
          {
             "name":"NOIA_AGENT_NAME",
             "label":"Agent name"
- 
+         }, 
          {
             "name":"NOIA_LAT",
             "label":"Latitude"
