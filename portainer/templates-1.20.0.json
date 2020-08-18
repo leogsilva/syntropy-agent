@@ -905,11 +905,11 @@
       "env":[
          {
             "name":"NOIA_API_KEY",
-            "label":"NOIA API KEY"
+            "label":"NOIA API KEY (mandatory)"
          },
          {
             "name":"NOIA_CONTROLLER_URL",
-            "label":"NOIA Controller URL",
+            "label":"NOIA Controller URL (mandatory)",
             "default": "app-controller-platform-agents.noia.network"
          },
          {
@@ -919,19 +919,27 @@
          },
          {
             "name":"NOIA_TAGS",
-            "label":"Tags"
+            "label":"Tags (optional)"
          },
          {
             "name":"NOIA_AGENT_NAME",
-            "label":"Agent name"
+            "label":"Agent name (optional)"
+         }, 
+         {
+            "name":"NOIA_COUNTRY",
+            "label":"Country (optional)"
+         }, 
+         {
+            "name":"NOIA_CITY",
+            "label":"City (optional)"
          }, 
          {
             "name":"NOIA_LAT",
-            "label":"Latitude"
+            "label":"Latitude (optional)"
          },
          {
             "name":"NOIA_LON",
-            "label":"Longitude"
+            "label":"Longitude (optional)"
          }
       ],
       "volumes":[
