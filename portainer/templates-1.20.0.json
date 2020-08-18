@@ -905,51 +905,33 @@
       "env":[
          {
             "name":"NOIA_API_KEY",
-            "label":"xx"
+            "label":"NOIA API KEY"
          },
          {
             "name":"NOIA_CONTROLLER_URL",
-            "label":"app-controller-platform-agents.noia.network"
+            "label":"NOIA Controller URL",
+            "default": "app-controller-platform-agents.noia.network"
          },
          {
             "name":"NOIA_NETWORK_API",
-            "label":"docker"
+            "label": "API to use"
+            "default":"docker"
          },
          {
             "name":"NOIA_TAGS",
-            "label":"x"
+            "label":"Tags"
          },
          {
             "name":"NOIA_AGENT_NAME",
-            "label":"x"
-         },
-         {
-            "name":"NOIA_COUNTRY",
-            "label":"x"
-         },
-         {
-            "name":"NOIA_CITY",
-            "label":"x"
-         },
-         {
-            "name":"NOIA_CATEGORY",
-            "label":"x"
-         },
-         {
-            "name":"NOIA_PROVIDER",
-            "label":"x"
-         },
+            "label":"Agent name"
+ 
          {
             "name":"NOIA_LAT",
-            "label":"x"
+            "label":"Latitude"
          },
          {
             "name":"NOIA_LON",
-            "label":"x"
-         },
-         {
-            "name":"NOIA_TAGS",
-            "label":"x"
+            "label":"Longitude"
          }
       ],
       "volumes":[
