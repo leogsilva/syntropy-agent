@@ -9,7 +9,6 @@
          "VPN"
       ],
       "platform":"linux",
-      "logo":"https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/sematext_agent.png",
       "image":"noia/agent:latest",
       "name":"noia-agent",
       "network":"host",
