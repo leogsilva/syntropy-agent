@@ -914,7 +914,7 @@
          },
          {
             "name":"NOIA_NETWORK_API",
-            "label": "API to use"
+            "label": "API to use",
             "default":"docker"
          },
          {
