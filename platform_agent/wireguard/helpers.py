@@ -1,12 +1,12 @@
 import datetime
 import os
-import pyroute2
 import ipaddress
 
 from icmplib import multiping
 
 from platform_agent.cmd.lsmod import module_loaded, is_tool
 from platform_agent.cmd.wg_info import WireGuardRead
+from platform_agent.network.iface_watcher import read_tmp_file
 
 WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
 
@@ -110,21 +110,20 @@ def ping_internal_ips(ips, count=4, interval=0.5):
 def merged_peer_info(wg):
     result = []
     peers_ips = []
-    with pyroute2.IPDB() as ipdb:
-        res = {k: v for k, v in ipdb.by_name.items() if
-               any(substring in v.get('ifname') for substring in WG_NAME_SUBSTRINGS)}
-        for ifname in res.keys():
-            if not res[ifname].get('ipaddr'):
-                continue
-            internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
-            peer_info, peers_internal_ips = get_peer_ips(ifname, wg, internal_ip, kind=res[ifname]['kind'])
-            peers_ips += peers_internal_ips
-            result.append(
-                {
-                    "iface": ifname,
-                    "peers": peer_info
-                }
-            )
+    interfaces = read_tmp_file(file_type='iface_info')
+    res = {k: v for k, v in interfaces.items() if
+           any(substring in k for substring in WG_NAME_SUBSTRINGS)}
+    for ifname in res.keys():
+        if not res[ifname].get('internal_ip'):
+            continue
+        peer_info, peers_internal_ips = get_peer_ips(ifname, wg, res[ifname]['internal_ip'], kind=res[ifname]['kind'])
+        peers_ips += peers_internal_ips
+        result.append(
+            {
+                "iface": ifname,
+                "peers": peer_info
+            }
+        )
     pings = ping_internal_ips(peers_ips, count=10, interval=0.3)
     for iface in result:
         for peer in iface['peers']:

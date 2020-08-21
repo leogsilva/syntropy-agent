@@ -12,6 +12,7 @@ from platform_agent.executors.wg_exec import WgExecutor
 from platform_agent.network.network_info import BWDataCollect
 from platform_agent.network.autoping import AutopingClient
 from platform_agent.network.iperf import IperfServer
+from platform_agent.network.iface_watcher import InterfaceWatcher
 from platform_agent.rerouting.rerouting import Rerouting
 
 logger = logging.getLogger()
@@ -31,6 +32,7 @@ class AgentApi:
             threading.Thread(target=self.bw_data_collector.run).start()
             self.network_exporter = NetworkExporter().start()
             self.wg_peers = WireguardPeerWatcher(self.runner).start()
+            self.interface_watcher = InterfaceWatcher().start()
         if module_loaded("wireguard"):
             os.environ["NOIA_WIREGUARD"] = "true"
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker" and prod_mode:

@@ -121,9 +121,9 @@ class WebSocketClient(threading.Thread):
 
     def run(self):
         while True and self.active:
-            logger.info(f"[AGENT] Connecting {self.connection_url}")
+            logger.info(f"[AGENT-{__version__}] Connecting {self.connection_url}")
             self.ws.run_forever()
-            logger.warning(f"[AGENT] Disconnected {self.connection_url}")
+            logger.warning(f"[AGENT-{__version__}] Disconnected {self.connection_url}")
             time.sleep(10)
 
     def on_message(self, message):
