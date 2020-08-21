@@ -5,6 +5,8 @@ import threading
 
 from prometheus_client import start_http_server, Metric, REGISTRY
 
+from platform_agent.cmd.lsmod import module_loaded
+from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.wireguard.helpers import merged_peer_info
 from pyroute2 import WireGuard
 
@@ -12,7 +14,7 @@ from pyroute2 import WireGuard
 class JsonCollector(object):
     def __init__(self, interval=10):
         self.interval = interval
-        self.wg = WireGuard()
+        self.wg = WireGuard() if module_loaded("wireguard") else WireGuardRead()
 
     def collect(self):
         # Fetch the JSON
