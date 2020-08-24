@@ -28,7 +28,6 @@ def read_tmp_file(file_type='iface_info'):
 
 class InterfaceWatcher(threading.Thread):
 
-
     def __init__(self):
         super().__init__()
         self.iface_watcher = threading.Event()
