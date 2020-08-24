@@ -25,7 +25,6 @@ class JsonCollector(object):
             metric = Metric(f"interface_info_{iface['iface']}",
                             'interface_information', 'summary')
             for peer in iface['peers']:
-                peer_metadata.get(peer['public_key'], {})
                 peer.update(peer_metadata.get(peer['public_key'], {}))
                 for k, v in peer.items():
                     if k not in ['latency_ms', 'packet_loss', 'rx_bytes', 'tx_bytes']:
