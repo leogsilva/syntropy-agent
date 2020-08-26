@@ -15,7 +15,10 @@ WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
 def get_peer_info(ifname, wg, kind=None):
     results = {}
     if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
-        ss = wg.info(ifname)
+        try:
+            ss = wg.info(ifname)
+        except NetlinkError as e:
+            return results
         wg_info = dict(ss[0]['attrs'])
         peers = wg_info.get('WGDEVICE_A_PEERS', [])
         for peer in peers:
@@ -40,7 +43,6 @@ def get_peer_info_all(ifname, wg, kind=None):
             ss = wg.info(ifname)
         except NetlinkError as e:
             return results
-        return results
         wg_info = dict(ss[0]['attrs'])
         peers = wg_info.get('WGDEVICE_A_PEERS', [])
         for peer in peers:
