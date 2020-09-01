@@ -33,7 +33,6 @@ class AgentRunner:
     def run(self):
         while True:
             message = self.queue.get()
-            print("GOT", message)
             if message == self.STOP_MESSAGE:
                 break
             request = json.loads(message)
