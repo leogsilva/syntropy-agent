@@ -30,7 +30,10 @@ def get_peer_info(ifname, wg, kind=None):
                 results[peer['WGPEER_A_PUBLIC_KEY'].decode('utf-8')] = []
     else:
         wg = WireGuardRead()
-        iface = wg.wg_info(ifname)[0]
+        ifaces = wg.wg_info(ifname)
+        if not ifaces:
+            return results
+        iface = ifaces[0]
         for peer in iface['peers']:
             results[peer['peer']] = peer['allowed_ips']
     return results
@@ -63,7 +66,10 @@ def get_peer_info_all(ifname, wg, kind=None):
 
     else:
         wg = WireGuardRead()
-        iface = wg.wg_info(ifname)[0]
+        ifaces = wg.wg_info(ifname)
+        if not ifaces:
+            return results
+        iface = ifaces[0]
         for peer in iface['peers']:
             try:
                 results.append({
