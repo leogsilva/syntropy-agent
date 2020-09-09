@@ -108,7 +108,7 @@ def ping_internal_ips(ips, count=4, interval=0.5):
     ping_res = multiping(ips, count=count, interval=interval)
     for res in ping_res:
         result[res.address] = {
-            "latency_ms": res.avg_rtt if res.is_alive else 10000,
+            "latency_ms": res.avg_rtt if res.is_alive else 5000,
             "packet_loss": res.packet_loss if res.is_alive else 1
         }
     return result
