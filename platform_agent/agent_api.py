@@ -101,7 +101,7 @@ class AgentApi:
         self.runner.send(json.dumps({
             'id': "ID." + str(time.time()),
             'executed_at': now(),
-            'type': 'UPDATE_AGENT_CONF',
+            'type': 'UPDATE_AGENT_CONFIG',
             'data': response
         }))
 
