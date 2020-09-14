@@ -109,9 +109,9 @@ def check_if_wireguard_installled():
     return module_loaded('wireguard') or is_tool('wireguard-go')
 
 
-def ping_internal_ips(ips, count=4, interval=0.5):
+def ping_internal_ips(ips, count=4, interval=0.5, icmp_id=10000):
     result = {}
-    ping_res = multiping(ips, count=count, interval=interval, id=60000)
+    ping_res = multiping(ips, count=count, interval=interval, id=icmp_id)
     for res in ping_res:
         result[res.address] = {
             "latency_ms": res.avg_rtt if res.is_alive else 5000,
