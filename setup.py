@@ -19,7 +19,7 @@ setup(
         'requests==2.22.0',
         'PyNaCl==1.3.0',
         'docker-py==1.10.6',
-        'icmplibv2==1.0.5',
+        'icmplibv2==1.0.6',
         'PyYAML==5.3.1',
         'dnspython==1.16.0',
         'iperf3==0.1.11',
