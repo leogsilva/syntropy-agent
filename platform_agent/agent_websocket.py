@@ -151,6 +151,10 @@ class WebSocketClient(threading.Thread):
         self.agent_runner.queue.put(self.agent_runner.STOP_MESSAGE)
 
     def generate_device_id(self):
-        with open('/sys/class/dmi/id/product_uuid', 'r') as file:
-            machine_id = file.read().replace('\n', '')
-            return machine_id
+        try:
+            with open('/sys/class/dmi/id/product_uuid', 'r') as file:
+                machine_id = file.read().replace('\n', '')
+        except FileNotFoundError:
+            with open('/etc/machine-id', 'r') as file:
+                machine_id = file.read().replace('\n', '')
+        return machine_id
