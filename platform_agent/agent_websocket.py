@@ -136,10 +136,12 @@ class WebSocketClient(threading.Thread):
     def on_error(self, error):
         self.agent_runner.active = False
         logger.error(f"[WEBSOCKET] Error | {error}")
+        time.sleep(10)
 
     def on_close(self):
         self.agent_runner.active = False
         logger.info("[WEBSOCKET] Close")
+        time.sleep(10)
 
     def on_open(self):
         logger.info("[WEBSOCKET] Connection open")
