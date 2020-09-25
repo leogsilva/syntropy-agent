@@ -5,7 +5,7 @@ stages:
 build_sandbox:
   stage: build
   only:
-    - devel
+    - sandbox
   script:
     - sudo docker build --no-cache -t noia/agent:sandbox .
 
@@ -26,7 +26,7 @@ build_prod:
 push_image_sandbox:
   stage: push_image
   only:
-    - devel
+    - sandbox
   script:
     - sudo docker push noia/agent:sandbox
 
