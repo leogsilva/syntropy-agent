@@ -7,6 +7,7 @@ import threading
 import traceback
 import time
 
+import requests
 import websocket
 
 from platform_agent.lib.ctime import now
@@ -158,5 +159,5 @@ class WebSocketClient(threading.Thread):
                 machine_id = file.read().replace('\n', '')
         except FileNotFoundError:
             with open('/etc/machine-id', 'r') as file:
-                machine_id = file.read().replace('\n', '')
+                machine_id = file.read().replace('\n', '') + requests.get("https://ip.noia.network/").json()
         return machine_id
