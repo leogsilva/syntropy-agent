@@ -2,7 +2,8 @@ import time
 import json
 import threading
 
-from platform_agent.wireguard.wg_conf import WgConf
+from platform_agent.files.tmp_files import read_tmp_file
+from platform_agent.wireguard.wg_conf import WG_NAME_SUBSTRINGS
 from platform_agent.lib.ctime import now
 
 
@@ -73,7 +74,9 @@ class BWDataCollect(threading.Thread):
 
     def run(self):
         while not self.stop_BWDataCollect.is_set():
-            wg_ifaces = WgConf.get_wg_interfaces()
+            interfaces = read_tmp_file(file_type='iface_info')
+            wg_ifaces = {k: v for k, v in interfaces.items() if
+                   any(substring in k for substring in WG_NAME_SUBSTRINGS)}
             if not wg_ifaces:
                 time.sleep(1)
             for iface in wg_ifaces:

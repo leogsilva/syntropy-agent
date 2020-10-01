@@ -9,44 +9,45 @@ from pyroute2 import WireGuard
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_info import WireGuardRead
+from platform_agent.files.tmp_files import read_tmp_file
 from platform_agent.routes import Routes
 from platform_agent.lib.ctime import now
 
-from platform_agent.wireguard.helpers import get_peer_info, WG_NAME_SUBSTRINGS, ping_internal_ips
+from platform_agent.wireguard.helpers import WG_NAME_SUBSTRINGS, ping_internal_ips, get_peer_info_all
 
 logger = logging.getLogger()
 
 
 def get_routing_info(wg):
-    with pyroute2.IPDB() as ipdb:
-        routing_info = {}
-        peers_internal_ips = []
-        res = {k: v for k, v in ipdb.by_name.items() if
-               any(substring in v.get('ifname') for substring in WG_NAME_SUBSTRINGS)}
-        for ifname in res.keys():
-            if not res[ifname].get('ipaddr'):
-                continue
-            internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
-            peers = get_peer_info(ifname, wg, kind=res[ifname]['kind'])
-            for peer in peers.keys():
-                peer_internal_ip = next(
-                    (
-                        ip for ip in peers[peer]
-                        if
+    routing_info = {}
+    peers_internal_ips = []
+    interfaces = read_tmp_file(file_type='iface_info')
+    res = {k: v for k, v in interfaces.items() if
+           any(substring in k for substring in WG_NAME_SUBSTRINGS)}
+    for ifname in res.keys():
+        if not res[ifname].get('internal_ip'):
+            continue
+        internal_ip = res[ifname]['internal_ip']
+        peers = get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
+        for peer in peers:
+            peer_internal_ip = next(
+                (
+                    ip for ip in peer['allowed_ips']
+                    if
                     ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/24",
                                                                                    False)
-                    ),
-                    None
-                )
-                if not peer_internal_ip:
-                    continue
-                peers_internal_ips.append(peer_internal_ip.split('/')[0])
-                peers[peer].remove(peer_internal_ip)
-                for allowed_ip in peers[peer]:
-                    if not routing_info.get(allowed_ip):
-                        routing_info[allowed_ip] = {'ifaces': {}}
-                    routing_info[allowed_ip]['ifaces'][ifname] = peer_internal_ip
-        return routing_info, peers_internal_ips
+                ),
+                None
+            )
+            if not peer_internal_ip:
+                continue
+            peers_internal_ips.append(peer_internal_ip.split('/')[0])
+            peer['allowed_ips'].remove(peer_internal_ip)
+            for allowed_ip in peer['allowed_ips']:
+                if not routing_info.get(allowed_ip):
+                    routing_info[allowed_ip] = {'ifaces': {}}
+                routing_info[allowed_ip]['ifaces'][ifname] = peer_internal_ip
+    return routing_info, peers_internal_ips
 
 
 def get_interface_internal_ip(ifname):

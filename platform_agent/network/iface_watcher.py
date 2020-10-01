@@ -41,20 +41,20 @@ class InterfaceWatcher(threading.Thread):
             iface_info_file.close()
 
     def run(self):
-        while not self.iface_watcher.is_set():
-            with pyroute2.IPDB() as ipdb:
-                res = {k: v for k, v in ipdb.by_name.items()}
-                payload = {}
-                for ifname in res.keys():
-                    if not res[ifname].get('ipaddr'):
-                        continue
-                    internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
-                    payload[ifname] = {
-                        'internal_ip': internal_ip,
-                        'kind': res[ifname]['kind']
-                    }
-                self.update_iface_info_file(payload)
-                time.sleep(1)
+        with pyroute2.IPDB() as ipdb:
+            while not self.iface_watcher.is_set():
+                    res = {k: v for k, v in ipdb.by_name.items()}
+                    payload = {}
+                    for ifname in res.keys():
+                        if not res[ifname].get('ipaddr'):
+                            continue
+                        internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
+                        payload[ifname] = {
+                            'internal_ip': internal_ip,
+                            'kind': res[ifname]['kind']
+                        }
+                    self.update_iface_info_file(payload)
+                    time.sleep(1)
 
     def join(self, timeout=None):
         self.watcher.set()
