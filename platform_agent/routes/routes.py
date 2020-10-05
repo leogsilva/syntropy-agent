@@ -18,7 +18,8 @@ class Routes:
             except NetlinkError as error:
                 if error.code != 17:
                     raise
-                logger.debug(f"[WG_CONF] add route failed [{ip}] - already exists")
+                elif dict(self.ip_route.get_routes(dst='8.8.8.8')[0]['attrs']).get('RTA_OIF') != dev:
+                    logger.error(f"[WG_CONF] add route failed [{ip}] - already exists")
 
     def ip_route_replace(self, ifname, ip_list, gw_ipv4):
         devices = self.ip_route.link_lookup(ifname=ifname)
