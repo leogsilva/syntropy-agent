@@ -4,7 +4,7 @@ import socket
 import requests
 
 import docker
-from platform_agent.docker_api.helpers import format_networks_result
+from platform_agent.docker_api.helpers import format_networks_result, format_container_result
 from platform_agent.config.settings import Config
 
 logger = logging.getLogger()
@@ -37,6 +37,16 @@ def get_network_info():
     }
 
 
+def get_container_results():
+    if os.environ.get("NOIA_NETWORK_API", 'docker').lower() == "docker":
+        docker_client = docker.from_env()
+        networks = docker_client.containers()
+        container_info = format_container_result(networks)
+        return {
+            "container_info": container_info
+        }
+
+
 def get_info():
     return {
         "agent_name": os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
@@ -53,4 +63,5 @@ def gather_initial_info():
     result.update(get_ip_addr())
     result.update(get_network_info())
     result.update(get_info())
+    result.update(get_container_results())
     return result
