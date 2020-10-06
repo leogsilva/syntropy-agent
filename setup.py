@@ -23,7 +23,8 @@ setup(
         'PyYAML==5.3.1',
         'dnspython==1.16.0',
         'iperf3==0.1.11',
-        'prometheus-client==0.8.0'
+        'prometheus-client==0.8.0',
+        'psutil==5.7.2',
     ],
     packages=find_packages(),
     license="MIT",
