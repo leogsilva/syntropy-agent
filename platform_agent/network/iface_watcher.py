@@ -6,6 +6,7 @@ import json
 import pyroute2
 
 from platform_agent.config.settings import AGENT_PATH_TMP
+from platform_agent.files.tmp_files import get_peer_metadata
 
 logger = logging.getLogger()
 
@@ -43,6 +44,7 @@ class InterfaceWatcher(threading.Thread):
     def run(self):
         with pyroute2.IPDB() as ipdb:
             while not self.iface_watcher.is_set():
+                    peers_metadata = get_peer_metadata(identifier='ifname')
                     res = {k: v for k, v in ipdb.by_name.items()}
                     payload = {}
                     for ifname in res.keys():
@@ -51,7 +53,8 @@ class InterfaceWatcher(threading.Thread):
                         internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
                         payload[ifname] = {
                             'internal_ip': internal_ip,
-                            'kind': res[ifname]['kind']
+                            'kind': res[ifname]['kind'],
+                            'metadata': peers_metadata.get(ifname, {})
                         }
                     self.update_iface_info_file(payload)
                     time.sleep(1)

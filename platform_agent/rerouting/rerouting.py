@@ -28,6 +28,7 @@ def get_routing_info(wg):
         if not res[ifname].get('internal_ip'):
             continue
         internal_ip = res[ifname]['internal_ip']
+        metadata = res[ifname]['metadata']
         peers = get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
         for peer in peers:
             peer_internal_ip = next(
@@ -46,7 +47,10 @@ def get_routing_info(wg):
             for allowed_ip in peer['allowed_ips']:
                 if not routing_info.get(allowed_ip):
                     routing_info[allowed_ip] = {'ifaces': {}}
-                routing_info[allowed_ip]['ifaces'][ifname] = peer_internal_ip
+                routing_info[allowed_ip]['ifaces'][ifname] = {
+                    'internal_ip': peer_internal_ip,
+                    'metadata': metadata
+                }
     return routing_info, peers_internal_ips
 
 
@@ -63,10 +67,10 @@ def get_fastest_routes(wg):
     for dest, routes in routing_info.items():
         best_route = None
         best_ping = 9999
-        for iface, internal_ip in routes['ifaces'].items():
-            int_ip = internal_ip.split('/')[0]
+        for iface, data in routes['ifaces'].items():
+            int_ip = data['internal_ip'].split('/')[0]
             if ping_results[int_ip]['latency_ms'] < best_ping:
-                best_route = {'iface': iface, 'gw': internal_ip}
+                best_route = {'iface': iface, 'gw': data['internal_ip'], 'metadata': data.get('metadata')}
                 best_ping = ping_results[int_ip]['latency_ms']
         result[dest] = best_route
         logger.debug(f"[REROUTING] Ping results {ping_results}")
@@ -94,7 +98,7 @@ class Rerouting(threading.Thread):
                 if not best_route or previous_routes.get(dest) == best_route:
                     continue
                 # Do rerouting logic with best_route
-                logger.info(f"[REROUTING] Rerouting {dest} via {best_route}")
+                logger.info(f"[REROUTING] Rerouting {dest} via {best_route}", extra={'metadata': best_route.get('metadata')})
                 try:
                     self.routes.ip_route_replace(
                         ifname=best_route['iface'], ip_list=[dest],
