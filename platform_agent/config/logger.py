@@ -10,6 +10,20 @@ from platform_agent.lib.ctime import now
 
 logger = logging.getLogger()
 
+class CustomLoggerAdapter(logging.LoggerAdapter):
+
+    def process(self, msg, kwargs):
+        """
+        Process the Logging message and keyword arguments passed in to
+        a logging call to insert contextual information. The extra argument
+        of the LoggerAdapter will be merged with the extra argument of the
+        logging call where the logging call's argument take precedence.
+        """
+        try:
+            kwargs["extra"] = {**self.extra, **kwargs["extra"]}
+        except KeyError as e:
+            kwargs["extra"] = self.extra
+        return msg, kwargs
 
 class PublishLogToSessionHandler(logging.Handler):
     def __init__(self, session):
@@ -20,11 +34,12 @@ class PublishLogToSessionHandler(logging.Handler):
     def emit(self, record):
         if not self.session.active:
             return
+        metadata = getattr(record, "metadata", {})
         self.session.send_log(json.dumps({
             'id': self.log_id,
             'executed_at': now(),
             'type': 'LOGGER',
-            'data': {'severity': record.levelname, 'message': record.getMessage()}
+            'data': {'severity': record.levelname, 'message': record.getMessage(), 'metadata': metadata}
         }))
 
 

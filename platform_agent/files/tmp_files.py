@@ -32,7 +32,7 @@ def update_tmp_config_dump(cmd, file_name="config_dump"):
     update_tmp_file(data, file_name)
 
 
-def get_peer_metadata(file_name="config_dump"):
+def get_peer_metadata(file_name="config_dump", peer=None):
     data = read_tmp_file(file_name)
     cmds = data.get('vpn', [])
     peer_metadata = {}
@@ -40,4 +40,6 @@ def get_peer_metadata(file_name="config_dump"):
         if cmd['fn'] != 'add_peer':
             continue
         peer_metadata[cmd['args']['public_key']] = cmd['metadata']
+    if peer:
+        return peer_metadata.get(peer, {})
     return peer_metadata

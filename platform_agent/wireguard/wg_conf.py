@@ -8,6 +8,7 @@ from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
+from platform_agent.files.tmp_files import get_peer_metadata
 from platform_agent.routes import Routes
 from platform_agent.wireguard.helpers import get_peer_info
 
@@ -84,8 +85,9 @@ class WgConf():
         raise IOError('no free ports')
 
     def create_interface(self, ifname, internal_ip, listen_port=None):
-        logger.info(f"[WG_CONF] - Creating interface {ifname} - wg_kernel={self.wg_kernel}")
         public_key, private_key = self.get_wg_keys(ifname)
+        peer_metadata = {'metadata': get_peer_metadata(public_key)}
+        logger.info(f"[WG_CONF] - Creating interface {ifname} - wg_kernel={self.wg_kernel}", extra=peer_metadata)
 
         with NDB() as ip:
             if self.wg_kernel:
@@ -121,7 +123,7 @@ class WgConf():
             "listen_port": int(listen_port),
             "ifname": ifname
         }
-        logger.info(f"[WG_CONF] - interface_created {result}")
+        logger.info(f"[WG_CONF] - interface_created {result}", extra=peer_metadata)
         return result
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
