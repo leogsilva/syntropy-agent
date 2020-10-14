@@ -31,6 +31,14 @@ class Config:
         if os.environ.get("NOIA_API_KEY"):
             return
 
+        if os.environ.get("NOIA_LOG_LEVEL"):
+            if os.environ["NOIA_LOG_LEVEL"].upper() in ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
+                os.environ["NOIA_LOG_LEVEL"] = os.environ["NOIA_LOG_LEVEL"].upper()
+            elif not (os.environ["NOIA_LOG_LEVEL"].isdigit() and os.environ["NOIA_LOG_LEVEL"] in ['0', '10', '20', '30', '40', '50']):
+                os.environ["NOIA_LOG_LEVEL"] = '20'
+        else:
+            os.environ["NOIA_LOG_LEVEL"] = '20'
+
         if os.environ.get('NOIA_USER_API') == 'DOCKER' and not os.environ.get('NOIA_DOCKER_URL'):
             raise ConfigException(f"For Docker API, you must provide NOIA_DOCKER_URL")
 

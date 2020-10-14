@@ -56,6 +56,11 @@ def configure_logger():
     if not log_file.is_file():
         log_file.write_text('')
 
+    if os.environ.get('NOIA_LOG_LEVEL', '20').isdigit():
+        loglevel = int(os.environ.get('NOIA_LOG_LEVEL', '20'))
+    else:
+        loglevel = os.environ.get('NOIA_LOG_LEVEL', 'INFO')
+
     logging_config = dict(
         version=1,
         formatters={
@@ -67,7 +72,7 @@ def configure_logger():
             'h': {
                 'class': 'logging.StreamHandler',
                 'formatter': 'f',
-                'level': int(os.environ.get('NOIA_LOG_LEVEL', 20))
+                'level': loglevel
             },
             'file': {
                 'level': 'DEBUG',
@@ -78,7 +83,7 @@ def configure_logger():
         },
         root={
             'handlers': ['h', 'file'],
-            'level': int(os.environ.get('NOIA_LOG_LEVEL', 20)),
+            'level': loglevel,
         },
     )
 
