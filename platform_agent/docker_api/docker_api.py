@@ -4,7 +4,7 @@ import threading
 import time
 
 import docker
-from platform_agent.docker_api.helpers import format_networks_result
+from platform_agent.docker_api.helpers import format_networks_result, format_container_result
 from platform_agent.lib.ctime import now
 
 logger = logging.getLogger()
@@ -29,6 +29,15 @@ class DockerNetworkWatcher(threading.Thread):
                     'id': "ID." + str(time.time()),
                     'executed_at': now(),
                     'type': 'NETWORK_INFO',
+                    'data': result
+                }))
+            if event.get('Type') == 'container' and event.get('Action') in ['create', 'destroy', 'stop', 'start']:
+                networks = self.docker_client.containers()
+                result = format_container_result(networks)
+                self.ws_client.send(json.dumps({
+                    'id': "ID." + str(time.time()),
+                    'executed_at': now(),
+                    'type': 'CONTAINER_INFO',
                     'data': result
                 }))
 

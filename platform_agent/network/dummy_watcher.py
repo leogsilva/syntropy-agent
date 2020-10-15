@@ -38,19 +38,19 @@ class DummyNetworkWatcher(threading.Thread):
                             {
                                 'agent_network_subnets': f"{k}/{v}",
                                 'agent_network_iface': iface,
-                                'agent_network_udp_ports': udp_ports,
-                                'agent_network_tcp_ports': tcp_ports,
+                                'agent_network_ports': {'udp': udp_ports, 'tcp': tcp_ports},
                             }
                         )
-                if result != ex_result:
+                status = getattr(self.ws_client.ws, 'sock')
+                if result != ex_result and status and status.status:
                     self.ws_client.send(json.dumps({
                         'id': "ID." + str(time.time()),
                         'executed_at': now(),
-                        'type': 'DUMMY_NETWORK_INFO',
+                        'type': 'HW_SERVICE_INFO',
                         'data': result
                     }))
                     ex_result = result
-            time.sleep(1)
+                time.sleep(3)
 
     def join(self, timeout=None):
         self.stop_network_watcher.set()
