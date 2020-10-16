@@ -15,6 +15,7 @@ from platform_agent.config.logger import configure_logger
 from platform_agent.config.settings import Config, AGENT_PATH_TMP
 from platform_agent.agent_websocket import WebSocketClient
 
+from pyroute2 import WireGuard
 
 def exit_handler():
     from pathlib import Path
@@ -30,6 +31,13 @@ atexit.register(exit_handler)
 
 def main(args=None):
     """ This is executed when run from the command line """
+
+    try:
+        WireGuard()
+    except:
+        # Wireguard module load failed
+        pass
+
     parser = argparse.ArgumentParser()
 
     # Required positional argument
