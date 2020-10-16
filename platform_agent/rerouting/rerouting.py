@@ -31,15 +31,18 @@ def get_routing_info(wg):
         metadata = res[ifname]['metadata']
         peers = get_peer_info_all(ifname, wg, kind=res[ifname]['kind'])
         for peer in peers:
-            peer_internal_ip = next(
-                (
-                    ip for ip in peer['allowed_ips']
-                    if
-                    ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/24",
-                                                                                   False)
-                ),
-                None
-            )
+            try:
+                peer_internal_ip = next(
+                    (
+                        ip for ip in peer['allowed_ips']
+                        if
+                        ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/24",
+                                                                                       False)
+                    ),
+                    None
+                )
+            except ValueError:
+                continue
             if not peer_internal_ip:
                 continue
             peers_internal_ips.append(peer_internal_ip.split('/')[0])

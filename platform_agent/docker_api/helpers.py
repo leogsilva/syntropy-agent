@@ -28,11 +28,11 @@ def format_container_result(containers):
         for k, v in network['Containers'].items():
             if conts.get(k) and conts[k].get('IPv4Address') and conts[k]['IPv4Address'] != v['IPv4Address']:
                 conts[k]['IPv4Address'].extend(v['IPv4Address'])
-                conts[k]['IPv4Address'].extend(network['Name'])
+                conts[k]['network_names'].extend(network['Name'])
                 continue
             conts[k] = v
             conts[k]['IPv4Address'] = [conts[k].get('IPv4Address')]
-            conts[k]['Name'] = [network.get('Name')]
+            conts[k]['network_names'] = [network.get('Name')]
     result = []
     for container in containers:
 
@@ -54,7 +54,7 @@ def format_container_result(containers):
                     'agent_container_id': container['Id'],
                     'agent_container_name': container_info.get('Name'),
                     'agent_container_subnets': container_info.get('IPv4Address'),
-                    'agent_container_networks': container_info.get('Name'),
+                    'agent_container_networks': container_info.get('network_names'),
                     'agent_container_ports': ports,
                     'agent_container_state': container.get('State'),
                     'agent_container_uptime': container.get('Status'),
