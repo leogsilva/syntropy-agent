@@ -36,7 +36,7 @@ class DummyNetworkWatcher(threading.Thread):
                         tcp_ports = [ip[k] for ip in tcp_info if ip.get(k)]
                         result.append(
                             {
-                                'agent_network_subnets': f"{k}/{v}",
+                                'agent_network_subnets': [f"{k}/{v}"],
                                 'agent_network_iface': iface,
                                 'agent_network_ports': {'udp': udp_ports, 'tcp': tcp_ports},
                             }
