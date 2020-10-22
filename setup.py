@@ -25,6 +25,7 @@ setup(
         'iperf3==0.1.11',
         'prometheus-client==0.8.0',
         'psutil==5.7.2',
+        'kubernetes==11.0.0',
     ],
     packages=find_packages(),
     license="MIT",

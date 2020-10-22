@@ -12,3 +12,5 @@ prometheus-client==0.8.0
 dnspython==1.16.0
 iperf3==0.1.11
 psutil==5.7.2
+setuptools==49.2.0
+kubernetes==11.0.0

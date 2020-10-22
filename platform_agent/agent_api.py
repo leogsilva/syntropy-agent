@@ -9,6 +9,7 @@ from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.files.tmp_files import update_tmp_file
 from platform_agent.lib.get_info import gather_initial_info
 from platform_agent.network.exporter import NetworkExporter
+from platform_agent.network.kubernetes_watcher import KubernetesNetworkWatcher
 from platform_agent.wireguard import WgConfException, WgConf, WireguardPeerWatcher
 from platform_agent.docker_api.docker_api import DockerNetworkWatcher
 from platform_agent.network.dummy_watcher import DummyNetworkWatcher
@@ -43,6 +44,8 @@ class AgentApi:
             self.network_watcher = DockerNetworkWatcher(self.runner).start()
         if os.environ.get("NOIA_NETWORK_API", '').lower() == "dummy" and prod_mode:
             self.network_watcher = DummyNetworkWatcher(self.runner).start()
+        if os.environ.get("NOIA_NETWORK_API", '').lower() == "kubernetes" and prod_mode:
+            self.network_watcher = KubernetesNetworkWatcher(self.runner).start()
         self.rerouting = Rerouting(self.runner).start()
 
     def call(self, type, data, request_id):
