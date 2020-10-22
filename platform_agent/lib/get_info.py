@@ -38,7 +38,7 @@ def get_network_info():
 
 
 def get_container_results():
-    if os.environ.get("NOIA_NETWORK_API", 'docker').lower() == "docker":
+    if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
         docker_client = docker.from_env()
         networks = docker_client.containers()
         container_info = format_container_result(networks)
