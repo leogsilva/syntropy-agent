@@ -62,7 +62,10 @@ class KubernetesNetworkWatcher(threading.Thread):
                         'agent_service_uptime': i.metadata.creation_timestamp.isoformat(),
                     }
                 )
-            if result != ex_result:
+
+            status = getattr(self.ws_client.ws, 'sock')
+
+            if result != ex_result and status and status.status:
                 self.ws_client.send(json.dumps({
                     'id': "ID." + str(time.time()),
                     'executed_at': now(),
