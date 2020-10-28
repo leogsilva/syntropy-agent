@@ -28,6 +28,7 @@ class KubernetesNetworkWatcher(threading.Thread):
                 config.load_kube_config()
             except config.config_exception.ConfigException:
                 raise KubernetesConfigException("Couldn't find config")
+        logger.info(f"['KUBERNETES_API'] - Namespace {self.current_namespace}")
         self.v1 = client.CoreV1Api()
         self.ws_client = ws_client
         self.stop_kubernetes_watcher = threading.Event()
