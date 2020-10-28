@@ -2,6 +2,7 @@ import json
 import logging
 import threading
 import time
+import os
 
 from platform_agent.lib.ctime import now
 from pyroute2 import IPDB
@@ -20,7 +21,9 @@ class KubernetesNetworkWatcher(threading.Thread):
         super().__init__()
         try:
             config.load_incluster_config()
+            self.current_namespace = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
         except config.config_exception.ConfigException:
+            self.current_namespace = os.environ.get('NOIA_NAMESPACE', None)
             try:
                 config.load_kube_config()
             except config.config_exception.ConfigException:
@@ -39,23 +42,23 @@ class KubernetesNetworkWatcher(threading.Thread):
         ex_result = []
         while not self.stop_kubernetes_watcher.is_set():
             result = []
-            ret = self.v1.list_pod_for_all_namespaces()
-
+            if not self.current_namespace:
+                return
+            ret = self.v1.list_namespaced_service(self.current_namespace)
             for i in ret.items:
-                if not i.metadata.labels.get('name'):
+                if not i.metadata.name:
                     continue
                 ports = {'udp': [], 'tcp': []}
-                for container in i.spec.containers:
-                    if not container.ports:
-                        continue
-                    ports['tcp'] = [port.container_port for port in container.ports if port.protocol == 'TCP']
-                    ports['udp'] = [port.container_port for port in container.ports if port.protocol == 'UDP']
+                if not i.spec.ports:
+                    continue
+                ports['tcp'] = [port.port for port in i.spec.ports if port.protocol == 'TCP']
+                ports['udp'] = [port.port for port in i.spec.ports if port.protocol == 'UDP']
                 result.append(
                     {
-                        'agent_service_subnets': f"{i.status.pod_ip}/32",
-                        'agent_service_name': i.metadata.labels['name'],
+                        'agent_service_subnets': f"{i.spec.cluster_ip}/32",
+                        'agent_service_name': i.metadata.name,
                         'agent_service_ports': ports,
-                        'agent_service_uptime': i.status.start_time.isoformat(),
+                        'agent_service_uptime': i.metadata.creation_timestamp.isoformat(),
                     }
                 )
             if result != ex_result:

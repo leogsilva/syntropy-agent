@@ -30,7 +30,11 @@ class Config:
             tmp_dir.chmod(0o700)
         if os.environ.get("NOIA_API_KEY"):
             return
-
+        if os.environ.get("NOIA_NETWORK_API", '').lower() == "kubernetes" and not os.environ.get('NOIA_AGENT_NAME'):
+            try:
+                os.environ['NOIA_AGENT_NAME'] = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
+            except FileNotFoundError:
+                pass
         if os.environ.get("NOIA_LOG_LEVEL"):
             if os.environ["NOIA_LOG_LEVEL"].upper() in ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
                 os.environ["NOIA_LOG_LEVEL"] = os.environ["NOIA_LOG_LEVEL"].upper()
