@@ -105,7 +105,7 @@ class AgentApi:
             except WgConfException as e:
                 logger.error(f"[CONFIG_INFO] Already exists [{str(e)}]")
         self.runner.send(json.dumps({
-            'id': "ID." + str(time.time()),
+            'id': kwargs['request_id'],
             'executed_at': now(),
             'type': 'UPDATE_AGENT_CONFIG',
             'data': response
