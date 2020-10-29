@@ -10,8 +10,6 @@ from platform_agent.files.tmp_files import get_peer_metadata
 
 logger = logging.getLogger()
 
-WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
-
 
 def read_tmp_file(file_type='iface_info'):
     """Read iface file"""

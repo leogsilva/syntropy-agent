@@ -4,6 +4,7 @@ import logging
 import pyroute2
 import ipaddress
 import json
+import re
 
 from pyroute2 import WireGuard
 
@@ -13,7 +14,7 @@ from platform_agent.files.tmp_files import read_tmp_file
 from platform_agent.routes import Routes
 from platform_agent.lib.ctime import now
 
-from platform_agent.wireguard.helpers import WG_NAME_SUBSTRINGS, ping_internal_ips, get_peer_info_all
+from platform_agent.wireguard.helpers import WG_NAME_PATTERN, ping_internal_ips, get_peer_info_all
 
 logger = logging.getLogger()
 
@@ -22,8 +23,7 @@ def get_routing_info(wg):
     routing_info = {}
     peers_internal_ips = []
     interfaces = read_tmp_file(file_type='iface_info')
-    res = {k: v for k, v in interfaces.items() if
-           any(substring in k for substring in WG_NAME_SUBSTRINGS)}
+    res = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k)}
     for ifname in res.keys():
         if not res[ifname].get('internal_ip'):
             continue

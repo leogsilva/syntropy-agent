@@ -1,6 +1,7 @@
 import datetime
 import os
 import ipaddress
+import re
 
 from icmplib import multiping
 from pyroute2 import NetlinkError
@@ -9,7 +10,7 @@ from platform_agent.cmd.lsmod import module_loaded, is_tool
 from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.network.iface_watcher import read_tmp_file
 
-WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_']
+WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
 
 def get_peer_info(ifname, wg, kind=None):
@@ -124,8 +125,7 @@ def merged_peer_info(wg):
     result = []
     peers_ips = []
     interfaces = read_tmp_file(file_type='iface_info')
-    res = {k: v for k, v in interfaces.items() if
-           any(substring in k for substring in WG_NAME_SUBSTRINGS)}
+    res = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k)}
     for ifname in res.keys():
         if not res[ifname].get('internal_ip'):
             continue

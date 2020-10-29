@@ -2,20 +2,18 @@ import socket
 import base64
 import logging
 import subprocess
+import re
 from pathlib import Path
-from pyroute2 import IPDB, WireGuard, CreateException, NDB
+from pyroute2 import IPDB, WireGuard, NDB
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata
 from platform_agent.routes import Routes
-from platform_agent.wireguard.helpers import get_peer_info
+from platform_agent.wireguard.helpers import get_peer_info, WG_NAME_PATTERN
 
 logger = logging.getLogger()
-
-WG_NAME_SUBSTRINGS = ['p2p_', 'mesh_', 'gw_', 'noia_']
-
 
 class WgConfException(Exception):
     pass
@@ -32,8 +30,7 @@ class WgConf():
     @staticmethod
     def get_wg_interfaces():
         with IPDB() as ipdb:
-            current_interfaces = [k for k, v in ipdb.by_name.items() if any(
-                substring in k for substring in WG_NAME_SUBSTRINGS)]
+            current_interfaces = [k for k, v in ipdb.by_name.items() if re.match(WG_NAME_PATTERN, k)]
         return current_interfaces
 
     def clear_interfaces(self, dump):
