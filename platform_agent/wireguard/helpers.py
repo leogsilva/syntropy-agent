@@ -13,6 +13,15 @@ from platform_agent.network.iface_watcher import read_tmp_file
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
 
+def get_iface_public_key(ifname):
+    wg = WireGuardRead()
+    ifaces = wg.wg_info(ifname)
+    if not ifaces:
+        return
+    iface = ifaces[0]
+    return iface.get('public_key')
+
+
 def get_peer_info(ifname, wg, kind=None):
     results = {}
     if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
@@ -131,9 +140,8 @@ def merged_peer_info(wg):
             continue
         peer_info, peers_internal_ips = get_peer_ips(ifname, wg, res[ifname]['internal_ip'], kind=res[ifname]['kind'])
         peers_ips += peers_internal_ips
-        try:
-            iface_public_key = open(f'/etc/noia-agent/publickey-{ifname}').read()
-        except FileNotFoundError:
+        iface_public_key = get_iface_public_key(ifname)
+        if not iface_public_key:
             continue
         result.append(
             {
