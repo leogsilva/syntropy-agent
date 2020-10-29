@@ -92,15 +92,18 @@ class AgentApi:
         update_tmp_file(data, 'config_dump')
         self.wgconf.clear_interfaces(data.get('vpn', []))
         self.wgconf.clear_peers(data.get('vpn', []))
+        interfaces = self.wgconf.get_wg_interfaces()
         response = []
         for vpn_cmd in data.get('vpn', []):
             try:
+                if vpn_cmd['fn'] == 'create_interface' and vpn_cmd['args'].get('ifname') in interfaces:
+                    continue
                 fn = getattr(self.wgconf, vpn_cmd['fn'])
                 result = fn(**vpn_cmd['args'])
                 if vpn_cmd['fn'] == 'create_interface':
                     response.append({'fn': vpn_cmd['fn'], 'data': result})
             except WgConfException as e:
-                logger.error(f"[CONFIG_INFO] {str(e)}")
+                logger.error(f"[CONFIG_INFO] Already exists [{str(e)}]")
         self.runner.send(json.dumps({
             'id': "ID." + str(time.time()),
             'executed_at': now(),
