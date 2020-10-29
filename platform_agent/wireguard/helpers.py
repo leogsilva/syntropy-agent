@@ -131,9 +131,14 @@ def merged_peer_info(wg):
             continue
         peer_info, peers_internal_ips = get_peer_ips(ifname, wg, res[ifname]['internal_ip'], kind=res[ifname]['kind'])
         peers_ips += peers_internal_ips
+        try:
+            iface_public_key = open(f'/etc/noia-agent/publickey-{ifname}').read()
+        except FileNotFoundError:
+            continue
         result.append(
             {
                 "iface": ifname,
+                "iface_public_key": iface_public_key,
                 "peers": peer_info
             }
         )
