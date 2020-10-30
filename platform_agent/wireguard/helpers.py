@@ -3,7 +3,6 @@ import os
 import ipaddress
 import re
 import socket
-from contextlib import closing
 
 from icmplib import multiping
 from pyroute2 import NetlinkError
@@ -15,11 +14,16 @@ from platform_agent.network.iface_watcher import read_tmp_file
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
 
-def find_free_port():
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(('', 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
+def find_free_port(port=49152, max_port=65535):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    while port <= max_port:
+        try:
+            sock.bind(('', port))
+            sock.close()
+            return port
+        except OSError:
+            port += 1
+    raise IOError('no free ports')
 
 
 def get_iface_public_key(ifname):
