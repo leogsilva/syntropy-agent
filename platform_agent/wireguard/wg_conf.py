@@ -191,6 +191,9 @@ class WireguardGo:
         if private_key:
             private_key_cmd = f"private-key {private_key}".split(' ')
             full_cmd += private_key_cmd
+            if not listen_port:
+                # Set random listen port
+                listen_port = 000
         if listen_port:
             listen_port_cmd = f"listen-port {listen_port}".split(' ')
             full_cmd += listen_port_cmd
