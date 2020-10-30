@@ -111,13 +111,12 @@ class WgConf():
             except KeyError as e:
                 raise WgConfException(str(e))
             ip.close()
-        if not listen_port:
-            listen_port = find_free_port()
         self.wg.set(
             ifname,
             private_key=private_key,
             listen_port=listen_port
         )
+        listen_port = self.get_listening_port(ifname)
 
         result = {
             "public_key": public_key,
@@ -192,6 +191,8 @@ class WireguardGo:
         if private_key:
             private_key_cmd = f"private-key {private_key}".split(' ')
             full_cmd += private_key_cmd
+            if not listen_port:
+                listen_port = find_free_port()
         if listen_port:
             listen_port_cmd = f"listen-port {listen_port}".split(' ')
             full_cmd += listen_port_cmd
