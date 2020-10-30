@@ -2,6 +2,8 @@ import datetime
 import os
 import ipaddress
 import re
+import socket
+from contextlib import closing
 
 from icmplib import multiping
 from pyroute2 import NetlinkError
@@ -11,6 +13,13 @@ from platform_agent.cmd.wg_info import WireGuardRead
 from platform_agent.network.iface_watcher import read_tmp_file
 
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
+
+
+def find_free_port():
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
 
 
 def get_iface_public_key(ifname):

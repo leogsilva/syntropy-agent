@@ -11,7 +11,7 @@ from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata
 from platform_agent.routes import Routes
-from platform_agent.wireguard.helpers import get_peer_info, WG_NAME_PATTERN
+from platform_agent.wireguard.helpers import find_free_port, get_peer_info, WG_NAME_PATTERN
 
 logger = logging.getLogger()
 
@@ -111,12 +111,13 @@ class WgConf():
             except KeyError as e:
                 raise WgConfException(str(e))
             ip.close()
+        if not listen_port:
+            listen_port = find_free_port()
         self.wg.set(
             ifname,
             private_key=private_key,
             listen_port=listen_port
         )
-        listen_port = self.get_listening_port(ifname)
 
         result = {
             "public_key": public_key,
@@ -191,9 +192,6 @@ class WireguardGo:
         if private_key:
             private_key_cmd = f"private-key {private_key}".split(' ')
             full_cmd += private_key_cmd
-            if not listen_port:
-                # Set random listen port
-                listen_port = 000
         if listen_port:
             listen_port_cmd = f"listen-port {listen_port}".split(' ')
             full_cmd += listen_port_cmd
