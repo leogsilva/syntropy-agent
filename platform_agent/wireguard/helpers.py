@@ -2,7 +2,9 @@ import datetime
 import os
 import ipaddress
 import re
-import socket
+import psutil
+from random import randint
+
 
 from icmplib import multiping
 from pyroute2 import NetlinkError
@@ -13,18 +15,18 @@ from platform_agent.network.iface_watcher import read_tmp_file
 
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
-
-def find_free_port(port=49152, max_port=65535):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    while port <= max_port:
-        try:
-            sock.bind(('', port))
-            sock.close()
-            return port
-        except OSError:
-            port += 1
-    raise IOError('no free ports')
-
+def find_free_port():
+    port = randint(49152,65535)
+    portsinuse=[]
+    while True:
+        conns = psutil.net_connections()
+        for conn in conns:
+            portsinuse.append(conn.laddr[1])
+        if port in portsinuse:
+            port = randint(49152,65535)
+        else:
+            break
+    return port
 
 def get_iface_public_key(ifname):
     wg = WireGuardRead()
