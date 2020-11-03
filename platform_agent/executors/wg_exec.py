@@ -28,7 +28,7 @@ class WgExecutor(threading.Thread):
 
     def get_from_queue(self):
         payloads = {}
-        t_end = time.time() + 1  # run for 1 second
+        t_end = time.time() + 0.2  # run for 1 second
         while time.time() < t_end:
             try:
                 message = self.queue.get(timeout=0.1)
