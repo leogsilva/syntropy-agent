@@ -19,6 +19,11 @@ class WgConfException(Exception):
     pass
 
 
+def delete_interface(ifname):
+
+    subprocess.run(['ip', 'link', 'del', ifname], check=False)
+
+
 class WgConf():
 
     def __init__(self):
@@ -39,6 +44,9 @@ class WgConf():
         remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
         current_interfaces = self.get_wg_interfaces()
         remove_interfaces = set(current_interfaces) - set(remote_interfaces)
+        logger.info(
+            f"Clearing interfaces REMOTE - {remote_interfaces}, CURRENT - {current_interfaces} REMOVE={remove_interfaces}"
+        )
         for interface in remove_interfaces:
             self.remove_interface(interface)
 
@@ -183,12 +191,7 @@ class WgConf():
         return
 
     def remove_interface(self, ifname):
-        wg_int = self.ndb.interfaces.get(ifname)
-        if not wg_int:
-            logger.warning(f'[WG_CONF] Remove interface [{ifname}] does not exist')
-            return
-        wg_int.remove().commit()
-        return
+        delete_interface(ifname)
 
     def get_listening_port(self, ifname):
         if self.wg_kernel:

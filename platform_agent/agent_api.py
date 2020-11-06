@@ -91,7 +91,6 @@ class AgentApi:
         update_tmp_file(data, 'config_dump')
         self.wgconf.clear_interfaces(data.get('vpn', []))
         self.wgconf.clear_peers(data.get('vpn', []))
-        interfaces = self.wgconf.get_wg_interfaces()
         response = []
         for vpn_cmd in data.get('vpn', []):
             try:
