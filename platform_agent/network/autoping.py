@@ -25,7 +25,7 @@ class AutopingClient(threading.Thread):
     def run(self):
         while not self.stop_autoping.is_set():
             pings = []
-            ping_res = multiping(self.hosts, count=5, interval=0.5)
+            ping_res = multiping(self.hosts, count=5, interval=0.5, max_threads=2)
             ping_res.sort(key=lambda x: x.avg_rtt)
             for res in ping_res:
                 if res.is_alive:

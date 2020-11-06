@@ -83,7 +83,7 @@ class WgConf():
                 port += 1
         raise IOError('no free ports')
 
-    def create_interface(self, ifname, internal_ip, listen_port=None):
+    def create_interface(self, ifname, internal_ip, listen_port=None, **kwargs):
         public_key, private_key = self.get_wg_keys(ifname)
         peer_metadata = {'metadata': get_peer_metadata(public_key)}
         logger.info(
@@ -130,6 +130,13 @@ class WgConf():
                     private_key=private_key,
                 )
         listen_port = self.get_listening_port(ifname)
+        if not listen_port:
+            listen_port = find_free_port()
+            self.wg.set(
+                ifname,
+                private_key=private_key,
+                listen_port=listen_port
+            )
 
         result = {
             "public_key": public_key,

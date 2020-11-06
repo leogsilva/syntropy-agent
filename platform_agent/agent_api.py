@@ -97,7 +97,9 @@ class AgentApi:
             try:
                 fn = getattr(self.wgconf, vpn_cmd['fn'])
                 result = fn(**vpn_cmd['args'])
-                if vpn_cmd['fn'] == 'create_interface' and result:
+                if vpn_cmd['fn'] == 'create_interface' and result and\
+                        (vpn_cmd['args'].get('public_key') != result.get('public_key') or
+                         vpn_cmd['args'].get('listen_port') != result.get('listen_port')):
                     response.append({'fn': vpn_cmd['fn'], 'data': result})
             except WgConfException as e:
                 logger.error(f"[CONFIG_INFO] [{str(e)}]")
