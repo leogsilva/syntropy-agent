@@ -98,11 +98,13 @@ class WgConf():
             f"[WG_CONF] - Creating interface {ifname}, {listen_port}, {internal_ip}- wg_kernel={self.wg_kernel}",
             extra={'metadata': peer_metadata}
         )
-
+        wg_int = None
+        error = None
         if self.wg_kernel:
             try:
                 wg_int = self.ndb.interfaces.create(kind='wireguard', ifname=ifname)
             except KeyError as e:
+                error = str(e)
                 if not len(e.args) and e.args[0] == 'object exists':
                     raise WgConfException(str(e))
         else:
@@ -114,7 +116,7 @@ class WgConf():
         if self.ndb.interfaces.get(ifname):
             wg_int = self.ndb.interfaces[ifname]
         elif not wg_int:
-            raise WgConfException("Wireguard failed to create interface")
+            raise WgConfException(f"[WG_CONF] Wireguard failed to create interface - {error}")
         wg_int.add_ip(internal_ip)
         wg_int.set('state', 'up')
         try:
@@ -246,7 +248,7 @@ class WireguardGo:
 
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
-        logger.info(f"[Wireguard-go] - WG Create - {complete_output} , args {ifname}")
+        logger.info(f"[Wireguard-go] - WG Create - {complete_output.read()} , args {ifname}")
         return complete_output
 
     def info(self, ifname):
