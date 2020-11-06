@@ -2,7 +2,6 @@ import json
 import logging
 import threading
 import os
-import time
 
 from platform_agent.lib.ctime import now
 from platform_agent.cmd.lsmod import module_loaded
@@ -96,14 +95,12 @@ class AgentApi:
         response = []
         for vpn_cmd in data.get('vpn', []):
             try:
-                if vpn_cmd['fn'] == 'create_interface' and vpn_cmd['args'].get('ifname') in interfaces:
-                    continue
                 fn = getattr(self.wgconf, vpn_cmd['fn'])
                 result = fn(**vpn_cmd['args'])
-                if vpn_cmd['fn'] == 'create_interface':
+                if vpn_cmd['fn'] == 'create_interface' and result:
                     response.append({'fn': vpn_cmd['fn'], 'data': result})
             except WgConfException as e:
-                logger.error(f"[CONFIG_INFO] Already exists [{str(e)}]")
+                logger.error(f"[CONFIG_INFO] [{str(e)}]")
         self.runner.send(json.dumps({
             'id': kwargs['request_id'],
             'executed_at': now(),

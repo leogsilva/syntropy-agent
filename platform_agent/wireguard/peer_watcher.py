@@ -16,7 +16,7 @@ logger = logging.getLogger()
 
 class WireguardPeerWatcher(threading.Thread):
 
-    def __init__(self, client, interval=10):
+    def __init__(self, client, interval=60):
         super().__init__()
         self.client = client
         self.interval = interval

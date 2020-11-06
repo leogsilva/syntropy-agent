@@ -4,7 +4,7 @@ import logging
 import subprocess
 import re
 from pathlib import Path
-from pyroute2 import IPDB, WireGuard, NDB
+from pyroute2 import IPDB, WireGuard, NDB, NetlinkError
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
@@ -25,6 +25,8 @@ class WgConf():
 
         self.wg_kernel = module_loaded('wireguard')
         self.wg = WireGuard() if self.wg_kernel else WireguardGo()
+        self.ipdb = IPDB()
+        self.ndb = NDB()
         self.routes = Routes()
 
     @staticmethod
@@ -85,37 +87,48 @@ class WgConf():
         public_key, private_key = self.get_wg_keys(ifname)
         peer_metadata = {'metadata': get_peer_metadata(public_key)}
         logger.info(
-            f"[WG_CONF] - Creating interface {ifname} - wg_kernel={self.wg_kernel}",
+            f"[WG_CONF] - Creating interface {ifname}, {listen_port}, {internal_ip}- wg_kernel={self.wg_kernel}",
             extra={'metadata': peer_metadata}
         )
 
-        with NDB() as ip:
-            if self.wg_kernel:
-                try:
-                    wg_int = ip.interfaces.create(kind='wireguard', ifname=ifname)
-                except KeyError as e:
-                    raise WgConfException(str(e))
-            else:
-                self.wg.create_interface(ifname)
-                from time import sleep
-                #Wait until interface was created
-                sleep(0.01)
-                if ip.interfaces.get(ifname):
-                    wg_int = ip.interfaces[ifname]
-                else:
-                    raise WgConfException("Wireguard-go failed to create interface")
-            wg_int.add_ip(internal_ip)
-            wg_int.set('state', 'up')
+        if self.wg_kernel:
             try:
-                wg_int.commit()
+                wg_int = self.ndb.interfaces.create(kind='wireguard', ifname=ifname)
             except KeyError as e:
+                if not len(e.args) and e.args[0] == 'object exists':
+                    raise WgConfException(str(e))
+        else:
+            self.wg.create_interface(ifname)
+            from time import sleep
+            #Wait until interface was created
+            sleep(0.01)
+
+        if self.ndb.interfaces.get(ifname):
+            wg_int = self.ndb.interfaces[ifname]
+        elif not wg_int:
+            raise WgConfException("Wireguard failed to create interface")
+        wg_int.add_ip(internal_ip)
+        wg_int.set('state', 'up')
+        try:
+            wg_int.commit()
+        except KeyError as e:
+            if not len(e.args) and e.args[0] == 'object exists':
                 raise WgConfException(str(e))
-            ip.close()
-        self.wg.set(
-            ifname,
-            private_key=private_key,
-            listen_port=listen_port
-        )
+        try:
+            self.wg.set(
+                ifname,
+                private_key=private_key,
+                listen_port=listen_port
+            )
+        except NetlinkError as error:
+            if error.code != 98:
+                raise
+            else:
+                # if port was taken before creating.
+                self.wg.set(
+                    ifname,
+                    private_key=private_key,
+                )
         listen_port = self.get_listening_port(ifname)
 
         result = {
@@ -147,6 +160,11 @@ class WgConf():
         return
 
     def remove_peer(self, ifname, public_key, allowed_ips=None):
+
+        if not self.ndb.interfaces.get(ifname):
+            logger.warning(f'[WG_CONF] Remove peer - [{ifname}] does not exist')
+            return
+
         peer = {
             'public_key': public_key,
             'remove': True
@@ -158,11 +176,11 @@ class WgConf():
         return
 
     def remove_interface(self, ifname):
-        with IPDB() as ipdb:
-            if ifname not in ipdb.interfaces:
-                raise WgConfException(f'[{ifname}] does not exist')
-            with ipdb.interfaces[ifname] as i:
-                i.remove()
+        wg_int = self.ndb.interfaces.get(ifname)
+        if not wg_int:
+            logger.warning(f'[WG_CONF] Remove interface [{ifname}] does not exist')
+            return
+        wg_int.remove().commit()
         return
 
     def get_listening_port(self, ifname):
