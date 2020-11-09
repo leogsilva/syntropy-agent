@@ -26,7 +26,9 @@ def format_container_result(containers):
     conts = {}
     for network in networks:
         for k, v in network['Containers'].items():
-            if conts.get(k) and conts[k].get('IPv4Address') and conts[k]['IPv4Address'] != v['IPv4Address']:
+            if not v['IPv4Address']:
+                continue
+            if conts.get(k) and conts[k]['IPv4Address'] != v['IPv4Address']:
                 conts[k]['IPv4Address'].extend(v['IPv4Address'].split('/')[0])
                 conts[k]['network_names'].extend(network['Name'])
                 continue
