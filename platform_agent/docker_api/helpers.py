@@ -53,7 +53,7 @@ def format_container_result(containers):
                 {
                     'agent_container_id': container['Id'],
                     'agent_container_name': container_info.get('Name'),
-                    'agent_container_subnets': container_info.get('IPv4Address'),
+                    'agent_container_ips': container_info.get('IPv4Address'),
                     'agent_container_networks': container_info.get('network_names'),
                     'agent_container_ports': ports,
                     'agent_container_state': container.get('State'),
