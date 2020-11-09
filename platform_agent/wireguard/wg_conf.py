@@ -214,9 +214,9 @@ class WireguardGo:
             if not peer.get('remove'):
                 for ip in peer.get('allowed_ips', []):
                     allowed_ips_cmd += f"allowed-ips {ip} "
-                peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']}".split(' ')
+                peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']} persistent-keepalive 15".split(' ')
             else:
-                peer_cmd = f"peer {peer['public_key']} remove"
+                peer_cmd = f"peer {peer['public_key']} remove".split(' ')
             full_cmd += peer_cmd
         if private_key:
             private_key_cmd = f"private-key {private_key}".split(' ')
@@ -245,7 +245,6 @@ class WireguardGo:
             )
         except FileNotFoundError:
             raise WgConfException(f'Wireguard-go missing')
-
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
         logger.info(f"[Wireguard-go] - WG Create - {complete_output.read()} , args {ifname}")
