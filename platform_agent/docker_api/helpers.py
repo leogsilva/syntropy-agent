@@ -4,8 +4,6 @@ import docker
 def format_networks_result(networks):
     result = []
     for network in networks:
-        if network.get('Name') == 'bridge':
-            continue
         subnets = []
         for subnet in network['IPAM']['Config']:
             subnets.append(subnet['Subnet'])
@@ -29,8 +27,8 @@ def format_container_result(containers):
             if not v['IPv4Address']:
                 continue
             if conts.get(k) and conts[k]['IPv4Address'] != v['IPv4Address']:
-                conts[k]['IPv4Address'].extend(v['IPv4Address'].split('/')[0])
-                conts[k]['network_names'].extend(network['Name'])
+                conts[k]['IPv4Address'].append(v['IPv4Address'].split('/')[0])
+                conts[k]['network_names'].append(network['Name'])
                 continue
             conts[k] = v
             conts[k]['IPv4Address'] = [conts[k].get('IPv4Address').split('/')[0]]
