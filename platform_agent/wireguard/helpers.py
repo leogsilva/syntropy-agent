@@ -15,6 +15,14 @@ from platform_agent.network.iface_watcher import read_tmp_file
 
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
+
+def get_connection_status(latency, packet_loss):
+    if 0.1 <= packet_loss <= 1 or latency >= 1000:
+        return 'WARNING'
+    elif packet_loss >= 1:
+        return 'OFFLINE'
+    return 'CONNECTED'
+
 def find_free_port():
     port = randint(49152,65535)
     portsinuse=[]
@@ -138,9 +146,12 @@ def ping_internal_ips(ips, count=4, interval=0.5, icmp_id=10000):
     result = {}
     ping_res = multiping(ips, count=count, interval=interval, id=icmp_id)
     for res in ping_res:
+        latency_ms = res.avg_rtt if res.is_alive else 5000
+        packet_loss = res.packet_loss if res.is_alive else 1
         result[res.address] = {
-            "latency_ms": res.avg_rtt if res.is_alive else 5000,
-            "packet_loss": res.packet_loss if res.is_alive else 1
+            "latency_ms": latency_ms,
+            "packet_loss": packet_loss,
+            "status": get_connection_status(latency_ms, packet_loss),
         }
     return result
 
