@@ -46,9 +46,9 @@ class InterfaceWatcher(threading.Thread):
                     res = {k: v for k, v in ipdb.by_name.items()}
                     payload = {}
                     for ifname in res.keys():
-                        if not res[ifname].get('ipaddr'):
+                        if not res[ifname].get('ipaddr') and not res[ifname]['ipaddr'].ipv4:
                             continue
-                        internal_ip = f"{res[ifname]['ipaddr'][0]['address']}/{res[ifname]['ipaddr'][0]['prefixlen']}"
+                        internal_ip = f"{res[ifname]['ipaddr'].ipv4[0]['address']}/{res[ifname]['ipaddr'].ipv4[0]['prefixlen']}"
                         payload[ifname] = {
                             'internal_ip': internal_ip,
                             'kind': res[ifname]['kind'],
