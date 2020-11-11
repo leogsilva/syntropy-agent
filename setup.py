@@ -14,9 +14,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        'pyroute2==0.5.12',
-        'websocket-client==0.57.0',
         'requests==2.24.0',
+        'urllib3<1.26',
+        'pyroute2==0.5.14',
+        'websocket-client==0.57.0',
         'PyNaCl==1.3.0',
         'docker-py==1.10.6',
         'icmplibv2==1.0.6',
