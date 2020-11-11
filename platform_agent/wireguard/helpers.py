@@ -17,10 +17,10 @@ WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
 
 def get_connection_status(latency, packet_loss):
-    if 0.1 <= packet_loss <= 1 or latency >= 1000:
-        return 'WARNING'
-    elif packet_loss >= 1:
+    if packet_loss >= 1:
         return 'OFFLINE'
+    elif 0.1 <= packet_loss <= 1 or latency >= 1000:
+        return 'WARNING'
     return 'CONNECTED'
 
 def find_free_port():
@@ -74,45 +74,45 @@ def get_peer_info(ifname, wg, kind=None):
 
 def get_peer_info_all(ifname, wg, kind=None):
     results = []
-    if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
-        try:
-            ss = wg.info(ifname)
-        except NetlinkError as e:
-            return results
-        wg_info = dict(ss[0]['attrs'])
-        peers = wg_info.get('WGDEVICE_A_PEERS', [])
-        for peer in peers:
-            try:
-                peer_dict = dict(peer['attrs'])
-                results.append({
-                    "public_key": peer_dict['WGPEER_A_PUBLIC_KEY'].decode('utf-8'),
-                    "allowed_ips": [allowed_ip['addr'] for allowed_ip in peer_dict['WGPEER_A_ALLOWEDIPS']],
-                    "last_handshake": datetime.datetime.strptime(
-                        peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'],
-                        "%a %b %d %H:%M:%S %Y").isoformat(),
-                    "keep_alive_interval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
-                    "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
-                    "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
-                })
-            except KeyError:
-                continue
+    # TODO NEED FIX pyroute2 wireguard info solution, because of missing peers when getting info.
+    # if kind == 'wireguard' or os.environ.get("NOIA_WIREGUARD"):
+    #     try:
+    #         ss = wg.info(ifname)
+    #     except NetlinkError as e:
+    #         return results
+    #     wg_info = dict(ss[0]['attrs'])
+    #     peers = wg_info.get('WGDEVICE_A_PEERS', [])
+    #     for peer in peers:
+    #         try:
+    #             peer_dict = dict(peer['attrs'])
+    #             results.append({
+    #                 "public_key": peer_dict['WGPEER_A_PUBLIC_KEY'].decode('utf-8'),
+    #                 "allowed_ips": [allowed_ip['addr'] for allowed_ip in peer_dict['WGPEER_A_ALLOWEDIPS']],
+    #                 "last_handshake": datetime.datetime.strptime(
+    #                     peer_dict['WGPEER_A_LAST_HANDSHAKE_TIME']['latest handshake'],
+    #                     "%a %b %d %H:%M:%S %Y").isoformat(),
+    #                 "keep_alive_interval": peer_dict['WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'],
+    #                 "rx_bytes": peer_dict['WGPEER_A_RX_BYTES'],
+    #                 "tx_bytes": peer_dict['WGPEER_A_TX_BYTES'],
+    #             })
+    #         except KeyError:
+    #             continue
 
-    else:
-        wg = WireGuardRead()
-        ifaces = wg.wg_info(ifname)
-        if not ifaces:
-            return results
-        iface = ifaces[0]
-        for peer in iface['peers']:
-            try:
-                results.append({
-                    "public_key": peer['peer'],
-                    "last_handshake": datetime.datetime.now().isoformat() if peer['latest_handshake'] else None,
-                    "keep_alive_interval": peer['persistent_keepalive'],
-                    "allowed_ips": peer['allowed_ips'],
-                })
-            except KeyError:
-                continue
+    wg = WireGuardRead()
+    ifaces = wg.wg_info(ifname)
+    if not ifaces:
+        return results
+    iface = ifaces[0]
+    for peer in iface['peers']:
+        try:
+            results.append({
+                "public_key": peer['peer'],
+                "last_handshake": datetime.datetime.now().isoformat() if peer['latest_handshake'] else None,
+                "keep_alive_interval": int(''.join(filter(str.isdigit, peer.get('persistent_keepalive', '15')))),
+                "allowed_ips": peer['allowed_ips'],
+            })
+        except KeyError:
+            continue
     return results
 
 
