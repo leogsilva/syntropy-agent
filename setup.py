@@ -16,7 +16,7 @@ setup(
     install_requires=[
         'pyroute2==0.5.12',
         'websocket-client==0.57.0',
-        'requests==2.22.0',
+        'requests==2.24.0',
         'PyNaCl==1.3.0',
         'docker-py==1.10.6',
         'icmplibv2==1.0.6',
