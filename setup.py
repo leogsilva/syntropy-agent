@@ -16,7 +16,7 @@ setup(
     install_requires=[
         'requests==2.24.0',
         'urllib3<1.26',
-        'pyroute2==0.5.14',
+        'pyroute2==0.5.12',
         'websocket-client==0.57.0',
         'PyNaCl==1.3.0',
         'docker-py==1.10.6',
