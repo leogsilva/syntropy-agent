@@ -4,7 +4,7 @@ import base64
 import logging
 import subprocess
 import re
-from datetime import time
+from time import sleep
 from pathlib import Path
 from pyroute2 import IPDB, WireGuard, NDB, NetlinkError
 from nacl.public import PrivateKey
@@ -97,7 +97,7 @@ class WgConf():
 
     def create_interface(self, ifname, internal_ip, listen_port=None, **kwargs):
         public_key, private_key = self.get_wg_keys(ifname)
-        peer_metadata = {'metadata': get_peer_metadata(public_key)}
+        peer_metadata = {'metadata': get_peer_metadata(public_key=public_key)}
         logger.info(
             f"[WG_CONF] - Creating interface {ifname}, {listen_port}, {internal_ip}- wg_kernel={self.wg_kernel}",
             extra={'metadata': peer_metadata}
@@ -113,7 +113,6 @@ class WgConf():
                     raise WgConfException(str(e))
         else:
             self.wg.create_interface(ifname)
-            from time import sleep
             #Wait until interface was created
             sleep(0.01)
 
@@ -164,6 +163,7 @@ class WgConf():
         return result
 
     def add_peer(self, ifname, public_key, allowed_ips, gw_ipv4, endpoint_ipv4=None, endpoint_port=None):
+        peer_metadata = get_peer_metadata(public_key=public_key)
         if self.wg_kernel:
             try:
                 peer_info = get_peer_info(ifname=ifname, wg=self.wg)
@@ -183,7 +183,7 @@ class WgConf():
             'executed_at': now(),
             "type": "WG_ROUTE_STATUS",
             "data": {
-                "connection_id": 123,
+                "connection_id": peer_metadata.get('connection_id'),
                 "public_key": public_key,
                 "statuses": statuses,
             }
