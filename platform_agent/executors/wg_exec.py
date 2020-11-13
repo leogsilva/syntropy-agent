@@ -21,7 +21,7 @@ class WgExecutor(threading.Thread):
         self.client = client
         self.stop_wg_executor = threading.Event()
         self.wg = None
-        self.wgconf = WgConf()
+        self.wgconf = WgConf(client)
         self.daemon = True
 
         threading.Thread.__init__(self)

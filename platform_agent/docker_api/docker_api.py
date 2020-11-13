@@ -4,6 +4,9 @@ import threading
 import time
 
 import docker
+from requests.exceptions import ConnectionError
+from urllib3.exceptions import ProtocolError
+
 from platform_agent.docker_api.helpers import format_networks_result, format_container_result
 from platform_agent.lib.ctime import now
 
@@ -16,7 +19,11 @@ class DockerNetworkWatcher(threading.Thread):
         super().__init__()
         self.ws_client = ws_client
         self.docker_client = docker.from_env()
-        self.events = self.docker_client.events(decode=True)
+        try:
+            self.events = self.docker_client.events(decode=True)
+        except (ConnectionError, ProtocolError) as e:
+            logger.error(f"[DOCKER_API]: {e}")
+            self.events = []
         self.daemon = True
 
     def run(self):

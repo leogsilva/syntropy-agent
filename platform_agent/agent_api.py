@@ -28,7 +28,7 @@ class AgentApi:
         self.runner = runner
         self.wg_peers = None
         self.autoping = None
-        self.wgconf = WgConf()
+        self.wgconf = WgConf(self.runner)
         self.wg_executor = WgExecutor(self.runner)
         self.bw_data_collector = BWDataCollect(self.runner)
         if prod_mode:

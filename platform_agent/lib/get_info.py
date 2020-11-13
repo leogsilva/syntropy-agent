@@ -4,6 +4,9 @@ import socket
 import requests
 
 import docker
+from requests.exceptions import ConnectionError
+from urllib3.exceptions import ProtocolError
+
 from platform_agent.docker_api.helpers import format_networks_result, format_container_result
 from platform_agent.config.settings import Config
 
@@ -28,9 +31,12 @@ def get_location():
 def get_network_info():
     network_info = []
     if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
-        docker_client = docker.from_env()
-        networks = docker_client.networks()
-        network_info = format_networks_result(networks)
+        try:
+            docker_client = docker.from_env()
+            networks = docker_client.networks()
+            network_info = format_networks_result(networks)
+        except (ProtocolError, ConnectionError):
+            network_info = []
     network_info.extend(Config.get_valid_allowed_ips())
     return {
         "network_info": network_info
@@ -40,9 +46,12 @@ def get_network_info():
 def get_container_results():
     container_info = []
     if os.environ.get("NOIA_NETWORK_API", '').lower() == "docker":
-        docker_client = docker.from_env()
-        networks = docker_client.containers()
-        container_info = format_container_result(networks)
+        try:
+            docker_client = docker.from_env()
+            networks = docker_client.containers()
+            container_info = format_container_result(networks)
+        except (ProtocolError, ConnectionError):
+            container_info = []
     return {
         "container_info": container_info
     }

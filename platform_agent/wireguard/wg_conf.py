@@ -1,8 +1,10 @@
+import json
 import socket
 import base64
 import logging
 import subprocess
 import re
+from datetime import time
 from pathlib import Path
 from pyroute2 import IPDB, WireGuard, NDB, NetlinkError
 from nacl.public import PrivateKey
@@ -10,6 +12,7 @@ from nacl.public import PrivateKey
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata
+from platform_agent.lib.ctime import now
 from platform_agent.routes import Routes
 from platform_agent.wireguard.helpers import find_free_port, get_peer_info, WG_NAME_PATTERN
 
@@ -26,13 +29,14 @@ def delete_interface(ifname):
 
 class WgConf():
 
-    def __init__(self):
+    def __init__(self, client=None):
 
         self.wg_kernel = module_loaded('wireguard')
         self.wg = WireGuard() if self.wg_kernel else WireguardGo()
         self.ipdb = IPDB()
         self.ndb = NDB()
         self.routes = Routes()
+        self.client = client
 
     @staticmethod
     def get_wg_interfaces():
@@ -173,8 +177,17 @@ class WgConf():
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
-        self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
-        return
+        statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
+        self.client.send(json.dumps({
+            'id': "ID." + str(now()),
+            'executed_at': now(),
+            "type": "WG_ROUTE_STATUS",
+            "data": {
+                "connection_id": 123,
+                "public_key": public_key,
+                "statuses": statuses,
+            }
+        }))
 
     def remove_peer(self, ifname, public_key, allowed_ips=None):
 
