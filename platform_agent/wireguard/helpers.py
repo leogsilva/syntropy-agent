@@ -125,7 +125,7 @@ def get_peer_ips(ifname, wg, internal_ip, kind=None):
             (
                 ip for ip in peer['allowed_ips']
                 if
-                ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/24",
+                ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/16",
                                                                                False)
             ),
             None
