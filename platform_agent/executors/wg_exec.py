@@ -58,13 +58,13 @@ class WgExecutor(threading.Thread):
             payloads = self.get_from_queue()
             if not payloads:
                 continue
-            logger.info(f"[WG_EXECUTOR] - Received {payloads}")
+            logger.debug(f"[WG_EXECUTOR] - Received {payloads}")
             for request_id in list(payloads.keys()):
                 try:
                     self.execute_payload(request_id, payloads)
                 except:  # noqa Catch all errors and report to controller
                     # Catch all exceptions that not handled
-                    logger.info(f"[WG_EXECUTOR] - catched error")
+                    logger.debug(f"[WG_EXECUTOR] - catched error")
                     self.send_error(request_id)
 
     def execute_payload(self, request_id, payloads):
@@ -83,7 +83,7 @@ class WgExecutor(threading.Thread):
                 except WgConfException as e:
                     logger.error(f"[WG_EXECUTOR] failed. exception = {str(e)}, data = {payload}")
                     errors.append({payload['fn_name']: str(e), "args": payload['fn_args']})
-            logger.info(f"[WG_EXECUTOR] - Results {result}")
+            logger.debug(f"[WG_EXECUTOR] - Results {result}")
             response = {
                 'id': request_id,
                 'executed_at': now(),
@@ -108,7 +108,6 @@ class WgExecutor(threading.Thread):
             }
         }
         logger.error(result)
-        logger.debug(f"[RUNNER] WG Executor ERROR | {result}")
         if result:
             payload = {
                 'id': request_id,

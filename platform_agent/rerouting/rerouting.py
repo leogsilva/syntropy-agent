@@ -76,14 +76,13 @@ def get_fastest_routes(wg):
                 best_route = {'iface': iface, 'gw': data['internal_ip'], 'metadata': data.get('metadata')}
                 best_ping = ping_results[int_ip]['latency_ms']
         result[dest] = best_route
-        logger.debug(f"[REROUTING] Ping results {ping_results}")
     return result, ping_results
 
 
 class Rerouting(threading.Thread):
 
     def __init__(self, client, interval=1):
-        logger.info(f"[REROUTING] Initializing")
+        logger.debug(f"[REROUTING] Initializing")
         super().__init__()
         self.interval = interval
         self.client = client
@@ -93,7 +92,7 @@ class Rerouting(threading.Thread):
         self.daemon = True
 
     def run(self):
-        logger.info(f"[REROUTING] Running")
+        logger.debug(f"[REROUTING] Running")
         previous_routes = {}
         while not self.stop_rerouting.is_set():
             new_routes, ping_data = get_fastest_routes(self.wg)
@@ -101,7 +100,7 @@ class Rerouting(threading.Thread):
                 if not best_route or previous_routes.get(dest) == best_route:
                     continue
                 # Do rerouting logic with best_route
-                logger.info(f"[REROUTING] Rerouting {dest} via {best_route}", extra={'metadata': best_route.get('metadata')})
+                logger.debug(f"[REROUTING] Rerouting {dest} via {best_route}", extra={'metadata': best_route.get('metadata')})
                 try:
                     self.routes.ip_route_replace(
                         ifname=best_route['iface'], ip_list=[dest],

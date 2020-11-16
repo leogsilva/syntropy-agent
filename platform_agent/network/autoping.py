@@ -37,7 +37,6 @@ class AutopingClient(threading.Thread):
                 if len(pings) >= self.response_limit:
                     break
 
-            logger.debug("Autoping - sending answer")
             self.client.send_log(json.dumps({
                 'id': "ID." + str(time.time()),
                 'executed_at': now(),

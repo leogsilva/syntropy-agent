@@ -31,7 +31,7 @@ class DockerNetworkWatcher(threading.Thread):
             if event.get('Type') == 'network' and event.get('Action') in ['create', 'destroy']:
                 networks = self.docker_client.networks()
                 result = format_networks_result(networks)
-                logger.info(f"[NETWORK_INFO] Sending networks {result}")
+                logger.debug(f"[NETWORK_INFO] Sending networks {result}")
                 self.ws_client.send(json.dumps({
                     'id': "ID." + str(time.time()),
                     'executed_at': now(),

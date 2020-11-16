@@ -51,7 +51,7 @@ class AgentApi:
         result = None
         try:
             if hasattr(self, type):
-                logger.info(f"[AGENT_API] Calling agent api {data}")
+                logger.debug(f"[AGENT_API] Calling agent api {data}")
                 if not isinstance(data, (dict, list)):
                     logger.error('[AGENT_API] data should be "DICT" type')
                     result = {'error': "BAD REQUEST"}
@@ -72,7 +72,6 @@ class AgentApi:
             self.wg_peers = None
         self.wg_peers = WireguardPeerWatcher(self.runner, **data)
         self.wg_peers.start()
-        logger.debug(f"[WIREGUARD_PEERS] Enabled | {data}")
 
     def WG_CONF(self, data, **kwargs):
         self.wg_executor.queue.put({"data": data, "request_id": kwargs['request_id']})
@@ -84,7 +83,6 @@ class AgentApi:
             self.autoping = None
         self.autoping = AutopingClient(self.runner, **data)
         self.autoping.start()
-        logger.debug(f"[AUTO_PING] Enabled | {data}")
         return False
 
     def CONFIG_INFO(self, data, **kwargs):

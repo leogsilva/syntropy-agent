@@ -48,7 +48,7 @@ class WgConf():
         remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
         current_interfaces = self.get_wg_interfaces()
         remove_interfaces = set(current_interfaces) - set(remote_interfaces)
-        logger.info(
+        logger.debug(
             f"Clearing interfaces REMOTE - {remote_interfaces}, CURRENT - {current_interfaces} REMOVE={remove_interfaces}"
         )
         for interface in remove_interfaces:
@@ -99,7 +99,7 @@ class WgConf():
         public_key, private_key = self.get_wg_keys(ifname)
         peer_metadata = {'metadata': get_peer_metadata(public_key=public_key)}
         logger.info(
-            f"[WG_CONF] - Creating interface {ifname}, {listen_port}, {internal_ip}- wg_kernel={self.wg_kernel}",
+            f"[WG_CONF] - Creating interface {ifname}, {internal_ip} - wg_kernel={self.wg_kernel}",
             extra={'metadata': peer_metadata}
         )
         wg_int = None
@@ -156,7 +156,7 @@ class WgConf():
             "listen_port": int(listen_port),
             "ifname": ifname
         }
-        logger.info(
+        logger.debug(
             f"[WG_CONF] - interface_created {result}",
             extra={'metadata': peer_metadata}
         )
@@ -192,7 +192,7 @@ class WgConf():
     def remove_peer(self, ifname, public_key, allowed_ips=None):
 
         if not self.ndb.interfaces.get(ifname):
-            logger.warning(f'[WG_CONF] Remove peer - [{ifname}] does not exist')
+            logger.debug(f'[WG_CONF] Remove peer - [{ifname}] does not exist')
             return
 
         peer = {
@@ -244,7 +244,7 @@ class WireguardGo:
 
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
-        logger.info(f"[Wireguard-go] - WG SET - {complete_output} , args {full_cmd}")
+        logger.debug(f"[Wireguard-go] - WG SET - {complete_output} , args {full_cmd}")
         return complete_output
 
     def create_interface(self, ifname):
@@ -260,7 +260,7 @@ class WireguardGo:
             raise WgConfException(f'Wireguard-go missing')
         complete_output = result_set.stdout or result_set.stderr
         complete_output = complete_output or 'Success'
-        logger.info(f"[Wireguard-go] - WG Create - {complete_output.read()} , args {ifname}")
+        logger.debug(f"[Wireguard-go] - WG Create - {complete_output.read()} , args {ifname}")
         return complete_output
 
     def info(self, ifname):

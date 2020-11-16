@@ -50,7 +50,6 @@ class AgentRunner:
                     }
                 }
                 logger.error(result)
-            logger.debug(f"[RUNNER] Response | {result}")
             self.queue.task_done()
             if result:
                 payload = self.create_response(request, result)
@@ -72,7 +71,7 @@ class AgentRunner:
     def send(self, message):
         status = getattr(self.ws, 'sock')
         if status and status.status:
-            logger.info(f"[SENDING]: {message}")
+            logger.debug(f"[SENDING]: {message}")
             try:
                 self.ws.send(message)
             except:
@@ -124,14 +123,14 @@ class WebSocketClient(threading.Thread):
 
     def run(self):
         while True and self.active:
-            logger.info(f"[AGENT-{__version__}] Connecting {self.connection_url}")
+            logger.debug(f"[AGENT-{__version__}] Connecting {self.connection_url}")
             self.ws.run_forever()
             logger.warning(f"[AGENT-{__version__}] Disconnected {self.connection_url}")
             time.sleep(10)
 
     def on_message(self, message):
-        logger.info(f"[WEBSOCKET] Received | {message}")
-        logger.info(f"[WEBSOCKET] Queue size | {self.agent_runner.queue.qsize()}")
+        logger.debug(f"[WEBSOCKET] Received | {message}")
+        logger.debug(f"[WEBSOCKET] Queue size | {self.agent_runner.queue.qsize()}")
         self.agent_runner.queue.put(message)
 
     def on_error(self, error):
@@ -141,11 +140,11 @@ class WebSocketClient(threading.Thread):
 
     def on_close(self):
         self.agent_runner.active = False
-        logger.info("[WEBSOCKET] Close")
+        logger.debug("[WEBSOCKET] Close")
         time.sleep(10)
 
     def on_open(self):
-        logger.info("[WEBSOCKET] Connection open")
+        logger.debug("[WEBSOCKET] Connection open")
         self.agent_runner.active = True
 
     def stop(self):

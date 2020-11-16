@@ -40,7 +40,6 @@ class Routes:
             except NetlinkError as error:
                 if error.code != 17:
                     raise
-                logger.debug(f"[WG_CONF] add route failed [{ip}] - already exists")
 
     def ip_route_del(self, ifname, ip_list, scope=None):
         devices = self.ip_route.link_lookup(ifname=ifname)
@@ -51,7 +50,6 @@ class Routes:
             except NetlinkError as error:
                 if error.code not in [17, 3]:
                     raise
-                logger.debug(f"[WG_CONF] del route failed [{ip}] - does not exist")
 
     def create_rule(self, internal_ip, rt_table_id):
         self.ip_route.flush_rules(table=rt_table_id)
