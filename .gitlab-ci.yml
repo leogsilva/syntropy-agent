@@ -1,3 +1,7 @@
+variables:
+  PROD: "0.1"
+  TEST: "devel"
+
 stages:
   - build
   - push_image
@@ -5,41 +9,43 @@ stages:
 build_sandbox:
   stage: build
   only:
-    - sandbox
+    - master
   script:
     - sudo docker build --no-cache -t noia/agent:sandbox .
 
 build_devel:
   stage: build
   only:
-    - devel
+    - $TEST
   script:
-    - sudo docker build --no-cache -t noia/agent:latest .
+    - sudo docker build --no-cache -t noia/agent:$TEST .
 
 build_prod:
   stage: build
   only:
-    - master
+    - $PROD
+  when: manual
   script:
-    - sudo docker build --no-cache -t noia/agent:prod .
+    - sudo docker build --no-cache -t noia/agent:$PROD .
 
 push_image_sandbox:
   stage: push_image
   only:
-    - sandbox
+    - master
   script:
     - sudo docker push noia/agent:sandbox
 
 push_image_devel:
   stage: push_image
   only:
-    - devel
+    - $TEST
   script:
-    - sudo docker push noia/agent:latest
+    - sudo docker push noia/agent:$TEST
 
 push_image_prod:
   stage: push_image
   only:
-    - master
+    - $PROD
+  when: manual
   script:
-    - sudo docker push noia/agent:prod
+    - sudo docker push noia/agent:$PROD
