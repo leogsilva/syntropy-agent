@@ -5,7 +5,7 @@ import requests
 
 import docker
 from requests.exceptions import ConnectionError
-from urllib3.exceptions import ProtocolError
+from urllib3.exceptions import ProtocolError, NewConnectionError
 
 from platform_agent.docker_api.helpers import format_networks_result, format_container_result
 from platform_agent.config.settings import Config
@@ -14,11 +14,13 @@ logger = logging.getLogger()
 
 
 def get_ip_addr():
-    resp = requests.get("https://ip.noia.network/")
-    return {
-        "external_ip": resp.json()
-    }
-
+    try:
+        resp = requests.get("https://ip.noia.network/")
+        return {
+            "external_ip": resp.json()
+        }
+    except NewConnectionError:
+        return {}
 
 def get_location():
     return {

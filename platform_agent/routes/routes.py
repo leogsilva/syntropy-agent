@@ -23,7 +23,7 @@ class Routes:
                     status = "ERROR"
                     msg = str(error)
                 elif dict(self.ip_route.get_routes(dst=ip)[0]['attrs']).get('RTA_OIF') != dev:
-                    logger.error(f"[WG_CONF] add route failed [{ip}] - already exists")
+                    logger.debug(f"[WG_CONF] add route failed [{ip}] - already exists")
                     status = "ERROR"
                     msg = "OVERLAP"
                 else:
