@@ -14,21 +14,16 @@ class Routes:
         dev = devices[0]
         statuses = []
         for ip in ip_list:
-            msg = "OK"
+            result = {'ip': ip, 'status': 'OK'}
             try:
                 self.ip_route.route('add', dst=ip, gateway=gw_ipv4, oif=dev)
-                status = "OK"
             except NetlinkError as error:
                 if error.code != 17:
-                    status = "ERROR"
-                    msg = str(error)
+                    result.update({'status': "ERROR", 'msg': str(error)})
                 elif dict(self.ip_route.get_routes(dst=ip)[0]['attrs']).get('RTA_OIF') != dev:
                     logger.debug(f"[WG_CONF] add route failed [{ip}] - already exists")
-                    status = "ERROR"
-                    msg = "OVERLAP"
-                else:
-                    status = "OK"
-            statuses.append({"ip": ip, "status": status, "msg": msg})
+                    result.update({'status': "ERROR", 'msg': "OVERLAP"})
+            statuses.append(result)
         return statuses
 
     def ip_route_replace(self, ifname, ip_list, gw_ipv4):

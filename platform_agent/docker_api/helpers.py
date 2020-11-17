@@ -40,13 +40,13 @@ def format_container_result(containers):
         for port in container.get('Ports', []):
             private_port = port.get('PrivatePort')
             public_port = port.get('PublicPort')
-            type = port.get('Type')
-            if not type:
+            port_type = port.get('Type')
+            if not port_type:
                 continue
-            if private_port:
-                ports[type].append(private_port)
-            if public_port:
-                ports[type].append(public_port)
+            if private_port and private_port not in ports[port_type]:
+                ports[port_type].append(private_port)
+            if public_port and public_port not in ports[port_type]:
+                ports[port_type].append(public_port)
         container_info = conts.get(container['Id'])
         if container_info:
             result.append(
