@@ -44,7 +44,7 @@ push_image_devel:
     variables:
       - $CI_COMMIT_REF_NAME == $BRANCH_TESTING
   script:
-    - sudo docker push noia/agent:$CI_COMMIT_SHORT_SHA .
+    - sudo docker push noia/agent:$CI_COMMIT_SHORT_SHA
 
 push_image_prod:
   stage: push_image
@@ -53,4 +53,4 @@ push_image_prod:
       - $CI_COMMIT_REF_NAME == $BRANCH_STABLE
   when: manual
   script:
-    - sudo docker push noia/agent:$BRANCH_STABLE .
+    - sudo docker push noia/agent:$BRANCH_STABLE
