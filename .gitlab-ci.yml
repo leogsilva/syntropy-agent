@@ -20,7 +20,7 @@ build_devel:
     variables:
       - $CI_COMMIT_REF_NAME == $BRANCH_TESTING
   script:
-    - sudo docker build --no-cache -t noia/agent:$TEST .
+    - sudo docker build --no-cache -t noia/agent:$CI_COMMIT_SHORT_SHA .
 
 build_prod:
   stage: build
@@ -29,7 +29,7 @@ build_prod:
       - $CI_COMMIT_REF_NAME == $BRANCH_STABLE
   when: manual
   script:
-    - sudo docker build --no-cache -t noia/agent:$PROD .
+    - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE .
 
 push_image_sandbox:
   stage: push_image
@@ -44,7 +44,7 @@ push_image_devel:
     variables:
       - $CI_COMMIT_REF_NAME == $BRANCH_TESTING
   script:
-    - sudo docker push noia/agent:$TEST
+    - sudo docker push noia/agent:$CI_COMMIT_SHORT_SHA .
 
 push_image_prod:
   stage: push_image
@@ -53,4 +53,4 @@ push_image_prod:
       - $CI_COMMIT_REF_NAME == $BRANCH_STABLE
   when: manual
   script:
-    - sudo docker push noia/agent:$PROD
+    - sudo docker push noia/agent:$BRANCH_STABLE .
