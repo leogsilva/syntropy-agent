@@ -1,6 +1,7 @@
 variables:
-  PROD: "0.1"
-  TEST: "devel"
+  BRANCH_TESTING: "devel"
+  BRANCH_STABLE: "0.1"
+
 
 stages:
   - build
@@ -16,14 +17,16 @@ build_sandbox:
 build_devel:
   stage: build
   only:
-    - $TEST
+    variables:
+      - $CI_COMMIT_REF_NAME == $BRANCH_TESTING
   script:
     - sudo docker build --no-cache -t noia/agent:$TEST .
 
 build_prod:
   stage: build
   only:
-    - $PROD
+    variables:
+      - $CI_COMMIT_REF_NAME == $BRANCH_STABLE
   when: manual
   script:
     - sudo docker build --no-cache -t noia/agent:$PROD .
@@ -38,14 +41,16 @@ push_image_sandbox:
 push_image_devel:
   stage: push_image
   only:
-    - $TEST
+    variables:
+      - $CI_COMMIT_REF_NAME == $BRANCH_TESTING
   script:
     - sudo docker push noia/agent:$TEST
 
 push_image_prod:
   stage: push_image
   only:
-    - $PROD
+    variables:
+      - $CI_COMMIT_REF_NAME == $BRANCH_STABLE
   when: manual
   script:
     - sudo docker push noia/agent:$PROD
