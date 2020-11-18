@@ -1,10 +1,11 @@
 image: python:3.6.0
 pipelines:
-  branches:
-    '{master,devel,sandbox}':
-      - step:
-          script:
-            - git config user.email virginijus@noia.network
-            - git config --global user.name "Virginijus Magelinskas"
-            - git remote add --mirror=fetch gitlab git@gitlab.com:noia-public/platform_agent.git
-            - git push -f -u gitlab --all
+  default:
+    - step:
+        script:
+          - git config user.email virginijus@noia.network
+          - git config --global user.name "Virginijus Magelinskas"
+          - git remote add --mirror=fetch gitlab git@gitlab.com:noia-public/platform_agent.git
+          - git fetch origin
+          - git push -f -u --all gitlab
+          - git push -u --tags gitlab

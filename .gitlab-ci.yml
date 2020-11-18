@@ -1,7 +1,11 @@
 variables:
-  BRANCH_TESTING: "devel"
   BRANCH_STABLE: "0.1"
 
+.rules-def:
+  rules:
+    - if: &is-for-sandbox '$CI_COMMIT_BRANCH == "master"'
+    - if: &is-for-prod '$CI_COMMIT_BRANCH == $BRANCH_STABLE'
+    - if: &is-for-devel '$CI_COMMIT_TAG =~ /-(?:beta|rc)\d+$/'
 
 stages:
   - build
@@ -9,48 +13,43 @@ stages:
 
 build_sandbox:
   stage: build
-  only:
-    - master
+  rules:
+    - if: *is-for-sandbox
   script:
-    - sudo docker build --no-cache -t noia/agent:sandbox .
+    - sudo docker build --no-cache -t noia/agent:sandbox-$CI_COMMIT_SHORT_SHA .
 
 build_devel:
   stage: build
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == $BRANCH_TESTING
+  rules:
+    - if: *is-for-devel
   script:
-    - sudo docker build --no-cache -t noia/agent:$CI_COMMIT_SHORT_SHA .
+    - sudo docker build --no-cache -t noia/agent:$CI_COMMIT_TAG .
 
 build_prod:
   stage: build
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == $BRANCH_STABLE
+  rules:
+    - if: *is-for-prod
   when: manual
   script:
     - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE .
 
 push_image_sandbox:
   stage: push_image
-  only:
-    - master
+  rules:
+    - if: *is-for-sandbox
   script:
-    - sudo docker push noia/agent:sandbox
+    - sudo docker push noia/agent:sandbox-$CI_COMMIT_SHORT_SHA
 
 push_image_devel:
   stage: push_image
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == $BRANCH_TESTING
+  rules:
+    - if: *is-for-devel
   script:
-    - sudo docker push noia/agent:$CI_COMMIT_SHORT_SHA
+    - sudo docker push noia/agent:$CI_COMMIT_TAG
 
 push_image_prod:
   stage: push_image
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == $BRANCH_STABLE
-  when: manual
+  rules:
+    - if: *is-for-prod
   script:
     - sudo docker push noia/agent:$BRANCH_STABLE
