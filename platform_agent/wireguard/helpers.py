@@ -19,7 +19,7 @@ WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 def get_connection_status(latency, packet_loss):
     if packet_loss >= 1:
         return 'OFFLINE'
-    elif 0.1 <= packet_loss <= 1 or latency >= 1000:
+    elif 0.01 <= packet_loss <= 1 or latency >= 1000:
         return 'WARNING'
     return 'CONNECTED'
 
