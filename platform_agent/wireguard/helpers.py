@@ -18,11 +18,11 @@ WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
 def get_connection_status(latency_ms, packet_loss):
     if packet_loss >= 1:
-        res = {'status': 'OFFLINE', 'reason': 'Packet loss 100%'}
+        res = {'status': 'OFFLINE', 'status_reason': 'Packet loss 100%'}
     elif 0.01 <= packet_loss <= 1:
-        res = {'status': 'WARNING', 'reason': 'Packet loss higher than 1%'}
+        res = {'status': 'WARNING', 'status_reason': 'Packet loss higher than 1%'}
     elif latency_ms >= 1000:
-        res = {'status': 'WARNING', 'reason': 'Latency higher than 1000ms'}
+        res = {'status': 'WARNING', 'status_reason': 'Latency higher than 1000ms'}
     else:
         res = {'status': 'CONNECTED'}
     res.update(
