@@ -16,12 +16,22 @@ from platform_agent.network.iface_watcher import read_tmp_file
 WG_NAME_PATTERN = '[0-9]{10}(s1|s2|s3|p0)+(g|m|p)[Nn][Oo]'
 
 
-def get_connection_status(latency, packet_loss):
+def get_connection_status(latency_ms, packet_loss):
     if packet_loss >= 1:
-        return 'OFFLINE'
-    elif 0.01 <= packet_loss <= 1 or latency >= 1000:
-        return 'WARNING'
-    return 'CONNECTED'
+        res = {'status': 'OFFLINE', 'reason': 'Packet loss 100%'}
+    elif 0.01 <= packet_loss <= 1:
+        res = {'status': 'WARNING', 'reason': 'Packet loss higher than 1%'}
+    elif latency_ms >= 1000:
+        res = {'status': 'WARNING', 'reason': 'Latency higher than 1000ms'}
+    else:
+        res = {'status': 'CONNECTED'}
+    res.update(
+        {
+            "latency_ms": latency_ms,
+            "packet_loss": packet_loss,
+        }
+    )
+    return res
 
 def find_free_port():
     port = randint(49152,65535)
@@ -148,11 +158,7 @@ def ping_internal_ips(ips, count=4, interval=0.5, icmp_id=10000):
     for res in ping_res:
         latency_ms = res.avg_rtt if res.is_alive else 5000
         packet_loss = res.packet_loss if res.is_alive else 1
-        result[res.address] = {
-            "latency_ms": latency_ms,
-            "packet_loss": packet_loss,
-            "status": get_connection_status(latency_ms, packet_loss),
-        }
+        result[res.address] = get_connection_status(latency_ms, packet_loss),
     return result
 
 
