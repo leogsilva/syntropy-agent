@@ -16,7 +16,7 @@ build_sandbox:
   rules:
     - if: *is-for-sandbox
   script:
-    - sudo docker build --no-cache -t noia/agent:sandbox-$CI_COMMIT_SHORT_SHA .
+    - sudo docker build --no-cache -t noia/agent:sandbox-$CI_COMMIT_SHORT_SHA -t noia/agent:sandbox -t noia/agent:latest .
 
 build_devel:
   stage: build
@@ -38,6 +38,8 @@ push_image_sandbox:
     - if: *is-for-sandbox
   script:
     - sudo docker push noia/agent:sandbox-$CI_COMMIT_SHORT_SHA
+    - sudo docker push noia/agent:sandbox
+    - sudo docker push noia/agent:latest
 
 push_image_devel:
   stage: push_image
