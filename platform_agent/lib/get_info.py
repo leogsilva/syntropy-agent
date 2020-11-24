@@ -66,10 +66,16 @@ def get_srevice_status():
         return False
 
 
+def get_provider():
+    try:
+        int(os.environ['NOIA_PROVIDER']),
+    except (ValueError, KeyError):
+        return None
+
 def get_info():
     return {
         "agent_name": os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
-        "agent_provider": os.environ.get('NOIA_PROVIDER', None),
+        "agent_provider": get_provider(),
         "agent_category": os.environ.get('NOIA_CATEGORY', None),
         "service_status": get_srevice_status(),
         "agent_tags": Config.get_list_item('tags'),
