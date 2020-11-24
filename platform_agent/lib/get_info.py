@@ -22,6 +22,7 @@ def get_ip_addr():
     except NewConnectionError:
         return {}
 
+
 def get_location():
     return {
         "location_lat": os.environ.get('NOIA_LAT'),
@@ -59,12 +60,19 @@ def get_container_results():
     }
 
 
+def get_srevice_status():
+    if os.environ.get('NOIA_SERVICES_STATUS') and os.environ.get('NOIA_SERVICES_STATUS').lower() == 'true':
+        return True
+    else:
+        return False
+
+
 def get_info():
     return {
         "agent_name": os.environ.get('NOIA_AGENT_NAME', socket.gethostname()),
         "agent_provider": os.environ.get('NOIA_PROVIDER', None),
         "agent_category": os.environ.get('NOIA_CATEGORY', None),
-        "service_status": os.environ.get('NOIA_SERVICES_STATUS', False),
+        "service_status": get_srevice_status(),
         "agent_tags": Config.get_list_item('tags'),
         "network_ids": Config.get_list_item('network_ids'),
     }
