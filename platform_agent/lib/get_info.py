@@ -27,7 +27,6 @@ def get_location():
     return {
         "location_lat": os.environ.get('NOIA_LAT'),
         "location_lon": os.environ.get('NOIA_LON'),
-        "location_city": os.environ.get('NOIA_CITY')
     }
 
 
@@ -85,4 +84,5 @@ def gather_initial_info():
     result.update(get_network_info())
     result.update(get_info())
     result.update(get_container_results())
+    result.update(get_location())
     return result
