@@ -10,6 +10,8 @@ variables:
 stages:
   - build
   - push_image
+  - prep_env
+  - pypi
 
 build_sandbox:
   stage: build
@@ -54,3 +56,27 @@ push_image_prod:
     - if: *is-for-prod
   script:
     - sudo docker push noia/agent:$BRANCH_STABLE
+
+prepare_environment:
+  stage: prep_env
+  rules:
+    - if: *is-for-sandbox
+  script:
+    - python3 --version
+    - virtualenv-3 -p python3 build_env --no-pip
+    - source build_env/bin/activate
+    - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    - python get-pip.py "pip"==19.2.2
+    - rm -rf get-pip.py
+    - pip -V
+    - deactivate
+
+pypi:
+  stage: pypi
+  rules:
+    - if: *is-for-sandbox
+  script:
+    - source build_env/bin/activate
+    - pip install twine
+    - python3 setup.py bdist_wheel
+    - TWINE_PASSWORD=${PIP_TOKEN} TWINE_USERNAME=__token__ python3 -m twine upload dist/*
