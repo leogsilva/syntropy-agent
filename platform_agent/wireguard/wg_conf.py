@@ -124,8 +124,8 @@ class WgConf():
         wg_int.set('state', 'up')
         try:
             wg_int.commit()
-        except KeyError as e:
-            if not len(e.args) and e.args[0] == 'object exists':
+        except (KeyError, Exception) as e:
+            if not len(e.args) and e.args[0] not in ['object exists', 'lost sync in apply()']:
                 raise WgConfException(str(e))
         try:
             self.wg.set(
