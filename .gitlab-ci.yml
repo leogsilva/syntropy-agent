@@ -10,7 +10,6 @@ variables:
 stages:
   - build
   - push_image
-  - prep_env
   - pypi
 
 build_sandbox:
@@ -25,14 +24,14 @@ build_devel:
   rules:
     - if: *is-for-devel
   script:
-    - sudo docker build --no-cache -t noia/agent:$CI_COMMIT_TAG .
+    - sudo docker build --no-cache -t noia/agent:$CI_COMMIT_TAG -t noia/agent:devel .
 
 build_prod:
   stage: build
   rules:
     - if: *is-for-prod
   script:
-    - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE .
+    - sudo docker build --no-cache -t noia/agent:$BRANCH_STABLE -t noia/agent:stable .
 
 push_image_sandbox:
   stage: push_image
@@ -49,6 +48,7 @@ push_image_devel:
     - if: *is-for-devel
   script:
     - sudo docker push noia/agent:$CI_COMMIT_TAG
+    - sudo docker push noia/agent:devel
 
 push_image_prod:
   stage: push_image
@@ -56,27 +56,14 @@ push_image_prod:
     - if: *is-for-prod
   script:
     - sudo docker push noia/agent:$BRANCH_STABLE
-
-prepare_environment:
-  stage: prep_env
-  rules:
-    - if: *is-for-sandbox
-  script:
-    - python3 --version
-    - virtualenv-3 -p python3 build_env --no-pip
-    - source build_env/bin/activate
-    - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-    - python get-pip.py "pip"==19.2.2
-    - rm -rf get-pip.py
-    - pip -V
-    - deactivate
+    - sudo docker push noia/agent:stable
 
 pypi:
   stage: pypi
   rules:
     - if: *is-for-sandbox
   script:
-    - source build_env/bin/activate
+    - pip install wheel
     - pip install twine
-    - python3 setup.py bdist_wheel
+    - python3 setup.py sdist bdist_wheel
     - TWINE_PASSWORD=${PIP_TOKEN} TWINE_USERNAME=__token__ python3 -m twine upload dist/*
