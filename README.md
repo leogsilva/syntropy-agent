@@ -134,18 +134,14 @@ Environment=NOIA_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":
 #If using docker , NOIA_NETWORK_API=docker would allow agent to access docker networks for information.
 Environment=NOIA_NETWORK_API=none
 Environment="NOIA_AGENT_NAME=Azure EU gateway"
-Environment=NOIA_COUNTRY=Germany
-Environment=NOIA_CITY=Frankfurt
-#Select one of the categories from the list or default will be assigned
-# 'IoT','Server','none'
-Environment=NOIA_CATEGORY=IoT
-#Select one of providers from the list or default will be assigned
-#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
-#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
-Environment="NOIA_PROVIDER=Microsoft Azure"
+
+# Select one of providers from the list - https://noia-network.readme.io/docs/start-noia-agent#section-variables
+Environment="NOIA_PROVIDER=1"
+
 Environment=NOIA_LAT=40.14
 Environment=NOIA_LON=-74.21
 Environment=NOIA_TAGS=Tag1,Tag2
+Environment=NOIA_SERVICES_STATUS=false
 ```
 
 ```bash
@@ -189,23 +185,16 @@ NOIA_API_KEY= your_api_key
 ```ini
 -e NOIA_NETWORK_API='docker'
 -e NOIA_AGENT_NAME='Azure EU gateway '
--e NOIA_COUNTRY='Germany'
--e NOIA_CITY='Frankfurt'
 
-#Select one of the categories from the list or default will be assigned 
-# 'IoT','Server','none' 
--e NOIA_CATEGORY='IoT'
+# Select one of providers from the list - https://noia-network.readme.io/docs/start-noia-agent#section-variables
+-e NOIA_PROVIDER ='1'
 
-#Select one of providers from the list or default will be assigned 
-#'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud', 
-#'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'. 
-
--e NOIA_PROVIDER ='Microsoft Azure'
 -e NOIA_LAT='40.14'
 -e NOIA_LON='-74.21'
 
 #You can manually add allowed ips
 -e NOIA_ALLOWED_IPS='[{"127.0.24.0/24":"myvpc"},{"192.168.24.0/32":"vpc"}]'
+-e NOIA_SERVICES_STATUS='false'
 ```
 
 
