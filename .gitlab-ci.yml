@@ -61,9 +61,9 @@ push_image_prod:
 pypi:
   stage: pypi
   rules:
-    - if: *is-for-sandbox
+    - if: *is-for-prod
   script:
     - pip install wheel
     - pip install twine
     - python3 setup.py sdist bdist_wheel
-    - TWINE_PASSWORD=${PIP_TOKEN} TWINE_USERNAME=__token__ python3 -m twine upload dist/*
+    - TWINE_PASSWORD="${PIP_TOKEN}" TWINE_USERNAME=__token__ python3 -m twine upload dist/*

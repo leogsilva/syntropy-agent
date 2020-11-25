@@ -23,24 +23,14 @@ Environment=NOIA_NETWORK_API=none
 
 Environment=NOIA_AGENT_NAME=Azure EU gateway
 
-Environment=NOIA_COUNTRY=Germany
+# Select one of providers from the list - https://noia-network.readme.io/docs/start-noia-agent#section-variables
 
-Environment=NOIA_CITY=Frankfurt
-
-# Select one of the categories from the list or default will be assigned
-# 'IoT','Server','none' 
-
-Environment=NOIA_CATEGORY=IoT
-
-# Select one of providers from the list or default will be assigned
-# 'AWS', 'DigitalOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',
-# 'Google Cloud Platform', 'Oracle Cloud', 'VMware', 'IBM Cloud', 'Vultr'.
-
-Environment=NOIA_PROVIDER=Microsoft Azure
+Environment=NOIA_PROVIDER=1
 
 Environment=NOIA_LAT=40.14
-
 Environment=NOIA_LON=-74.21
+
+Environment=NOIA_SERVICES_STATUS=false
 ```
 ### Create Systemd service
 
