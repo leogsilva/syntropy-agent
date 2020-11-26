@@ -3,8 +3,8 @@ import os
 import ipaddress
 import re
 import psutil
+import socket
 from random import randint
-
 
 from icmplib import multiping
 from pyroute2 import NetlinkError
@@ -33,18 +33,20 @@ def get_connection_status(latency_ms, packet_loss):
     )
     return res
 
+
 def find_free_port():
-    port = randint(49152,65535)
-    portsinuse=[]
+    port = randint(49152, 65535)
+    portsinuse = []
     while True:
         conns = psutil.net_connections()
         for conn in conns:
             portsinuse.append(conn.laddr[1])
         if port in portsinuse:
-            port = randint(49152,65535)
+            port = randint(49152, 65535)
         else:
             break
     return port
+
 
 def get_iface_public_key(ifname):
     wg = WireGuardRead()
@@ -152,13 +154,27 @@ def check_if_wireguard_installled():
     return module_loaded('wireguard') or is_tool('wireguard-go')
 
 
+def check_udp_connection():
+    for pings in range(3):
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        client_socket.settimeout(1.0)
+        message = b'test'
+        addr = ("udp-check.noia.network", 12000)
+        client_socket.sendto(message, addr)
+        try:
+            client_socket.recvfrom(1024)
+            return True
+        except socket.timeout:
+            return False
+
+
 def ping_internal_ips(ips, count=4, interval=0.5, icmp_id=10000):
     result = {}
     ping_res = multiping(ips, count=count, interval=interval, id=icmp_id)
     for res in ping_res:
         latency_ms = res.avg_rtt if res.is_alive else 5000
         packet_loss = res.packet_loss if res.is_alive else 1
-        result[res.address] = get_connection_status(latency_ms, packet_loss),
+        result[res.address] = get_connection_status(latency_ms, packet_loss)
     return result
 
 
@@ -185,5 +201,6 @@ def merged_peer_info(wg):
     pings = ping_internal_ips(peers_ips, count=1, interval=0.3)
     for iface in result:
         for peer in iface['peers']:
+            print(pings[peer['internal_ip']])
             peer.update(pings[peer['internal_ip']])
     return result
