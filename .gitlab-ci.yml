@@ -1,5 +1,5 @@
 variables:
-  BRANCH_STABLE: "0.2"
+  BRANCH_STABLE: "0.62"
 
 .rules-def:
   rules:
