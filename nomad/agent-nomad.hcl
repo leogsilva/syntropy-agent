@@ -28,7 +28,7 @@ job "noia-agent" {
         }
     env {
       NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA'
-      NOIA_CONTROLLER_URL='app-controller-platform-agents.noia.network'
+      NOIA_CONTROLLER_URL='controller-prod-platform-agents.noia.network'
 
     }
       }

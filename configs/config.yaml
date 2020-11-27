@@ -2,7 +2,7 @@ name: Azure EU gateway
 
 connection:
   api_key: vAVlRtYoiA2rfa3NHM7mgGpN23Sg1WWH
-  controller_url: app-controller-platform-agents.noia.network
+  controller_url: controller-prod-platform-agents.noia.network
   network_api: docker
   #Select one of providers from the list or default will be assigned
   #'AWS', 'DigtialOcean', 'Microsoft Azure', 'Rackspace', 'Alibaba Cloud',

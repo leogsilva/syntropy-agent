@@ -129,7 +129,7 @@ Edit settings file ```/etc/systemd/system/noia-agent.service.d/10-vars.conf``` a
 # Required parameters
 Environment=NOIA_API_KEY=YOUR_API_KEY
 # Optional parameters
-Environment=NOIA_CONTROLLER_URL=app-controller-platform-agents.noia.network
+Environment=NOIA_CONTROLLER_URL=controller-prod-platform-agents.noia.network
 Environment=NOIA_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]
 #If using docker , NOIA_NETWORK_API=docker would allow agent to access docker networks for information.
 Environment=NOIA_NETWORK_API=none

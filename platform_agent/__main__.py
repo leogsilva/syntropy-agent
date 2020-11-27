@@ -4,7 +4,7 @@ Noia platform agent.
 """
 
 __author__ = "NOIA Network"
-__version__ = "0.0.61"
+__version__ = "0.0.62"
 __license__ = "MIT"
 
 import os
@@ -72,7 +72,7 @@ def agent(args):
 
         # Initiating WS client
         client = WebSocketClient(
-            os.environ.get('NOIA_CONTROLLER_URL', 'app-controller-platform-agents.noia.network'),
+            os.environ.get('NOIA_CONTROLLER_URL', 'controller-prod-platform-agents.noia.network'),
             os.environ['NOIA_API_KEY']
         )
 

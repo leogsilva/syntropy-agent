@@ -26,7 +26,7 @@
     purge_networks: no
     env:
       NOIA_API_KEY: "{{ noia_api_key }}"
-      NOIA_CONTROLLER_URL:  "{{ ctrl_url | default('app-controller-platform-agents.noia.network') }}" 
+      NOIA_CONTROLLER_URL:  "{{ ctrl_url | default('controller-prod-platform-agents.noia.network') }}"
       NOIA_NETWORK_API: docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
