@@ -201,6 +201,5 @@ def merged_peer_info(wg):
     pings = ping_internal_ips(peers_ips, count=1, interval=0.3)
     for iface in result:
         for peer in iface['peers']:
-            print(pings[peer['internal_ip']])
             peer.update(pings[peer['internal_ip']])
     return result
