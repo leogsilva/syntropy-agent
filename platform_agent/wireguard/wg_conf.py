@@ -4,9 +4,8 @@ import base64
 import logging
 import subprocess
 import re
-from time import sleep
 from pathlib import Path
-from pyroute2 import IPDB, WireGuard, NDB, NetlinkError
+from pyroute2 import IPDB, WireGuard, NetlinkError
 from nacl.public import PrivateKey
 
 from platform_agent.cmd.lsmod import module_loaded
@@ -24,7 +23,25 @@ class WgConfException(Exception):
 
 def delete_interface(ifname):
 
-    subprocess.run(['ip', 'link', 'del', ifname], check=False)
+    subprocess.run(['ip', 'link', 'del', ifname], check=False, stderr=subprocess.DEVNULL)
+
+
+def create_interface(ifname):
+    try:
+        subprocess.run(['ip', 'link', 'add', 'dev', ifname, 'type', 'wireguard'], check=True, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        pass
+    try:
+        subprocess.run(['ip', 'link', 'set', 'up', ifname], check=True, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        pass
+
+
+def set_interface_ip(ifname, ip):
+    try:
+        subprocess.run(['ip', 'address', 'add', 'dev', ifname, ip], check=True, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        pass
 
 
 class WgConf():
@@ -34,7 +51,6 @@ class WgConf():
         self.wg_kernel = module_loaded('wireguard')
         self.wg = WireGuard() if self.wg_kernel else WireguardGo()
         self.ipdb = IPDB()
-        self.ndb = NDB()
         self.routes = Routes()
         self.client = client
 
@@ -102,31 +118,14 @@ class WgConf():
             f"[WG_CONF] - Creating interface {ifname}, {internal_ip} - wg_kernel={self.wg_kernel}",
             extra={'metadata': peer_metadata}
         )
-        wg_int = None
-        error = None
+
         if self.wg_kernel:
-            try:
-                wg_int = self.ndb.interfaces.create(kind='wireguard', ifname=ifname)
-            except KeyError as e:
-                error = str(e)
-                if not len(e.args) and e.args[0] == 'object exists':
-                    raise WgConfException(str(e))
+            create_interface(ifname)
         else:
             self.wg.create_interface(ifname)
-            #Wait until interface was created
-            sleep(0.01)
 
-        if self.ndb.interfaces.get(ifname):
-            wg_int = self.ndb.interfaces[ifname]
-        elif not wg_int:
-            raise WgConfException(f"[WG_CONF] Wireguard failed to create interface - {error}")
-        wg_int.add_ip(internal_ip)
-        wg_int.set('state', 'up')
-        try:
-            wg_int.commit()
-        except (KeyError, Exception) as e:
-            if not len(e.args) and e.args[0] not in ['object exists', 'lost sync in apply()']:
-                raise WgConfException(str(e))
+        set_interface_ip(ifname, internal_ip)
+
         try:
             self.wg.set(
                 ifname,
@@ -191,7 +190,7 @@ class WgConf():
 
     def remove_peer(self, ifname, public_key, allowed_ips=None):
 
-        if not self.ndb.interfaces.get(ifname):
+        if ifname in self.get_wg_interfaces():
             logger.debug(f'[WG_CONF] Remove peer - [{ifname}] does not exist')
             return
 
@@ -254,8 +253,9 @@ class WireguardGo:
                 encoding='utf-8',
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                start_new_session=True
+                start_new_session=True,
             )
+            result_set.wait(timeout=2)
         except FileNotFoundError:
             raise WgConfException(f'Wireguard-go missing')
         complete_output = result_set.stdout or result_set.stderr

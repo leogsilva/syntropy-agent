@@ -133,15 +133,18 @@ def get_peer_ips(ifname, wg, internal_ip, kind=None):
     peers_internal_ip = []
     peers = get_peer_info_all(ifname, wg, kind=kind)
     for peer in peers:
-        peer_internal_ip = next(
-            (
-                ip for ip in peer['allowed_ips']
-                if
-                ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/16",
-                                                                               False)
-            ),
-            None
-        )
+        try:
+            peer_internal_ip = next(
+                (
+                    ip for ip in peer['allowed_ips']
+                    if
+                    ipaddress.ip_address(ip.split('/')[0]) in ipaddress.ip_network(f"{internal_ip.split('/')[0]}/16",
+                                                                                   False)
+                ),
+                None
+            )
+        except ValueError:
+            continue
         if not peer_internal_ip:
             continue
         peer.update({'internal_ip': peer_internal_ip.split('/')[0]})
