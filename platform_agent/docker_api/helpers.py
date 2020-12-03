@@ -48,14 +48,16 @@ def format_container_result(containers):
                 ports[port_type].append(public_port)
         container_info = conts.get(container['Id'])
 
-        container_conf = docker_client.inspect_container(container['Id'])['Config']
-
-        try:
-            container_info['name'] = [name for name in container_conf.get('Env', []) if 'NOIA_SERVICE_NAME' in name][0].split('=')[1]
-        except IndexError:
-            container_info['name'] = container_conf.get('Domainname', container_info.get('Name'))
-
         if container_info:
+
+            container_conf = docker_client.inspect_container(container['Id'])['Config']
+
+            try:
+                container_info['name'] = \
+                    [name for name in container_conf.get('Env', []) if 'NOIA_SERVICE_NAME' in name][0].split('=')[1]
+            except IndexError:
+                container_info['name'] = container_conf.get('Domainname', container_info.get('Name'))
+
             result.append(
                 {
                     'agent_container_id': container['Id'],
