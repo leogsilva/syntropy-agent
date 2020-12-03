@@ -35,7 +35,6 @@ def format_container_result(containers):
             conts[k]['network_names'] = [network.get('Name')]
     result = []
     for container in containers:
-
         ports = {'udp': [], 'tcp': []}
         for port in container.get('Ports', []):
             private_port = port.get('PrivatePort')
@@ -48,11 +47,19 @@ def format_container_result(containers):
             if public_port and public_port not in ports[port_type]:
                 ports[port_type].append(public_port)
         container_info = conts.get(container['Id'])
+
+        container_conf = docker_client.inspect_container(container['Id'])['Config']
+
+        try:
+            container_info['name'] = [name for name in container_conf.get('Env', []) if 'NOIA_SERVICE_NAME' in name][0].split('=')[1]
+        except IndexError:
+            container_info['name'] = container_conf.get('Domainname', container_info.get('Name'))
+
         if container_info:
             result.append(
                 {
                     'agent_container_id': container['Id'],
-                    'agent_container_name': container_info.get('Name'),
+                    'agent_container_name': container_info.get('name'),
                     'agent_container_ips': container_info.get('IPv4Address'),
                     'agent_container_networks': container_info.get('network_names'),
                     'agent_container_ports': ports,
