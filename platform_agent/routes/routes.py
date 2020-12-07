@@ -68,7 +68,7 @@ class Routes:
             try:
                 self.ip_route.route('del', dst=ip, oif=dev, scope=scope)
             except NetlinkError as error:
-                if error.code not in [17, 3]:
+                if error.code not in [17, 3, 19]:
                     raise
 
     def create_rule(self, internal_ip, rt_table_id):

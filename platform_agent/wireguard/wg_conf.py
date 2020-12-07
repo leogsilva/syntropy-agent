@@ -5,6 +5,8 @@ import logging
 import subprocess
 import re
 from pathlib import Path
+
+import pyroute2
 from pyroute2 import IPDB, WireGuard, NetlinkError
 from nacl.public import PrivateKey
 
@@ -17,12 +19,12 @@ from platform_agent.wireguard.helpers import find_free_port, get_peer_info, WG_N
 
 logger = logging.getLogger()
 
+
 class WgConfException(Exception):
     pass
 
 
 def delete_interface(ifname):
-
     subprocess.run(['ip', 'link', 'del', ifname], check=False, stderr=subprocess.DEVNULL)
 
 
@@ -43,12 +45,28 @@ def set_interface_ip(ifname, ip):
     except subprocess.CalledProcessError:
         pass
 
-def set_iptables(ips):
+
+def add_iptable_rules(ips: list):
+    for ip in ips:
+        try:
+            # Check if already exists, if not - create
+            subprocess.run(['iptables', '-C', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'], check=True,
+                           stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            subprocess.run(
+                ['iptables', '-A', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+                check=True, stderr=subprocess.DEVNULL
+            )
+
+
+def delete_iptable_rule(ips: list):
     for ip in ips:
         subprocess.run(
-            ['iptables', '-A', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
-            check=False, stderr=subprocess.DEVNULL
+            ['iptables', '-D', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+            check=False,
+            stderr=subprocess.DEVNULL
         )
+
 
 class WgConf():
 
@@ -183,7 +201,7 @@ class WgConf():
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
         statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
-        set_iptables(allowed_ips)
+        add_iptable_rules(allowed_ips)
         self.client.send(json.dumps({
             'id': "ID." + str(now()),
             'executed_at': now(),
@@ -205,10 +223,14 @@ class WgConf():
             'public_key': public_key,
             'remove': True
         }
-
-        self.wg.set(ifname, peer=peer)
-        if allowed_ips:
-            self.routes.ip_route_del(ifname, allowed_ips)
+        try:
+            self.wg.set(ifname, peer=peer)
+            if allowed_ips:
+                self.routes.ip_route_del(ifname, allowed_ips)
+                delete_iptable_rule(allowed_ips)
+        except pyroute2.netlink.exceptions.NetlinkError as error:
+            if error.code != 19:
+                raise
         return
 
     def remove_interface(self, ifname):
@@ -233,7 +255,8 @@ class WireguardGo:
             if not peer.get('remove'):
                 for ip in peer.get('allowed_ips', []):
                     allowed_ips_cmd += f"allowed-ips {ip} "
-                peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']} persistent-keepalive 15".split(' ')
+                peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']} persistent-keepalive 15".split(
+                    ' ')
             else:
                 peer_cmd = f"peer {peer['public_key']} remove".split(' ')
             full_cmd += peer_cmd
