@@ -152,11 +152,28 @@ class WebSocketClient(threading.Thread):
         self.agent_runner.active = False
         self.agent_runner.queue.put(self.agent_runner.STOP_MESSAGE)
 
+    @staticmethod
+    def getserial():
+        # Extract serial from cpuinfo file
+        cpuserial = "0000000000000000"
+        f = open('/proc/cpuinfo', 'r')
+        for line in f:
+            if line[0:6] == 'Serial':
+                cpuserial = line[10:26]
+        f.close()
+
+        return cpuserial
+
     def generate_device_id(self):
         try:
             with open('/sys/class/dmi/id/product_uuid', 'r') as file:
                 machine_id = file.read().replace('\n', '')
         except FileNotFoundError:
-            with open('/etc/machine-id', 'r') as file:
-                machine_id = file.read().replace('\n', '') + requests.get("https://ip.noia.network/").json()
+            try:
+                with open('/etc/machine-id', 'r') as file:
+                    machine_id = file.read().replace('\n', '') + requests.get("https://ip.noia.network/").json()
+            except FileNotFoundError:
+                machine_id = self.getserial()
+
         return machine_id
+

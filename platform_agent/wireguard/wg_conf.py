@@ -43,6 +43,12 @@ def set_interface_ip(ifname, ip):
     except subprocess.CalledProcessError:
         pass
 
+def set_iptables(ips):
+    for ip in ips:
+        subprocess.run(
+            ['iptables', '-A', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+            check=False, stderr=subprocess.DEVNULL
+        )
 
 class WgConf():
 
@@ -177,6 +183,7 @@ class WgConf():
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
         statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
+        set_iptables(allowed_ips)
         self.client.send(json.dumps({
             'id': "ID." + str(now()),
             'executed_at': now(),
