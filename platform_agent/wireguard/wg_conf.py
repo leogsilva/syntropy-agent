@@ -98,6 +98,15 @@ class WgConf():
         for interface in remove_interfaces:
             self.remove_interface(interface)
 
+    def clear_unused_routes(self, dump):
+        remote_peers = [d['args'] for d in dump if d['fn'] == 'add_peer']
+        remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
+        for ifname in remote_interfaces:
+            allowed_ips = []
+            remote_peers = [allowed_ips.extend(peer['allowed_ips']) for peer in remote_peers if peer['ifname'] == ifname]
+            self.routes.clear_unused_routes(ifname, allowed_ips)
+
+
     def clear_peers(self, dump):
         remote_peers = [d['args']['public_key'] for d in dump if d['fn'] == 'add_peer']
         current_interfaces = self.get_wg_interfaces()

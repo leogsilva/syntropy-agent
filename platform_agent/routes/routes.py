@@ -75,3 +75,18 @@ class Routes:
         self.ip_route.flush_rules(table=rt_table_id)
         self.ip_route.flush_routes(table=rt_table_id)
         self.ip_route.rule('add', src=internal_ip, table=rt_table_id)
+
+    def clear_unused_routes(self, ifname, ips):
+        devices = self.ip_route.link_lookup(ifname=ifname)
+        dev = devices[0]
+        routes = self.ip_route.get_routes(family=socket.AF_INET)
+        already_used_ips = []
+        for route in routes:
+            try:
+                attrs = dict(route['attrs'])
+                if attrs.get('RTA_OIF') == dev and route.get('type') == 1:
+                    already_used_ips.append(attrs.get('RTA_DST') + '/' + str(route['dst_len']))
+            except (KeyError, ValueError):
+                continue
+        remove_ips = set(already_used_ips) - set(ips)
+        self.ip_route_del(ifname, remove_ips)
