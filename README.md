@@ -2,6 +2,8 @@
 
 ---
 
+#### [Latest NOIA Agent Docs](https://docs.noia.network/docs/start-noia-agent) 
+- https://docs.noia.network/docs/start-noia-agent
 #### Prerequisites
 
 * Wireguard kernel module is installed and loaded:
@@ -29,9 +31,9 @@ docker system info
 
 ##### 3. Install NOIA Agent
 
-Possible versions:
+Possible Docker Container versions:
 
-Stable:  ```noia/agent:prod```
+Stable:  ```noia/agent:stable```
 
 Development:  ```noia/agent:devel``` or ```noia/agent:latest```  
 
@@ -46,13 +48,13 @@ docker run --network="host" --restart=on-failure:10 \
 --name=noia-agent \
 -e NOIA_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' \
 -e NOIA_NETWORK_API='docker' \
--d noia/agent:prod
+-d noia/agent:stable
 ```
 Check agent logs:
 
 ```docker logs noia-agent```
 
-More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER.md)
+More information:     [https://docs.noia.network/docs/start-noia-agent#install-with-docker](https://docs.noia.network/docs/start-noia-agent#install-with-docker)
 
 ---
 
@@ -63,14 +65,14 @@ More information:     [https://bitbucket.org/noianetwork-team/platform-agent/src
 > With Portainer agent:
 
 ```bash
-curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/master/docker-compose/na-pa.yml \
+curl  https://gitlab.com/noia-public/platform_agent/-/raw/master/docker-compose/na-pa.yml \
 -o docker-compose.yaml
 ```
 
 > Without portainer agent:
 
 ```bash
-curl  https://bitbucket.org/noianetwork-team/platform-agent/raw/master/docker-compose/noia-agent.yaml \
+curl  https://gitlab.com/noia-public/platform_agent/-/raw/master/docker-compose/noia-agent.yaml \
 -o docker-compose.yaml
 ```
 
@@ -95,7 +97,7 @@ P.S. NOIA Agent will ignore the default docker network, you will  need to create
 
 More information:
 
-[https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/DOCKER_COMPOSE.md)
+[https://docs.noia.network/docs/start-noia-agent#install-as-docker-compose](https://docs.noia.network/docs/start-noia-agent#install-as-docker-compose)
 
 ---
 
@@ -109,7 +111,7 @@ pip3 install platform-agent
 Download systemd service file:
 
 ```bash
-curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/noia-agent.service -o /etc/systemd/system/noia-agent.service
+curl https://gitlab.com/noia-public/platform_agent/-/raw/master/systemd/noia-agent.service -o /etc/systemd/system/noia-agent.service
 ```
 
 Create noia-agent directory:
@@ -119,7 +121,7 @@ chmod -R 600 /etc/systemd/system/noia-agent.service.d/
 ```
 Download settings file:
 ```bash
-curl https://bitbucket.org/noianetwork-team/platform-agent/raw/master/systemd/10-vars.conf -o /etc/systemd/system/noia-agent.service.d/10-vars.conf
+curl https://gitlab.com/noia-public/platform_agent/-/raw/master/systemd/10-vars.conf -o /etc/systemd/system/noia-agent.service.d/10-vars.conf
 ```
 
 Edit settings file ```/etc/systemd/system/noia-agent.service.d/10-vars.conf``` and change these settings:
@@ -157,67 +159,6 @@ Check if service is running:
 systemctl status noia-agent
 ```
 
-More information: [https://bitbucket.org/noianetwork-team/platform-agent/src/master/pip.md](https://bitbucket.org/noianetwork-team/platform-agent/src/master/pip.md)
+More information: [https://docs.noia.network/docs/start-noia-agent#install-with-pip](https://docs.noia.network/docs/start-noia-agent#install-with-pip)
 
 ---
-
-
-###### On Portainer
-
-1. Select image:
-
-![alt_text](images/image.png "Select docker image")
-
-
-2. Select network (Agent **MUST** run in the host network): 
-
-![alt_text](images/network.png "Select network")
-
-3. Add environment variables:
-
-** Mandatory variables: **
-
-```ini
-NOIA_API_KEY= your_api_key
-```
-
-** Metadata (Optional) **
-```ini
--e NOIA_NETWORK_API='docker'
--e NOIA_AGENT_NAME='Azure EU gateway '
-
-# Select one of providers from the list - https://noia-network.readme.io/docs/start-noia-agent#section-variables
--e NOIA_PROVIDER ='1'
-
--e NOIA_LAT='40.14'
--e NOIA_LON='-74.21'
-
-#You can manually add allowed ips
--e NOIA_ALLOWED_IPS='[{"127.0.24.0/24":"myvpc"},{"192.168.24.0/32":"vpc"}]'
--e NOIA_SERVICES_STATUS='false'
-```
-
-
-![alt_text](images/env.png "Add environment variables")
-
-
-(noia agent will read docker subnets and report them to the controller). If this variable is selected, you also need to add docker.sock as a read-only volume;
-
-![alt_text](images/volumes.png "Add docker.sock")
-
-
-4. Add additional capabilities (NET_ADMIN and SYS_MODULE): 
-
-![alt_text](images/cap.png "image_tooltip")
-
-
-5. All agents will appear in NOIA Platform as endpoints:
-
-![alt_text](images/endpoints.png "Endpoints")
-
-
-
-6. To connect endpoints to a network, select Networks > Add new network. Input Network name, select Type (if you want connect multiple Portainer agents to Portainer, choose Gateway and select Portainer host as a gateway and select agents which you want to connect), then click Add: 
-
-![alt_text](images/create_net.png "Create network")
-

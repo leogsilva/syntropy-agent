@@ -42,7 +42,7 @@ spec:
               key: NOIA_API_KEY
               name: noia-platform
               optional: false
-        image: noia/agent:prod
+        image: noia/agent:stable
         imagePullPolicy: Always
         name: noia-agent
         resources: {}
