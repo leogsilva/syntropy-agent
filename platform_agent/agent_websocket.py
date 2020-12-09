@@ -124,7 +124,7 @@ class WebSocketClient(threading.Thread):
     def run(self):
         while True and self.active:
             logger.debug(f"[AGENT-{__version__}] Connecting {self.connection_url}")
-            self.ws.run_forever()
+            self.ws.run_forever(ping_interval=60, ping_timeout=10)
             logger.warning(f"[AGENT-{__version__}] Disconnected {self.connection_url}")
             time.sleep(10)
 
@@ -136,6 +136,7 @@ class WebSocketClient(threading.Thread):
     def on_error(self, error):
         self.agent_runner.active = False
         logger.error(f"[WEBSOCKET] Error | {error}")
+        self.ws.close()
         time.sleep(10)
 
     def on_close(self):
