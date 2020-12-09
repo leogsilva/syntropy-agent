@@ -28,11 +28,15 @@ def delete_interface(ifname):
     subprocess.run(['ip', 'link', 'del', ifname], check=False, stderr=subprocess.DEVNULL)
 
 
+
 def create_interface(ifname):
     try:
         subprocess.run(['ip', 'link', 'add', 'dev', ifname, 'type', 'wireguard'], check=True, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
         pass
+
+
+def set_interface_up(ifname):
     try:
         subprocess.run(['ip', 'link', 'set', 'up', ifname], check=True, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
@@ -147,7 +151,7 @@ class WgConf():
             create_interface(ifname)
         else:
             self.wg.create_interface(ifname)
-
+        set_interface_up(ifname)
         set_interface_ip(ifname, internal_ip)
 
         try:
