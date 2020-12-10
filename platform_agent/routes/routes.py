@@ -78,7 +78,10 @@ class Routes:
 
     def clear_unused_routes(self, ifname, ips):
         devices = self.ip_route.link_lookup(ifname=ifname)
-        dev = devices[0]
+        if len(devices) > 0:
+            dev = devices[0]
+        else:
+            return
         routes = self.ip_route.get_routes(family=socket.AF_INET)
         already_used_ips = []
         for route in routes:
