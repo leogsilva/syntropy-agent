@@ -51,6 +51,7 @@ class AgentRunner:
                 }
                 logger.error(result)
             self.queue.task_done()
+            logger.debug(f"[RUNNER] Result | {result}")
             if result:
                 payload = self.create_response(request, result)
                 self.send(payload)
