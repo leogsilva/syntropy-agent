@@ -228,7 +228,7 @@ class WgConf():
 
     def remove_peer(self, ifname, public_key, allowed_ips=None):
 
-        if ifname in self.get_wg_interfaces():
+        if ifname not in self.get_wg_interfaces():
             logger.debug(f'[WG_CONF] Remove peer - [{ifname}] does not exist')
             return
 
@@ -247,7 +247,10 @@ class WgConf():
         return
 
     def remove_interface(self, ifname):
+        logger.debug(f'[WG_CONF] Removing interfcae - [{ifname}]')
         delete_interface(ifname)
+        logger.debug(f'[WG_CONF] Removed interfcae - [{ifname}]')
+        return
 
     def get_listening_port(self, ifname):
         if self.wg_kernel:
