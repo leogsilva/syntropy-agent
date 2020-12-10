@@ -103,7 +103,7 @@ class WgConf():
         remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
         for ifname in remote_interfaces:
             allowed_ips = []
-            remote_peers = [allowed_ips.extend(peer['allowed_ips']) for peer in remote_peers if peer['ifname'] == ifname]
+            remote_peers = [allowed_ips.extend(peer['allowed_ips']) for peer in remote_peers if peer and peer['ifname'] == ifname]
             self.routes.clear_unused_routes(ifname, allowed_ips)
 
 
