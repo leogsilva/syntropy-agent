@@ -1,0 +1,40 @@
+---
+# tasks file for syntropy-agent
+- name: pull an image
+  docker_image:
+    name: syntropy/agent:latest
+    force_source: yes
+  tags:
+    - pull_syntropy-agent
+
+- name: Stop and remove old container
+  docker_container:
+    name: syntropy-agent
+    state: absent
+    image: syntropy-agent
+  tags:
+    - remove_syntropy-agent
+
+- name: Create SYNTROPY agent container and connect to network
+  docker_container:
+    name: syntropy-agent
+    restart_policy: unless-stopped
+    image: syntropy/agent:latest
+    exposed_ports:
+      - 18001
+    network_mode: "host"
+    purge_networks: no
+    env:
+      SYNTROPY_API_KEY: "{{ syntropy_api_key }}"
+      SYNTROPY_CONTROLLER_URL:  "{{ ctrl_url | default('controller-prod-platform-agents.syntropystack.com') }}"
+      SYNTROPY_NETWORK_API: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    capabilities:
+      - net_admin
+      - sys_module
+  tags:
+    - start_syntropy-agent
+

@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  portainer:
+    image: portainer/agent
+    restart: always
+    networks:
+      - syntropy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+  syntropy-agent:
+    image: syntropy/agent:stable
+    container_name: syntropy-agent
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - SYNTROPY_API_KEY=my-random-api-key
+      - SYNTROPY_NETWORK_API=docker
+    restart: always
+    network_mode: "host"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+networks:
+    syntropy:
+        ipam:
+            config:
+                - subnet: 192.168.150.0/24

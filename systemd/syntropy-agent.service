@@ -1,0 +1,10 @@
+[Unit]
+Description=SYNTROPY Platform Agent
+After=multi-user.target
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/bin/syntropy_agent run
+[Install]
+WantedBy=multi-user.target
