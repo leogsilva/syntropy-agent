@@ -19,7 +19,7 @@ def get_ip_addr():
         return {
             "external_ip": resp.json()
         }
-    except (NewConnectionError, SSLError):
+    except (NewConnectionError, SSLError, ConnectionError):
         return {}
 
 
