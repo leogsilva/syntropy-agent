@@ -56,7 +56,9 @@ def format_container_result(containers):
                 container_info['name'] = \
                     [name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_NAME' in name][0].split('=')[1]
             except IndexError:
-                container_info['name'] = container_conf.get('Domainname', container_info.get('Name'))
+                container_info['name'] = container_conf.get('Domainname')
+                if not container_info['name']:
+                    container_info['name'] = container_info.get('Name')
 
             result.append(
                 {
