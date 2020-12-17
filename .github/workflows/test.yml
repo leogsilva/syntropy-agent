@@ -1,0 +1,29 @@
+
+name: Tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Install dependencies
+      run: |
+        pip3 install --upgrade pip
+        pip3 install --upgrade setuptools wheel
+    - name: Test with pytest
+      run: |
+        pip3 install -r requirements.txt
+        python3 -m pytest
