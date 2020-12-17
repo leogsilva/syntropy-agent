@@ -1,5 +1,6 @@
 import logging
 import socket
+import subprocess
 
 from pyroute2 import IPRoute, NetlinkError
 from ipaddress import IPv4Network, ip_network
@@ -93,3 +94,12 @@ class Routes:
                 continue
         remove_ips = set(already_used_ips) - set(ips)
         self.ip_route_del(ifname, remove_ips)
+
+    def clear_unused_iface_addrs(self, ifname, current_addr):
+        addrs = self.ip_route.get_addr(label=ifname)
+        for addr in addrs:
+            if current_addr.split('/')[0] != str(dict(addr.get('attrs')).get('IFA_ADDRESS')):
+                subprocess.run(
+                    ['ip', 'addr', 'del', f"{dict(addr.get('attrs')).get('IFA_ADDRESS')}", 'dev', ifname],
+                    check=False, stderr=subprocess.DEVNULL
+                )

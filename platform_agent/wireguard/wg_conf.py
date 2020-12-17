@@ -162,6 +162,7 @@ class WgConf():
             self.wg.create_interface(ifname)
         set_interface_up(ifname)
         set_interface_ip(ifname, internal_ip)
+        self.routes.clear_unused_iface_addrs(ifname, internal_ip.split('/')[0])
 
         try:
             self.wg.set(
