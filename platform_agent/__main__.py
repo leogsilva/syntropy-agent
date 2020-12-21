@@ -10,12 +10,15 @@ __license__ = "MIT"
 import os
 import argparse
 import atexit
+import logging
 
 from platform_agent.config.logger import configure_logger
-from platform_agent.config.settings import Config, AGENT_PATH_TMP
+from platform_agent.config.settings import Config, AGENT_PATH_TMP, ConfigException
 from platform_agent.agent_websocket import WebSocketClient
 
 from pyroute2 import WireGuard
+
+logger = logging.getLogger()
 
 def exit_handler():
     from pathlib import Path
@@ -65,7 +68,11 @@ def agent(args):
     """ Main entry point of the app """
     if args.run:
         # Retrieving settings from config on start
-        Config()
+        try:
+            Config()
+        except ConfigException as e:
+            logger.error(f"[CONFIG]: {e}")
+            return
 
         # Configuring logger globally
         configure_logger()
