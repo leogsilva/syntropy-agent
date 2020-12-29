@@ -68,7 +68,6 @@ def format_container_result(containers):
                     'agent_container_networks': container_info.get('network_names'),
                     'agent_container_ports': ports,
                     'agent_container_state': container.get('State'),
-                    'agent_container_uptime': container.get('Status'),
                 }
             )
     return result

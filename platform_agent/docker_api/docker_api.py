@@ -28,9 +28,12 @@ class DockerNetworkWatcher(threading.Thread):
 
     def run(self):
         for event in self.events:
+            old_res = None
             if event.get('Type') == 'network' and event.get('Action') in ['create', 'destroy']:
                 networks = self.docker_client.networks()
                 result = format_networks_result(networks)
+                if old_res == result:
+                    continue
                 logger.debug(f"[NETWORK_INFO] Sending networks {result}")
                 self.ws_client.send(json.dumps({
                     'id': "ID." + str(time.time()),
@@ -38,15 +41,19 @@ class DockerNetworkWatcher(threading.Thread):
                     'type': 'NETWORK_INFO',
                     'data': result
                 }))
+                old_res = result
             if event.get('Type') == 'container' and event.get('Action') in ['create', 'destroy', 'stop', 'start']:
                 networks = self.docker_client.containers()
                 result = format_container_result(networks)
+                if old_res == result:
+                    continue
                 self.ws_client.send(json.dumps({
                     'id': "ID." + str(time.time()),
                     'executed_at': now(),
                     'type': 'CONTAINER_INFO',
                     'data': result
                 }))
+                old_res = result
 
     def join(self, timeout=None):
         self.events.close()
