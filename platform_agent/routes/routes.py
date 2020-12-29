@@ -5,6 +5,8 @@ import subprocess
 from pyroute2 import IPRoute, NetlinkError
 from ipaddress import IPv4Network, ip_network
 
+from platform_agent.files.tmp_files import get_agent_id_by_text
+
 logger = logging.getLogger()
 
 
@@ -32,10 +34,11 @@ class Routes:
                 if formatted_ip == network:
                     continue
                 elif formatted_ip.overlaps(network):
+                    agent_id = get_agent_id_by_text(ip)
                     result = {
                         'ip': ip,
                         'status': 'ERROR',
-                        'msg': f'Service ip: {ip} intersects network CIDR {network}'
+                        'msg': f'Service ip: {ip} intersects agent_id: {agent_id} CIDR {network}'
                     }
                     break
             if result['status'] == 'ERROR':
@@ -47,6 +50,7 @@ class Routes:
                 if error.code != 17:
                     result.update({'status': "ERROR", 'msg': str(error)})
                 elif dict(self.ip_route.get_routes(dst=formatted_ip.with_prefixlen)[0]['attrs']).get('RTA_OIF') != dev:
+
                     logger.debug(f"[WG_CONF] add route failed [{ip}] - already exists")
                     result.update({'status': "ERROR", 'msg': "OVERLAP"})
             statuses.append(result)

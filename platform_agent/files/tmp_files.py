@@ -6,7 +6,7 @@ from platform_agent.config.settings import AGENT_PATH_TMP
 def read_tmp_file(file_type='iface_info'):
     """Read iface file"""
     try:
-        with open(f"{AGENT_PATH_TMP}/{file_type}") as json_file:
+        with open(f"/home/povilaspc/platform-agent/config_dump") as json_file:
             rez = json_file.read()
             try:
                 data = json.loads(rez)
@@ -43,3 +43,12 @@ def get_peer_metadata(file_name="config_dump", public_key=None, identifier='publ
     if public_key:
         return peer_metadata.get(public_key, {})
     return peer_metadata
+
+
+def get_agent_id_by_text(text, file_name="config_dump"):
+    data = read_tmp_file(file_name)
+    cmds = data.get('vpn', [])
+    for cmd in cmds:
+        if cmd.get('metadata') and text in str(cmd):
+            return cmd['metadata'].get('agent_id')
+    return "UNKNOWN"
