@@ -82,6 +82,18 @@ class WgConf():
         self.routes = Routes()
         self.client = client
 
+    def create_syntropy_interfaces(self, ifaces):
+        result = []
+        for ifname in ifaces.keys():
+            int_data = self.create_interface(ifname, ifaces[ifname].get('ip'))
+            if int_data.get('public_key') != ifaces[ifname].get('public_key'):
+                result.append(
+                    {
+                        "fn": "create_interface",
+                        "data": int_data
+                    }
+                )
+
     @staticmethod
     def get_wg_interfaces():
         with IPDB() as ipdb:
