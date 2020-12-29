@@ -27,8 +27,8 @@ class DockerNetworkWatcher(threading.Thread):
         self.daemon = True
 
     def run(self):
+        old_res = None
         for event in self.events:
-            old_res = None
             if event.get('Type') == 'network' and event.get('Action') in ['create', 'destroy']:
                 networks = self.docker_client.networks()
                 result = format_networks_result(networks)
