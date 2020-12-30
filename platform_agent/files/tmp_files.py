@@ -6,7 +6,7 @@ from platform_agent.config.settings import AGENT_PATH_TMP
 def read_tmp_file(file_type='iface_info'):
     """Read iface file"""
     try:
-        with open(f"/home/povilaspc/platform-agent/config_dump") as json_file:
+        with open(f"{AGENT_PATH_TMP}/{file_type}") as json_file:
             rez = json_file.read()
             try:
                 data = json.loads(rez)
