@@ -68,7 +68,7 @@ def get_srevice_status():
 
 def get_provider():
     try:
-        int(os.environ['SYNTROPY_PROVIDER']),
+        return int(os.environ['SYNTROPY_PROVIDER'])
     except (ValueError, KeyError):
         return None
 

@@ -4,6 +4,7 @@ import threading
 import time
 import psutil
 
+from platform_agent.config.settings import Config
 from platform_agent.lib.ctime import now
 from pyroute2 import IPDB
 logger = logging.getLogger()
@@ -42,6 +43,7 @@ class DummyNetworkWatcher(threading.Thread):
                             }
                         )
                 status = getattr(self.ws_client.ws, 'sock')
+                result.extend(Config.get_valid_allowed_ips())
                 if result != ex_result and status and status.status:
                     self.ws_client.send(json.dumps({
                         'id': "ID." + str(time.time()),

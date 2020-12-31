@@ -19,7 +19,6 @@ class Config:
     _data = None
 
     def __init__(self):
-
         agent_dir = Path(AGENT_PATH)
         if not agent_dir.is_dir():
             agent_dir.mkdir()
@@ -87,8 +86,9 @@ class Config:
                 return result
             result.append(
                 {
-                    'agent_network_name': subnet_name,
-                    'agent_network_subnets': [ip_network.with_prefixlen]
+                    'agent_network_iface': subnet_name,
+                    'agent_network_subnets': [ip_network.with_prefixlen],
+                    'agent_network_ports': {'udp': [], 'tcp': []},
                 }
             )
             return result
