@@ -35,14 +35,24 @@ def get_connection_status(latency_ms, packet_loss):
 
 
 def find_free_port():
-    port = randint(49152, 65535)
+    ports_start = 49152
+    ports_end = 65535
+    if os.environ.get("SYNTROPY_PORT_RANGE"):
+        try:
+            ports = os.environ["SYNTROPY_PORT_RANGE"]
+            ports = ports.split('-')
+            ports_start = int(ports[0])
+            ports_end = int(ports[1])
+        except (IndexError, ValueError):
+            pass
+    port = randint(ports_start, ports_end)
     portsinuse = []
     while True:
         conns = psutil.net_connections()
         for conn in conns:
             portsinuse.append(conn.laddr[1])
         if port in portsinuse:
-            port = randint(49152, 65535)
+            port = randint(ports_start, ports_end)
         else:
             break
     return port
