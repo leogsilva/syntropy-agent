@@ -85,7 +85,7 @@ def get_tags():
 def get_info():
     return {
         "agent_name": os.environ.get('SYNTROPY_AGENT_NAME', socket.gethostname()),
-        "agent_provider": get_provider(),
+        "agent_provider": None,
         "agent_category": os.environ.get('SYNTROPY_CATEGORY', None),
         "service_status": get_srevice_status(),
         "agent_tags": get_tags(),
