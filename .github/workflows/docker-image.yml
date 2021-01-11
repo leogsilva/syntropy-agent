@@ -58,3 +58,4 @@ jobs:
           tags: |
             syntropynet/agent:prod
             syntropynet/agent:stable
+            syntropynet/agent:v0.0.70
