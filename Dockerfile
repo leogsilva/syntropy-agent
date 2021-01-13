@@ -4,6 +4,7 @@ RUN apk add --update git build-base libmnl-dev iptables
 
 RUN git clone https://git.zx2c4.com/wireguard-go && \
     cd wireguard-go && \
+    git checkout c4895658e629ed9d5154c73eb5585c12fdba5b4b && \
     make && \
     make install
 
