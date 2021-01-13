@@ -1,5 +1,7 @@
 import docker
 
+from platform_agent.cmd.iptables import add_iptable_rules
+
 
 def format_networks_result(networks):
     result = []
@@ -22,6 +24,7 @@ def format_container_result(containers):
     docker_client = docker.from_env()
     networks = docker_client.networks()
     conts = {}
+    ips = []
     for network in networks:
         for k, v in network['Containers'].items():
             if not v['IPv4Address']:
@@ -70,4 +73,6 @@ def format_container_result(containers):
                     'agent_container_state': container.get('State'),
                 }
             )
+            ips.extend(container_info.get('IPv4Address'))
+    add_iptable_rules(ips)
     return result

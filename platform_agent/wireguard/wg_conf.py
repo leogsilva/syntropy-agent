@@ -50,29 +50,6 @@ def set_interface_ip(ifname, ip):
     except subprocess.CalledProcessError:
         pass
 
-
-def add_iptable_rules(ips: list):
-    for ip in ips:
-        try:
-            # Check if already exists, if not - create
-            subprocess.run(['iptables', '-C', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'], check=True,
-                           stderr=subprocess.DEVNULL)
-        except subprocess.CalledProcessError:
-            subprocess.run(
-                ['iptables', '-A', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
-                check=True, stderr=subprocess.DEVNULL
-            )
-
-
-def delete_iptable_rule(ips: list):
-    for ip in ips:
-        subprocess.run(
-            ['iptables', '-D', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
-            check=False,
-            stderr=subprocess.DEVNULL
-        )
-
-
 class WgConf():
 
     def __init__(self, client=None):
@@ -230,7 +207,7 @@ class WgConf():
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
         statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
-        add_iptable_rules(allowed_ips)
+        # add_iptable_rules(allowed_ips) // No need to add allowed ips.
         self.client.send_log(json.dumps({
             'id': "ID." + str(now()),
             'executed_at': now(),

@@ -3,6 +3,7 @@ import logging
 import threading
 import os
 
+from platform_agent.cmd.iptables import iptables_create_syntropy_chain
 from platform_agent.lib.ctime import now
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.files.tmp_files import update_tmp_file
@@ -40,6 +41,7 @@ class AgentApi:
             if module_loaded("wireguard"):
                 os.environ["SYNTROPY_WIREGUARD"] = "true"
             if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "docker" and prod_mode:
+                iptables_create_syntropy_chain()
                 self.network_watcher = DockerNetworkWatcher(self.runner).start()
             if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "host" and prod_mode:
                 self.network_watcher = DummyNetworkWatcher(self.runner).start()
