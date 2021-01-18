@@ -4,13 +4,13 @@ Pip is the package installer for Python. You can use pip to install packages fro
 #### 1. Install SYNTROPY agent
 `pip3 install platform-agent`
 #### 2. Create/Edit /etc/systemd/system/syntropy-agent.service.d/10-vars.conf file 
-##### SYNTROPY_API_KEY (Required)
+##### SYNTROPY_AGENT_TOKEN (Required)
 ```ini
 [Service]
 
 # Required parameters
 
-Environment=SYNTROPY_API_KEY=YOUR_API_KEY
+Environment=SYNTROPY_AGENT_TOKEN=YOUR_API_KEY
 
 # Optional parameters
 

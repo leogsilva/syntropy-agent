@@ -32,7 +32,8 @@ class Config:
                 os.environ['SYNTROPY_AGENT_NAME'] = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
             except FileNotFoundError:
                 pass
-        if os.environ.get("SYNTROPY_API_KEY"):
+        if os.environ.get("SYNTROPY_API_KEY", os.environ.get('SYNTROPY_AGENT_TOKEN')):
+            os.environ['SYNTROPY_AGENT_TOKEN'] = os.environ.get("SYNTROPY_API_KEY", os.environ.get('SYNTROPY_AGENT_TOKEN'))
             return
         if os.environ.get("SYNTROPY_LOG_LEVEL"):
             if os.environ["SYNTROPY_LOG_LEVEL"].upper() in ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:

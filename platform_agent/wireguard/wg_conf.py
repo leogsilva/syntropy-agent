@@ -11,6 +11,7 @@ import pyroute2
 from pyroute2 import IPDB, WireGuard, NetlinkError
 from nacl.public import PrivateKey
 
+from platform_agent.cmd.iptables import delete_iptable_rule
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata

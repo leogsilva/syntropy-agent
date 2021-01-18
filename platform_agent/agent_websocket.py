@@ -162,6 +162,9 @@ class WebSocketClient(threading.Thread):
         for line in f:
             if line[0:6] == 'Serial':
                 cpuserial = line[10:26]
+        if cpuserial == "0000000000000000":
+            cpuserial = cpuserial + requests.get("https://ip.syntropystack.com/").json()
+            logger.warning("Could not generate unique machineId")
         f.close()
 
         return cpuserial

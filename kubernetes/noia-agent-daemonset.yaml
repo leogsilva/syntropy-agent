@@ -36,10 +36,10 @@ spec:
               key: SYNTROPY_CONTROLLER_URL
               name: syntropy-platform
               optional: false
-        - name: SYNTROPY_API_KEY
+        - name: SYNTROPY_AGENT_TOKEN
           valueFrom:
             secretKeyRef:
-              key: SYNTROPY_API_KEY
+              key: SYNTROPY_AGENT_TOKEN
               name: syntropy-platform
               optional: false
         image: syntropy/agent:stable

@@ -16,7 +16,7 @@ services:
       - NET_ADMIN
       - SYS_MODULE
     environment:
-      - SYNTROPY_API_KEY=my-random-api-key
+      - SYNTROPY_AGENT_TOKEN=my-random-api-key
       - SYNTROPY_NETWORK_API=docker
     restart: always
     network_mode: "host"

@@ -4,7 +4,7 @@ Noia platform agent.
 """
 
 __author__ = "SYNTROPY Network"
-__version__ = "0.0.71"
+__version__ = "0.0.72"
 __license__ = "MIT"
 
 import os
@@ -80,7 +80,7 @@ def agent(args):
         # Initiating WS client
         client = WebSocketClient(
             os.environ.get('SYNTROPY_CONTROLLER_URL', 'controller-prod-platform-agents.syntropystack.com'),
-            os.environ['SYNTROPY_API_KEY']
+            os.environ['SYNTROPY_AGENT_TOKEN']
         )
 
         # Starting WS client main thread

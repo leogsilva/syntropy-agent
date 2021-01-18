@@ -46,7 +46,7 @@ docker run --network="host" --restart=on-failure:10 \
 -v /var/run/docker.sock:/var/run/docker.sock:ro \
 --device /dev/net/tun:/dev/net/tun \
 --name=syntropy-agent \
--e SYNTROPY_API_KEY='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' \
+-e SYNTROPY_AGENT_TOKEN='z99CuiZnMhe2qtz4LLX43Gbho5Zu9G8oAoWRY68WdMTVB9GzuMY2HNn667A752EA' \
 -e SYNTROPY_NETWORK_API='docker' \
 -d syntropy/agent:stable
 ```
@@ -79,7 +79,7 @@ curl  https://raw.githubusercontent.com/SyntropyNet/syntropy-agent/master/docker
 Edit ```docker-compose.yaml``` file and edit these environment variables:
 
 ```yaml
-SYNTROPY_API_KEY= your_api_key
+SYNTROPY_AGENT_TOKEN= your_api_key
 ```
 
 Start containers:
@@ -129,7 +129,7 @@ Edit settings file ```/etc/systemd/system/syntropy-agent.service.d/10-vars.conf`
 ```ini
 [Service]
 # Required parameters
-Environment=SYNTROPY_API_KEY=YOUR_API_KEY
+Environment=SYNTROPY_AGENT_TOKEN=YOUR_API_KEY
 # Optional parameters
 Environment=SYNTROPY_CONTROLLER_URL=controller-prod-platform-agents.syntropystack.com
 Environment=SYNTROPY_ALLOWED_IPS=[{"10.0.44.0/24":"oracle_vpc"},{"192.168.111.2/32":"internal"}]

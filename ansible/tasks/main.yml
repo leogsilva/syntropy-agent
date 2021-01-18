@@ -25,7 +25,7 @@
     network_mode: "host"
     purge_networks: no
     env:
-      SYNTROPY_API_KEY: "{{ syntropy_api_key }}"
+      SYNTROPY_AGENT_TOKEN: "{{ syntropy_agent_token }}"
       SYNTROPY_CONTROLLER_URL:  "{{ ctrl_url | default('controller-prod-platform-agents.syntropystack.com') }}"
       SYNTROPY_NETWORK_API: docker
     volumes:
