@@ -64,14 +64,15 @@ class WgConf():
     def create_syntropy_interfaces(self, ifaces):
         result = []
         for ifname in ifaces.keys():
-            int_data = self.create_interface(ifname, ifaces[ifname].get('ip'))
-            if int_data.get('public_key') != ifaces[ifname].get('public_key'):
+            int_data = self.create_interface("SYNTROPY_" + ifname, ifaces[ifname].get('internal_ip'))
+            if int_data.get('public_key') != ifaces[ifname].get('public_key') or int_data.get('listen_port') != ifaces[ifname].get('listen_port'):
                 result.append(
                     {
                         "fn": "create_interface",
                         "data": int_data
                     }
                 )
+        return result
 
     @staticmethod
     def get_wg_interfaces():

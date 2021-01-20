@@ -92,7 +92,7 @@ class AgentApi:
         self.wgconf.clear_interfaces(data.get('vpn', []))
         self.wgconf.clear_peers(data.get('vpn', []))
         self.wgconf.clear_unused_routes(data.get('vpn', []))
-        response = []
+        response = self.wgconf.create_syntropy_interfaces(data.get("network", {}))
         for vpn_cmd in data.get('vpn', []):
             try:
                 fn = getattr(self.wgconf, vpn_cmd['fn'])

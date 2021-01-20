@@ -4,7 +4,7 @@ import threading
 import re
 
 from platform_agent.files.tmp_files import read_tmp_file
-from platform_agent.wireguard.helpers import WG_NAME_PATTERN
+from platform_agent.wireguard.helpers import WG_NAME_PATTERN, WG_SYNTROPY_INT
 from platform_agent.lib.ctime import now
 
 
@@ -76,7 +76,7 @@ class BWDataCollect(threading.Thread):
     def run(self):
         while not self.stop_BWDataCollect.is_set():
             interfaces = read_tmp_file(file_type='iface_info')
-            wg_ifaces = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k)}
+            wg_ifaces = {k: v for k, v in interfaces.items() if re.match(WG_NAME_PATTERN, k) or k in WG_SYNTROPY_INT}
             if not wg_ifaces:
                 time.sleep(1)
             for iface in wg_ifaces:
