@@ -185,7 +185,8 @@ class WgConf():
         result = {
             "public_key": public_key,
             "listen_port": int(listen_port),
-            "ifname": ifname
+            "ifname": ifname,
+            "internal_ip": internal_ip
         }
         logger.debug(
             f"[WG_CONF] - interface_created {result}",
