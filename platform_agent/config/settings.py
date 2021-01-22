@@ -5,6 +5,8 @@ from pathlib import Path
 
 import yaml
 
+from platform_agent.cmd.iptables import iptables_version
+
 CONFIG_FILE = "/etc/syntropy-agent/config.yaml"
 
 AGENT_PATH = "/etc/syntropy-agent"
@@ -27,6 +29,8 @@ class Config:
         if not tmp_dir.is_dir():
             tmp_dir.mkdir()
             tmp_dir.chmod(0o700)
+        #Get iptables version.
+        iptables_version()
         if os.environ.get("SYNTROPY_NETWORK_API", '').lower() == "kubernetes" and not os.environ.get('SYNTROPY_AGENT_NAME'):
             try:
                 os.environ['SYNTROPY_AGENT_NAME'] = open("/var/run/secrets/kubernetes.io/serviceaccount/namespace").read()
