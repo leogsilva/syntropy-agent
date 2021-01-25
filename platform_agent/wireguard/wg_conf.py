@@ -11,7 +11,7 @@ import pyroute2
 from pyroute2 import IPDB, WireGuard, NetlinkError
 from nacl.public import PrivateKey
 
-from platform_agent.cmd.iptables import delete_iptable_rule
+from platform_agent.cmd.iptables import add_iptable_rules, delete_iptable_rules
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata
@@ -211,7 +211,7 @@ class WgConf():
                 'allowed_ips': allowed_ips}
         self.wg.set(ifname, peer=peer)
         statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
-        # add_iptable_rules(allowed_ips) // No need to add allowed ips.
+        add_iptable_rules(allowed_ips)
         self.client.send_log(json.dumps({
             'id': "ID." + str(now()),
             'executed_at': now(),
@@ -237,7 +237,7 @@ class WgConf():
             self.wg.set(ifname, peer=peer)
             if allowed_ips:
                 self.routes.ip_route_del(ifname, allowed_ips)
-                delete_iptable_rule(allowed_ips)
+                delete_iptable_rules(allowed_ips)
         except pyroute2.netlink.exceptions.NetlinkError as error:
             if error.code != 19:
                 raise
