@@ -82,6 +82,7 @@ class WgConf():
 
     def clear_interfaces(self, dump):
         remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
+        remote_interfaces.extend(WG_SYNTROPY_INT)
         current_interfaces = self.get_wg_interfaces()
         remove_interfaces = set(current_interfaces) - set(remote_interfaces)
         logger.debug(
