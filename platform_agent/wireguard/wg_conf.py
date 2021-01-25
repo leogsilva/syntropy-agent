@@ -17,7 +17,7 @@ from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata
 from platform_agent.lib.ctime import now
 from platform_agent.routes import Routes
-from platform_agent.wireguard.helpers import find_free_port, get_peer_info, WG_NAME_PATTERN
+from platform_agent.wireguard.helpers import find_free_port, get_peer_info, WG_NAME_PATTERN, WG_SYNTROPY_INT
 
 logger = logging.getLogger()
 
@@ -77,7 +77,7 @@ class WgConf():
     @staticmethod
     def get_wg_interfaces():
         with IPDB() as ipdb:
-            current_interfaces = [k for k, v in ipdb.by_name.items() if re.match(WG_NAME_PATTERN, k)]
+            current_interfaces = [k for k, v in ipdb.by_name.items() if re.match(WG_NAME_PATTERN, k) or k in WG_SYNTROPY_INT]
         return current_interfaces
 
     def clear_interfaces(self, dump):
