@@ -63,6 +63,8 @@ class WgConf():
 
     def create_syntropy_interfaces(self, ifaces):
         result = []
+        if not ifaces:
+            return result
         for ifname in ifaces.keys():
             int_data = self.create_interface("SYNTROPY_" + ifname, ifaces[ifname].get('internal_ip'))
             if int_data.get('public_key') != ifaces[ifname].get('public_key') or int_data.get('listen_port') != ifaces[ifname].get('listen_port'):
@@ -80,9 +82,10 @@ class WgConf():
             current_interfaces = [k for k, v in ipdb.by_name.items() if re.match(WG_NAME_PATTERN, k) or k in WG_SYNTROPY_INT]
         return current_interfaces
 
-    def clear_interfaces(self, dump):
+    def clear_interfaces(self, dump, network_dump):
         remote_interfaces = [d['args']['ifname'] for d in dump if d['fn'] == 'create_interface']
-        remote_interfaces.extend(WG_SYNTROPY_INT)
+        if network_dump:
+            remote_interfaces.extend(["SYNTROPY_" + ifname for ifname in network_dump.keys()])
         current_interfaces = self.get_wg_interfaces()
         remove_interfaces = set(current_interfaces) - set(remote_interfaces)
         logger.debug(

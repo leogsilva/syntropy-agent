@@ -89,7 +89,7 @@ class AgentApi:
 
     def CONFIG_INFO(self, data, **kwargs):
         update_tmp_file(data, 'config_dump')
-        self.wgconf.clear_interfaces(data.get('vpn', []))
+        self.wgconf.clear_interfaces(data.get('vpn', []), data.get("network", {}))
         self.wgconf.clear_peers(data.get('vpn', []))
         self.wgconf.clear_unused_routes(data.get('vpn', []))
         response = self.wgconf.create_syntropy_interfaces(data.get("network", {}))

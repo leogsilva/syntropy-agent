@@ -9,6 +9,7 @@ from urllib3.exceptions import ProtocolError
 
 from platform_agent.docker_api.helpers import format_networks_result, format_container_result
 from platform_agent.lib.ctime import now
+from platform_agent.cmd.iptables import delete_iptable_rules
 
 logger = logging.getLogger()
 
@@ -27,7 +28,7 @@ class DockerNetworkWatcher(threading.Thread):
         self.daemon = True
 
     def run(self):
-        old_res = None
+        old_res = []
         for event in self.events:
             if event.get('Type') == 'network' and event.get('Action') in ['create', 'destroy']:
                 networks = self.docker_client.networks()
@@ -53,7 +54,12 @@ class DockerNetworkWatcher(threading.Thread):
                     'type': 'CONTAINER_INFO',
                     'data': result
                 }))
+                if event.get('Action') in ['destroy', 'stop']:
+                    for container in old_res:
+                        if container['agent_container_id'] == event['id']:
+                            delete_iptable_rules(container['agent_container_ips'])
                 old_res = result
+
 
     def join(self, timeout=None):
         self.events.close()

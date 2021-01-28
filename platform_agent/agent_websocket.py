@@ -101,6 +101,7 @@ class WebSocketClient(threading.Thread):
 
         self.host = host
         self.active = True
+        self.open = True
         websocket.enableTrace(False)
         self.connection_url = f"{ssl}://{host}"
         self.ws = websocket.WebSocketApp(
@@ -124,9 +125,10 @@ class WebSocketClient(threading.Thread):
 
     def run(self):
         while True and self.active:
-            logger.debug(f"[AGENT-{__version__}] Connecting {self.connection_url}")
-            self.ws.run_forever(ping_interval=60, ping_timeout=10)
-            logger.warning(f"[AGENT-{__version__}] Disconnected {self.connection_url}")
+            if self.open:
+                logger.debug(f"[AGENT-{__version__}] Connecting {self.connection_url}")
+                self.ws.run_forever(ping_interval=60, ping_timeout=10)
+                logger.error(f"[AGENT-{__version__}] Disconnected {self.connection_url}")
             time.sleep(10)
 
     def on_message(self, message):
@@ -143,6 +145,7 @@ class WebSocketClient(threading.Thread):
     def on_close(self):
         self.agent_runner.active = False
         logger.debug("[WEBSOCKET] Close")
+        self.open = False
         time.sleep(10)
 
     def on_open(self):
