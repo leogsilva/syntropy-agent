@@ -3,8 +3,8 @@ name: Syntropy Agent CI
 on:
   push:
     branches: master
-  tags:
-    - '*'
+    tags:
+      - '*'
 
 jobs:
   create-container:
