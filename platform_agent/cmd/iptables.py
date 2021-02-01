@@ -8,46 +8,50 @@ def iptables_version():
     else:
         return 'iptables'
 
-def iptables_create_syntropy_chain():
-    iptables = iptables_version()
+def iptables_create_syntropy_chain(version='-nft'):
     try:
         # Check if already exists, if not - create
-        subprocess.run([iptables, '-N', 'SYNTROPY_CHAIN'], stderr=subprocess.DEVNULL)
+        subprocess.run([f'iptables{version}', '-N', 'SYNTROPY_CHAIN'], stderr=subprocess.DEVNULL)
         subprocess.run(
-            [iptables, '-C', 'FORWARD', '-s', '0.0.0.0/0', '-d', '0.0.0.0/0', '-j', 'SYNTROPY_CHAIN'],
+            [f'iptables{version}', '-C', 'FORWARD', '-s', '0.0.0.0/0', '-d', '0.0.0.0/0', '-j', 'SYNTROPY_CHAIN'],
             check=True,
             stderr=subprocess.DEVNULL
         )
     except subprocess.CalledProcessError:
         subprocess.run(
-            [iptables, '-I', 'FORWARD', '-s', '0.0.0.0/0', '-d', '0.0.0.0/0', '-j', 'SYNTROPY_CHAIN'],
+            [f'iptables{version}', '-I', 'FORWARD', '-s', '0.0.0.0/0', '-d', '0.0.0.0/0', '-j', 'SYNTROPY_CHAIN'],
             stderr=subprocess.DEVNULL,
             check=False
         )
+    if version == '-nft':
+        iptables_create_syntropy_chain(version='-legacy')
 
 
-def add_iptable_rules(ips: list):
-    iptables = iptables_version()
+def add_iptable_rules(ips: list, version='-nft'):
     for ip in ips:
         try:
             # Check if already exists, if not - create
             subprocess.run(
-                [iptables, '-C', 'SYNTROPY_CHAIN', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+                [f'iptables{version}', '-C', 'SYNTROPY_CHAIN', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
                 check=True,
                 stderr=subprocess.DEVNULL
             )
         except subprocess.CalledProcessError:
             subprocess.run(
-                [iptables, '-A', 'SYNTROPY_CHAIN', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+                [f'iptables{version}', '-A', 'SYNTROPY_CHAIN', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+                check=False,
                 stderr=subprocess.DEVNULL
             )
+    if version == '-nft':
+        add_iptable_rules(ips, version='-legacy')
 
 
-def delete_iptable_rules(ips: list):
-    iptables = iptables_version()
+def delete_iptable_rules(ips: list, version='-nft'):
     for ip in ips:
         subprocess.run(
-            [iptables, '-D', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
+            [f'iptables{version}', '-D', 'FORWARD', '-p', 'all', '-s', ip, '-j', 'ACCEPT'],
             check=False,
             stderr=subprocess.DEVNULL
         )
+    if version == '-nft':
+        delete_iptable_rules(ips, version='-legacy')

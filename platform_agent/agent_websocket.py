@@ -145,7 +145,9 @@ class WebSocketClient(threading.Thread):
     def on_close(self):
         self.agent_runner.active = False
         logger.debug("[WEBSOCKET] Close")
-        self.open = False
+        sock = getattr(self.ws, 'sock')
+        if sock and sock.status and sock.status == 101:
+            self.open = False
         time.sleep(10)
 
     def on_open(self):
