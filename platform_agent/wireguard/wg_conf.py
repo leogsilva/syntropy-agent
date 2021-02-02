@@ -67,7 +67,7 @@ class WgConf():
         if not ifaces:
             return result
         for ifname in ifaces.keys():
-            int_data = self.create_interface("SYNTROPY_" + ifname, ifaces[ifname].get('internal_ip'))
+            int_data = self.create_interface("SYNTROPY_" + ifname, ifaces[ifname].get('internal_ip'), listen_port=ifaces[ifname].get('listen_port'))
             if int_data.get('public_key') != ifaces[ifname].get('public_key') or int_data.get('listen_port') != ifaces[ifname].get('listen_port'):
                 result.append(
                     {
@@ -294,7 +294,6 @@ class WireguardGo:
         return complete_output
 
     def create_interface(self, ifname):
-        time.sleep(1)
         try:
             result_set = subprocess.Popen(
                 ['wireguard-go', ifname],
