@@ -5,6 +5,7 @@ import base64
 import logging
 import subprocess
 import re
+import time
 from pathlib import Path
 
 import pyroute2
@@ -293,6 +294,7 @@ class WireguardGo:
         return complete_output
 
     def create_interface(self, ifname):
+        time.sleep(1)
         try:
             result_set = subprocess.Popen(
                 ['wireguard-go', ifname],
