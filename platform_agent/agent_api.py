@@ -53,7 +53,6 @@ class AgentApi:
         result = None
         try:
             if hasattr(self, type):
-                logger.debug(f"[AGENT_API] Calling agent api {data}")
                 if not isinstance(data, (dict, list)):
                     logger.error('[AGENT_API] data should be "DICT" type')
                     result = {'error': "BAD REQUEST"}

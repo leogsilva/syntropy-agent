@@ -37,7 +37,6 @@ class AgentRunner:
             if message == self.STOP_MESSAGE:
                 break
             request = json.loads(message)
-            logger.debug(f"[RUNNER] Parsed request | {request}")
             try:
                 result = self.agent_api.call(request['type'], request['data'], request['id'])
             except:  # noqa
