@@ -10,7 +10,7 @@ from platform_agent.lib.ctime import now
 
 class BWDataCollect(threading.Thread):
 
-    def __init__(self, client, interval=10):
+    def __init__(self, client, interval=120):
         super().__init__()
         self.interval = interval
         self.client = client
