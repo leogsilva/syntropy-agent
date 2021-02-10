@@ -56,7 +56,7 @@ class DockerNetworkWatcher(threading.Thread):
                 }))
                 if event.get('Action') in ['destroy', 'stop']:
                     for container in old_res:
-                        if container['agent_container_id'] == event['id']:
+                        if container.get('agent_container_id') and container.get('agent_container_id') == event.get('id'):
                             delete_iptable_rules(container['agent_container_ips'])
                 old_res = result
 
