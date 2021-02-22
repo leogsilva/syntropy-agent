@@ -5,7 +5,6 @@ import base64
 import logging
 import subprocess
 import re
-import time
 from pathlib import Path
 
 import pyroute2
@@ -209,10 +208,15 @@ class WgConf():
             old_ips = set(peer_info.get(public_key, [])) - set(allowed_ips)
             self.routes.ip_route_del(ifname, old_ips)
         peer = {'public_key': public_key,
-                'endpoint_addr': endpoint_ipv4,
-                'endpoint_port': endpoint_port,
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}
+        if endpoint_ipv4 and endpoint_port:
+            peer.update(
+                {
+                    'endpoint_addr': endpoint_ipv4,
+                    'endpoint_port': endpoint_port,
+                }
+            )
         self.wg.set(ifname, peer=peer)
         statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
         add_iptable_rules(allowed_ips)
@@ -269,10 +273,11 @@ class WireguardGo:
         full_cmd = f"wg set {ifname}".split(' ')
         if peer:
             allowed_ips_cmd = ""
+            endpoint = f"endpoint {peer['endpoint_addr']}:{peer.get('endpoint_port')} " if peer.get('endpoint_addr') else ""
             if not peer.get('remove'):
                 for ip in peer.get('allowed_ips', []):
                     allowed_ips_cmd += f"allowed-ips {ip} "
-                peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}endpoint {peer['endpoint_addr']}:{peer['endpoint_port']} persistent-keepalive 15".split(
+                peer_cmd = f"peer {peer['public_key']} {allowed_ips_cmd}{endpoint}persistent-keepalive 15".split(
                     ' ')
             else:
                 peer_cmd = f"peer {peer['public_key']} remove".split(' ')
