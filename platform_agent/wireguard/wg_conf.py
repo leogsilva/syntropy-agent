@@ -11,7 +11,7 @@ import pyroute2
 from pyroute2 import IPDB, WireGuard, NetlinkError
 from nacl.public import PrivateKey
 
-from platform_agent.cmd.iptables import add_iptable_rules, delete_iptable_rules
+from platform_agent.cmd.iptables import add_iptable_rules, delete_iptable_rules, add_iptables_forward
 from platform_agent.cmd.lsmod import module_loaded
 from platform_agent.cmd.wg_show import get_wg_listen_port
 from platform_agent.files.tmp_files import get_peer_metadata
@@ -185,7 +185,7 @@ class WgConf():
                 private_key=private_key,
                 listen_port=listen_port
             )
-
+        add_iptables_forward(ifname)
         result = {
             "public_key": public_key,
             "listen_port": int(listen_port),
