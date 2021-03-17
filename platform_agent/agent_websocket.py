@@ -108,6 +108,7 @@ class WebSocketClient(threading.Thread):
             header={
                 'authorization': api_key,
                 'x-deviceid': self.generate_device_id(),
+                'x-deviceip': self.get_public_ip(),
                 'x-devicename': os.environ.get('SYNTROPY_AGENT_NAME', socket.gethostname()),
                 'x-devicestatus': status,
                 'x-agentversion': __version__,
@@ -172,6 +173,10 @@ class WebSocketClient(threading.Thread):
         f.close()
 
         return cpuserial
+
+    @staticmethod
+    def get_public_ip():
+        return requests.get("https://ip.syntropystack.com/").json()
 
     def generate_device_id(self):
         try:
