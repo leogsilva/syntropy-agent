@@ -2,7 +2,9 @@ name: Syntropy Agent CI
 
 on:
   push:
-    branches: master
+    branches:
+      - master
+      - v0.0.79
     tags:
       - '*'
 
@@ -49,7 +51,7 @@ jobs:
           tags: syntropynet/agent:devel
       - name: PROD Build and push
         # BRANCH_STABLE_VERSION
-        if: github.ref == 'refs/heads/0.68'
+        if: github.ref == 'refs/heads/v0.0.79'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -58,3 +60,4 @@ jobs:
           tags: |
             syntropynet/agent:prod
             syntropynet/agent:stable
+            syntropynet/agent:v0.0.79

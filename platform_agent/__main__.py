@@ -4,7 +4,7 @@ Noia platform agent.
 """
 
 __author__ = "SYNTROPY Network"
-__version__ = "0.0.78"
+__version__ = "0.0.79"
 __license__ = "MIT"
 
 import os
