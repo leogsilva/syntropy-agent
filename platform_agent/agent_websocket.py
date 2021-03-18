@@ -176,7 +176,10 @@ class WebSocketClient(threading.Thread):
 
     @staticmethod
     def get_public_ip():
-        return requests.get("https://ip.syntropystack.com/").json()
+        try:
+            return requests.get("https://ip.syntropystack.com/").json()
+        except:
+            return requests.get('https://ident.me').text
 
     def generate_device_id(self):
         try:
@@ -185,7 +188,7 @@ class WebSocketClient(threading.Thread):
         except FileNotFoundError:
             try:
                 with open('/etc/machine-id', 'r') as file:
-                    machine_id = file.read().replace('\n', '') + requests.get("https://ip.syntropystack.com/").json()
+                    machine_id = file.read().replace('\n', '') + self.get_public_ip()
             except FileNotFoundError:
                 machine_id = self.getserial()
 
