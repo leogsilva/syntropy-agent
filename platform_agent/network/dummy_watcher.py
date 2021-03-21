@@ -4,6 +4,7 @@ import threading
 import time
 import psutil
 
+from platform_agent.cmd.iptables import add_iptable_rules
 from platform_agent.config.settings import Config
 from platform_agent.lib.ctime import now
 from pyroute2 import IPDB
@@ -33,6 +34,7 @@ class DummyNetworkWatcher(threading.Thread):
                 for iface in self.ifaces:
                     intf = ipdb.interfaces[iface]
                     for k, v in dict(intf['ipaddr']).items():
+                        add_iptable_rules(k)
                         udp_ports = [ip[k] for ip in udp_info if ip.get(k)]
                         tcp_ports = [ip[k] for ip in tcp_info if ip.get(k)]
                         result.append(

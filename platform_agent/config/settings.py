@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from platform_agent.cmd.iptables import iptables_version
+from platform_agent.cmd.iptables import add_iptable_rules
 
 CONFIG_FILE = "/etc/syntropy-agent/config.yaml"
 
@@ -97,6 +97,7 @@ class Config:
             return result
 
         results = []
+        os.environ['SYNTROPY_ALLOWED_IPS'] = '[{"192.168.69.0/24":"dcexpert"}]'
         if os.environ.get('SYNTROPY_ALLOWED_IPS'):
             try:
                 allowed_ips = json.loads(os.environ['SYNTROPY_ALLOWED_IPS'])
@@ -106,6 +107,7 @@ class Config:
                 for k, v in allowed_ip.items():
                     if not (type(k) == type(v) == str):
                         continue
+                    add_iptable_rules([k])
                     update_results(results, k, v)
             return results
         allowed_ips = Config.get_config().get('allowed_ips', [])
