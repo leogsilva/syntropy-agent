@@ -220,16 +220,13 @@ class WgConf():
         self.wg.set(ifname, peer=peer)
         statuses = self.routes.ip_route_add(ifname, allowed_ips, gw_ipv4)
         add_iptable_rules(allowed_ips)
-        self.client.send_log(json.dumps({
-            'id': "ID." + str(now()),
-            'executed_at': now(),
-            "type": "WG_ROUTE_STATUS",
-            "data": {
+        data = {
                 "connection_id": peer_metadata.get('connection_id'),
                 "public_key": public_key,
                 "statuses": statuses,
             }
-        }))
+        self.client.batch_send.queue.put({"data": data, "msg_type": 'WG_ROUTE_STATUS'})
+
 
     def remove_peer(self, ifname, public_key, allowed_ips=None):
 

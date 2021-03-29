@@ -10,6 +10,7 @@ import time
 import requests
 import websocket
 
+from platform_agent.executors.batch_send import BatchSender
 from platform_agent.lib.ctime import now
 from platform_agent.agent_api import AgentApi
 from platform_agent.config.logger import PublishLogToSessionHandler
@@ -28,6 +29,8 @@ class AgentRunner:
         self.queue = queue.Queue()
         self.active = None
         self.agent_api = AgentApi(self)
+        self.batch_send = BatchSender(self)
+        self.batch_send.start()
 
         logging.root.addHandler(PublishLogToSessionHandler(self))
 
