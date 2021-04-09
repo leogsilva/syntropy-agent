@@ -114,6 +114,7 @@ class WebSocketClient(threading.Thread):
                 'x-deviceip': self.get_public_ip(),
                 'x-devicename': os.environ.get('SYNTROPY_AGENT_NAME', socket.gethostname()),
                 'x-devicestatus': status,
+                "x-agenttype": "Linux",
                 'x-agentversion': __version__,
             },
             on_message=self.on_message,
@@ -142,15 +143,14 @@ class WebSocketClient(threading.Thread):
     def on_error(self, error):
         self.agent_runner.active = False
         logger.error(f"[WEBSOCKET] Error | {error}")
+        if error.status_code == 401:
+            self.open = False
         self.ws.close()
         time.sleep(10)
 
     def on_close(self):
         self.agent_runner.active = False
         logger.debug("[WEBSOCKET] Close")
-        sock = getattr(self.ws, 'sock')
-        if sock and sock.status and sock.status == 101:
-            self.open = False
         time.sleep(10)
 
     def on_open(self):
