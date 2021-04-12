@@ -22,7 +22,7 @@ class AutopingClient(threading.Thread):
         self.daemon = True
         threading.Thread.__init__(self)
 
-    def run(self, max_threads=100):
+    def run(self, max_threads=1000):
         while not self.stop_autoping.is_set():
             pings = []
             ping_res = multiping(self.hosts, count=2, interval=0.5, max_threads=max_threads)
@@ -38,7 +38,7 @@ class AutopingClient(threading.Thread):
                 if len(pings) >= self.response_limit:
                     break
 
-            self.client.send(json.dumps({
+            self.client.send_log(json.dumps({
                 'id': "ID." + str(time.time()),
                 'executed_at': now(),
                 'type': 'AUTO_PING',
