@@ -63,6 +63,16 @@ def format_container_result(containers):
                 if not container_info['name']:
                     container_info['name'] = container_info.get('Name')
 
+            try:
+                ports['tcp'].append([name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_PORT_TCP' in name][0].split('=')[1])
+            except IndexError:
+                pass
+
+            try:
+                ports['udp'].append([name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_PORT_UDP' in name][0].split('=')[1])
+            except IndexError:
+                pass
+
             result.append(
                 {
                     'agent_container_id': container['Id'],
