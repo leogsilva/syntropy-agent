@@ -64,13 +64,13 @@ def format_container_result(containers):
                     container_info['name'] = container_info.get('Name')
 
             try:
-                ports['tcp'].append([name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_PORT_TCP' in name][0].split('=')[1])
-            except IndexError:
+                ports['tcp'].append(int([name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_PORT_TCP' in name][0].split('=')[1]))
+            except (IndexError, ValueError):
                 pass
 
             try:
-                ports['udp'].append([name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_PORT_UDP' in name][0].split('=')[1])
-            except IndexError:
+                ports['udp'].append(int([name for name in container_conf.get('Env', []) if 'SYNTROPY_SERVICE_PORT_UDP' in name][0].split('=')[1]))
+            except (IndexError, ValueError):
                 pass
 
             result.append(
