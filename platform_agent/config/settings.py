@@ -50,8 +50,8 @@ class Config:
 
         config_file = Path(CONFIG_FILE)
         if not config_file.is_file():
-            print(f"Config file was not found in {CONFIG_FILE}")
-            raise ConfigException(f"Config file was not found in {CONFIG_FILE}")
+            print(f"SYNTROPY_AGENT_TOKEN missing")
+            raise ConfigException(f"SYNTROPY_AGENT_TOKEN missing")
         env_conf = self.get_config()
         if env_conf.get('name') and type(env_conf['name']) == str:
             os.environ[f"SYNTROPY_AGENT_NAME"] = env_conf['name']
