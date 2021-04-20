@@ -97,7 +97,6 @@ class Config:
             return result
 
         results = []
-        os.environ['SYNTROPY_ALLOWED_IPS'] = '[{"192.168.69.0/24":"dcexpert"}]'
         if os.environ.get('SYNTROPY_ALLOWED_IPS'):
             try:
                 allowed_ips = json.loads(os.environ['SYNTROPY_ALLOWED_IPS'])
