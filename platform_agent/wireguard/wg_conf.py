@@ -53,13 +53,14 @@ def set_interface_ip(ifname, ip):
 
 class WgConf():
 
-    def __init__(self, client=None):
+    def __init__(self, client=None, restClient=None):
 
         self.wg_kernel = module_loaded('wireguard')
         self.wg = WireGuard() if self.wg_kernel else WireguardGo()
         self.ipdb = IPDB()
         self.routes = Routes()
         self.client = client
+        self.restClient = restClient
 
     def create_syntropy_interfaces(self, ifaces):
         result = []
@@ -207,6 +208,23 @@ class WgConf():
                 raise WgConfException(str(e))
             old_ips = set(peer_info.get(public_key, [])) - set(allowed_ips)
             self.routes.ip_route_del(ifname, old_ips)
+
+        network_id = os.environ.get("SYNTROPY_NETWORK")
+        if network_id:
+            agent_id = peer_metadata['agent_id']
+            logger.debug(f"[WGCONF] adding allowed ips if any agentId: {agent_id}, networkId {network_id}")
+            extra_info = self.restClient.get_network_info(agent_id, network_id)
+            logger.debug(f"[WGCONF] extra info found {extra_info}")
+            if extra_info:
+                if 'pod_cidr' in extra_info:
+                    allowed_ips.append(extra_info['pod_cidr'])
+                if 'service_cidr' in extra_info:
+                    allowed_ips.append(extra_info['service_cidr'])
+                if 'global_ip' in extra_info:
+                    allowed_ips.append(extra_info['global_ip'])					
+        else:
+            logger.warn(f"[WGCONF] no network configured")
+
         peer = {'public_key': public_key,
                 'persistent_keepalive': 15,
                 'allowed_ips': allowed_ips}

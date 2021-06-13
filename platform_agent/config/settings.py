@@ -1,6 +1,7 @@
 import os
 import ipaddress
 import json
+import logging
 from pathlib import Path
 
 import yaml
@@ -11,6 +12,8 @@ CONFIG_FILE = "/etc/syntropy-agent/config.yaml"
 
 AGENT_PATH = "/etc/syntropy-agent"
 AGENT_PATH_TMP = f"{AGENT_PATH}/tmp"
+
+logger = logging.getLogger()
 
 class ConfigException(Exception):
     pass
@@ -100,6 +103,7 @@ class Config:
         if os.environ.get('SYNTROPY_ALLOWED_IPS'):
             try:
                 allowed_ips = json.loads(os.environ['SYNTROPY_ALLOWED_IPS'])
+                logger.debug(f"[SETTINGS] allowed ips raw: {allowed_ips}")
             except json.JSONDecodeError:
                 return []
             for allowed_ip in allowed_ips:
@@ -107,6 +111,7 @@ class Config:
                     if not (type(k) == type(v) == str):
                         continue
                     add_iptable_rules([k])
+                    logger.info(f"[SETTINGS] adding subnet to iptable : {[k]}")
                     update_results(results, k, v)
             return results
         allowed_ips = Config.get_config().get('allowed_ips', [])

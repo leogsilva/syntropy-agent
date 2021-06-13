@@ -16,8 +16,10 @@ from platform_agent.agent_api import AgentApi
 from platform_agent.config.logger import PublishLogToSessionHandler
 from platform_agent.wireguard.helpers import check_if_wireguard_installled
 from platform_agent.__main__ import __version__
+import netifaces as ni
 
 logger = logging.getLogger()
+
 
 
 class AgentRunner:
@@ -89,7 +91,6 @@ class AgentRunner:
                 self.ws.send(message)
             except:
                 pass
-
 
 class WebSocketClient(threading.Thread):
 
@@ -171,7 +172,7 @@ class WebSocketClient(threading.Thread):
             if line[0:6] == 'Serial':
                 cpuserial = line[10:26]
         if cpuserial == "0000000000000000":
-            cpuserial = cpuserial + requests.get("https://ip.syntropystack.com/").json()
+            cpuserial = cpuserial + WebSocketClient.get_public_ip()
             logger.warning("Could not generate unique machineId")
         f.close()
 
@@ -179,10 +180,16 @@ class WebSocketClient(threading.Thread):
 
     @staticmethod
     def get_public_ip():
-        try:
-            return requests.get("https://ip.syntropystack.com/").json()
-        except:
-            return requests.get('https://ident.me').text
+        ip_from = os.environ.get("SYNTROPY_IP_FROM","")
+        if ip_from:
+            logger.debug("[GETINFO] using ip from {ip_from}")
+            ip = ni.ifaddresses(ip_from)[ni.AF_INET][0]['addr']
+            return ip
+        else:	
+            try:
+                return requests.get("https://ip.syntropystack.com/").json()
+            except:
+                return requests.get('https://ident.me').text
 
     def generate_device_id(self):
         try:

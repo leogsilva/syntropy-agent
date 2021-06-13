@@ -11,16 +11,25 @@ from platform_agent.docker_api.helpers import format_networks_result, format_con
 from platform_agent.config.settings import Config
 
 logger = logging.getLogger()
+import netifaces as ni
 
 
 def get_ip_addr():
-    try:
-        resp = requests.get("https://ip.syntropystack.com/")
+    ip_from = os.environ.get("SYNTROPY_IP_FROM","")
+    if ip_from:
+        logger.debug("[GETINFO] using ip from {ip_from}")
+        ip = ni.ifaddresses(ip_from)[ni.AF_INET][0]['addr']
         return {
-            "external_ip": resp.json()
+            "external_ip": ip
         }
-    except (NewConnectionError, SSLError, ConnectionError):
-        return {}
+    else:
+        try:
+            resp = requests.get("https://ip.syntropystack.com/")
+            return {
+                "external_ip": resp.json()
+            }
+        except (NewConnectionError, SSLError, ConnectionError):
+            return {}
 
 
 def get_location():

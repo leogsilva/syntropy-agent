@@ -37,7 +37,7 @@ class Routes:
                     agent_id = get_agent_id_by_text(ip)
                     result = {
                         'ip': ip,
-                        'status': 'ERROR',
+                        'status': 'OK',
                         'msg': f'Service ip: {ip} intersects agent_id: {agent_id} CIDR {network}'
                     }
                     break

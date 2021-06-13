@@ -4,10 +4,12 @@ import threading
 import time
 import queue
 import traceback
+import os
 
 from platform_agent.files.tmp_files import update_tmp_config_dump
 from platform_agent.lib.ctime import now
 from platform_agent.wireguard import WgConfException, WgConf
+from platform_agent.agent_restapi import AgentRestApi
 
 logger = logging.getLogger()
 
@@ -21,7 +23,10 @@ class WgExecutor(threading.Thread):
         self.client = client
         self.stop_wg_executor = threading.Event()
         self.wg = None
-        self.wgconf = WgConf(client)
+        apiHost = os.environ.get("SYNTROPY_API_SERVER","")
+        apiToken = os.environ.get("SYNTROPY_API_TOKEN","")
+        self.restClient = AgentRestApi(apiHost, apiToken)		
+        self.wgconf = WgConf(client, restClient=self.restClient)
         self.daemon = True
 
         threading.Thread.__init__(self)

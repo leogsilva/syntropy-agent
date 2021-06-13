@@ -19,6 +19,7 @@ from platform_agent.network.autoping import AutopingClient
 from platform_agent.network.iperf import IperfServer
 from platform_agent.network.iface_watcher import InterfaceWatcher
 from platform_agent.rerouting.rerouting import Rerouting
+from platform_agent.agent_restapi import AgentRestApi
 
 logger = logging.getLogger()
 
@@ -29,7 +30,10 @@ class AgentApi:
         self.runner = runner
         self.wg_peers = None
         self.autoping = None
-        self.wgconf = WgConf(self.runner)
+        apiHost = os.environ.get("SYNTROPY_API_SERVER","")
+        apiToken = os.environ.get("SYNTROPY_API_TOKEN","")
+        self.restClient = AgentRestApi(apiHost, apiToken)
+        self.wgconf = WgConf(self.runner, self.restClient)
         self.wg_executor = WgExecutor(self.runner)
         self.bw_data_collector = BWDataCollect(self.runner)
         if prod_mode:
